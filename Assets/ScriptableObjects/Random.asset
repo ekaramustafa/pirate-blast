@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: faf312acb0c58cf4497424c13385ed0a, type: 3}
+  m_Name: Random
+  m_EditorClassIdentifier: 
+  defaultStateSprite: {fileID: 21300000, guid: 918b3980d9f499148a1680391e045663, type: 3}
+  unitType: 5
+  health: 0
+  blastParticleSystem: {fileID: 0}
+  tntExplosionParticleSystem: {fileID: 0}
+  particles: []
