@@ -9,7 +9,7 @@ public class BlockBlastStrategy : IBlastStrategy
 {
     public async UniTask<bool> Blast(GridSystem gridSystem, GridPosition startPosition)
     {
-
+        
         List<GridPosition> blastablePositions = GetBlastablePositions(gridSystem, startPosition);
         if (blastablePositions.Count >= GameConstants.TNT_FORMATION_BLOCKS_THRESHOLD)
         {
