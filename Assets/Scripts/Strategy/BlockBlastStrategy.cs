@@ -9,7 +9,7 @@ public class BlockBlastStrategy : IBlastStrategy
 {
     public async UniTask<bool> Blast(GridSystem gridSystem, GridPosition startPosition)
     {
-        
+
         List<GridPosition> blastablePositions = GetBlastablePositions(gridSystem, startPosition);
         if (blastablePositions.Count >= GameConstants.TNT_FORMATION_BLOCKS_THRESHOLD)
         {
@@ -107,7 +107,7 @@ public class BlockBlastStrategy : IBlastStrategy
             Unit unit = gridObject.GetUnit();
             SlidingAnimation slidingAnimation = unit.GetComponent<SlidingAnimation>();
             Vector3 offset = GetOffsetVector(gridSystem, unit.transform.position, destination);
-            Tween initialTween = slidingAnimation.TriggerAnimationTo(0.25f,unit.transform.position + offset, AnimationType.HORIZANTALSLIDE, AnimationType.VERTICALSLIDE);
+            Tween initialTween = slidingAnimation.TriggerAnimationTo(GameConstants.UNIT_FORM_ELASTICITIY_ANIMATION_DURATION, unit.transform.position + offset, AnimationType.HORIZANTALSLIDE, AnimationType.VERTICALSLIDE);
             Tween tween = slidingAnimation.TriggerAnimationTo(destination, AnimationType.HORIZANTALSLIDE, AnimationType.VERTICALSLIDE);
             Sequence subSequence = DOTween.Sequence();
             subSequence.Append(initialTween);
@@ -124,7 +124,7 @@ public class BlockBlastStrategy : IBlastStrategy
     {
         GridPosition currentGridPosition = gridSystem.GetGridPosition(position);
         GridPosition destinationGridPosition = gridSystem.GetGridPosition(destination);
-        float offsetCoefficient = 1.5f;
+        float offsetCoefficient = GameConstants.UNIT_FORM_ELASTICITY_OFFSET;
         float yMultiplier = currentGridPosition.y - destinationGridPosition.y;
         float xMultiplier = currentGridPosition.x - destinationGridPosition.x;
         return new Vector3(offsetCoefficient * xMultiplier, offsetCoefficient * yMultiplier);

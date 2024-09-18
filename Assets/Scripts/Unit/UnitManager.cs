@@ -68,10 +68,16 @@ public class UnitManager
 
     }
 
-    public void CreateTNTUnit(GridPosition startPosition)
+    public void CreateComboTNTUnit(GridPosition gridPosition)
+    {
+        UnitData unitData = unitAssetsSO.GetTNTSOByTNTType(TNTType.LARGE);
+        CreateUnit(gridPosition, unitData);
+    }
+
+    public void CreateTNTUnit(GridPosition gridPosition)
     {
         UnitData unitData = unitAssetsSO.GetUnitSOByUnitType(UnitType.TNT);
-        CreateUnit(startPosition, unitData);
+        CreateUnit(gridPosition, unitData);
     }
 
     public void CreateUnit(GridPosition gridPosition, UnitData unitData)
