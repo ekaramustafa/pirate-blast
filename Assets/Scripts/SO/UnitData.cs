@@ -8,6 +8,7 @@ public class UnitData : ScriptableObject
     public Sprite defaultStateSprite;
     public UnitType unitType;
     public int health;
+    public bool affectedByNeighborBlast;
     public ParticleSystem blastParticleSystem;
     public ParticleSystem tntExplosionParticleSystem;
     public Material particleMaterial;

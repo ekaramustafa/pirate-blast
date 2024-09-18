@@ -147,7 +147,7 @@ public class LevelEditor : Editor
 
         // Take the minimum of width and height scale to maintain aspect ratio
         float resolutionScale = Mathf.Min(widthScale, heightScale);
-        Vector3 mousePosition = Event.current.mousePosition * 1.25f;
+        Vector3 mousePosition = Event.current.mousePosition * 1.00f; // to-do
         mousePosition.y = SceneView.currentDrawingSceneView.camera.pixelHeight - mousePosition.y;
         mousePosition = SceneView.currentDrawingSceneView.camera.ScreenToWorldPoint(mousePosition);
         mousePosition.z = 0f;

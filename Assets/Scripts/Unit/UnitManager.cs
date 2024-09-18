@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -67,11 +68,17 @@ public class UnitManager
 
     }
 
-    public void CreateUnit(GridPosition gridPosition, UnitData unitSO)
+    public void CreateTNTUnit(GridPosition startPosition)
+    {
+        UnitData unitData = unitAssetsSO.GetUnitSOByUnitType(UnitType.TNT);
+        CreateUnit(startPosition, unitData);
+    }
+
+    public void CreateUnit(GridPosition gridPosition, UnitData unitData)
     {
         Vector3 worldPosition = gridSystem.GetWorldPosition(gridPosition);
-        Transform unitTemplatePrefab = unitAssetsSO.GetPrefabByUnitType(unitSO.unitType);
-        Unit unit = UnitFactory.CreateUnit(unitSO, unitTemplatePrefab, worldPosition, gridPosition.y);
+        Transform unitTemplatePrefab = unitAssetsSO.GetPrefabByUnitType(unitData.unitType);
+        Unit unit = UnitFactory.CreateUnit(unitData, unitTemplatePrefab, worldPosition, gridPosition.y);
         GridObject gridObject = gridSystem.GetGridObject(gridPosition);
         gridObject.SetUnit(unit);
     }
@@ -167,17 +174,14 @@ public class UnitManager
                 if (!gridSystem.CanPerformOnPosition(startPosition)) continue;
                 GridObject gridObject = gridSystem.GetGridObject(startPosition);
                 UnitType unitType = gridObject.GetUnit().GetUnitType();
-                if (unitType != UnitType.Block) continue;
-
-                BlockFormNewUnitStrategy blockFormNewUnitStrategy = new BlockFormNewUnitStrategy(gridSystem);
-                List<GridPosition> formableGridPositions = blockFormNewUnitStrategy.GetFormablePositions(startPosition);
+                if (unitType != UnitType.Block) continue;                
+                List<GridPosition> formableGridPositions = GridSearchUtils.GetAdjacentSameColorBlocks(gridSystem, startPosition);
                 if (formableGridPositions.Count >= GameConstants.TNT_FORMATION_BLOCKS_THRESHOLD)
                 {
                     foreach (GridPosition position in formableGridPositions)
                     {
                         GridObject formableGridObject = gridSystem.GetGridObject(position);
                         Unit unit = formableGridObject.GetUnit();
-                        //if (unit == null) continue;
                         BlockData blockSO = unit.GetUnitData() as BlockData;
                         unit.GetComponent<SpriteRenderer>().sprite = blockSO.tntStateSprite;
                     }

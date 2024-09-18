@@ -55,6 +55,7 @@ public class GridObject
 
     private void PlayBlastParticleSystem(BlastType blastType)
     {
+        if (blastType == BlastType.BlockBlastForm || blastType == BlastType.TNTBlastForm) return;
         UnitData unitData = unit.GetUnitData();
         UnitType unitType = unit.GetUnitType();
         

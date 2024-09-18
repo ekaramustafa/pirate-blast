@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d96fe5a31518da4882bdca6f76fdf6e, type: 3}
   m_Name: BlueBlock
   m_EditorClassIdentifier: 
-  defaultStateSprite: {fileID: 21300000, guid: b4b0d3159a910d14ba0d0c0d7bf87f1f, type: 3}
+  defaultStateSprite: {fileID: 21300000, guid: 13a12bce273ac5642b6e92c9ab6da5ae, type: 3}
   unitType: 0
   health: 1
+  affectedByNeighborBlast: 1
   blastParticleSystem: {fileID: 2220476824931831946, guid: 4e40a3e57ad38aa478dc689b2232134c, type: 3}
   tntExplosionParticleSystem: {fileID: 7544857655930263523, guid: e9c93caa341ce4740931cd30ecba2afb, type: 3}
   particleMaterial: {fileID: 2100000, guid: 2fc52f7257c1b4457a0fb0284b56bbcc, type: 2}
   blockColor: 1
-  tntStateSprite: {fileID: 21300000, guid: a3eb284b19518c1458d4ccec929fa669, type: 3}
+  tntStateSprite: {fileID: 21300000, guid: cf1b080e6b747dc4e9d489c37c3e35e2, type: 3}

@@ -12,5 +12,6 @@ public enum BlastType
 {
     BlockBlast,
     TNTBlast,
-    None
+    BlockBlastForm,
+    TNTBlastForm,
 }

@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d96fe5a31518da4882bdca6f76fdf6e, type: 3}
   m_Name: RedBlock
   m_EditorClassIdentifier: 
-  defaultStateSprite: {fileID: 21300000, guid: 09f1f81d7a685ce42a16a0b8b997d1bb, type: 3}
+  defaultStateSprite: {fileID: 21300000, guid: 725e5f2b4533d934182950e3da14ee3a, type: 3}
   unitType: 0
   health: 1
+  affectedByNeighborBlast: 1
   blastParticleSystem: {fileID: 2220476824931831946, guid: 4e40a3e57ad38aa478dc689b2232134c, type: 3}
   tntExplosionParticleSystem: {fileID: 7544857655930263523, guid: e9c93caa341ce4740931cd30ecba2afb, type: 3}
   particleMaterial: {fileID: 2100000, guid: dd409208e15064526a523f64a860baf1, type: 2}
   blockColor: 0
-  tntStateSprite: {fileID: 21300000, guid: 5a1d03c8fe7bc804fab26460712f1c27, type: 3}
+  tntStateSprite: {fileID: 21300000, guid: 9243cc5f6f05d4849a6aef47eec2d2d8, type: 3}

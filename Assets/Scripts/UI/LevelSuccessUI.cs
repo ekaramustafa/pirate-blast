@@ -10,6 +10,10 @@ public class LevelSuccessUI : MonoBehaviour
     [SerializeField] private Transform levelCompletedText;
     [SerializeField] private Transform successImage;
 
+    [Space(5)]
+    [Header("Parameters")]
+    [SerializeField] private string victoryText = "Victory";
+
     private void Awake()
     {
         gameObject.SetActive(false);
@@ -17,10 +21,12 @@ public class LevelSuccessUI : MonoBehaviour
 
     private void OnEnable()
     {
-        successImage.GetComponent<UIScaleAnimation>().TriggerAnimation(new Vector3(1.5f, 0f, 0f), AnimationType.SCALEUP);
-        gameObject.GetComponent<ParticleSystem>().Play();
+        successImage.GetComponent<UIScaleAnimation>().TriggerAnimation(new Vector3(2f, 0f, 0f), AnimationType.SCALEUP).OnComplete(() =>
+        {
+            gameObject.GetComponent<ParticleSystem>().Play();
+        });
 
-        levelCompletedText.GetComponent<TextMeshProUGUI>().SetText("Perfect");
+        levelCompletedText.GetComponent<TextMeshProUGUI>().SetText(victoryText);
         Vector3 startPos = new Vector3(-GameConstants.WIDTH, 0f, 0f);
         levelCompletedText.GetComponent<UISlideAnimation>().TriggerAnimation(startPos, AnimationType.HORIZANTALSLIDE).OnComplete(() =>
         {

@@ -54,6 +54,7 @@ public class GridSystem
 
     }
 
+
     #region Initialization Functions
     private void InitializeOffsets()
     {
@@ -145,6 +146,17 @@ public class GridSystem
             gridPosition.y >= 0 &&
             gridPosition.y < height;
     }
+    public bool CanBeAffectedByNeighborBlast(GridPosition neighborPosition)
+    {
+        if (CanPerformOnPosition(neighborPosition))
+        {
+            Unit unit = GetGridObject(neighborPosition).GetUnit();
+            return unit.CanBeAffectedByNeighborBlast();
+        }
+        return false;
+
+    }
+
 
 
     public Vector3 GetWorldPosition(GridPosition gridPosition)

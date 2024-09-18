@@ -7,29 +7,29 @@ public class Unit : MonoBehaviour
 {
     [Tooltip("This is for creating bouncing/oscillation effect")]
     [SerializeField] float overshootAmount = 1f;
-    private UnitData unitSO;
+    private UnitData unitData;
     private int health;
 
     private void Awake()
     {
     }
 
-    public void SetUnitSO(UnitData unitSO)
+    public void SetUnitSO(UnitData unitData)
     {     
-        this.unitSO = unitSO;
-        GetComponent<SpriteRenderer>().sprite = unitSO.defaultStateSprite;
-        this.health = unitSO.health;
+        this.unitData = unitData;
+        GetComponent<SpriteRenderer>().sprite = unitData.defaultStateSprite;
+        this.health = unitData.health;
 
     }
 
     public UnitData GetUnitData()
     {
-        return unitSO;
+        return unitData;
     }
 
     public Sprite GetDefaultSprite()
     {
-        return unitSO.defaultStateSprite;
+        return unitData.defaultStateSprite;
     }
 
     public int GetHealth()
@@ -44,8 +44,13 @@ public class Unit : MonoBehaviour
 
     public UnitType GetUnitType()
     {
-        return unitSO.unitType;
+        return unitData.unitType;
     }
+    public bool CanBeAffectedByNeighborBlast()
+    {
+        return unitData.affectedByNeighborBlast;
+    }
+
 
     public void SetSortingOrder(int y)
     {
@@ -97,6 +102,7 @@ public class Unit : MonoBehaviour
 
         transform.position = targetPosition;
     }
+
 
 
     /// <summary>

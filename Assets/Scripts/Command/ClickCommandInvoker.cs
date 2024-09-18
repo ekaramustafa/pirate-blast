@@ -17,22 +17,15 @@ public class ClickCommandInvoker
             return false;
         }
 
-        bool isEligible = false;
-
-        IClickCommand formNewUnitCommand = new FormNewUnitCommand(gridSystem, position);
-        isEligible =  await formNewUnitCommand.Execute();
-
-        if (!isEligible)
+        IClickCommand blastCommand = new BlastCommand(gridSystem, position);
+        if(await blastCommand.Execute())
         {
-            IClickCommand blastCommand = new BlastCommand(gridSystem, position);
-            isEligible = await blastCommand.Execute();
+            return true;
         }
 
-        if (!isEligible)
-        {
-            IClickCommand failCommand = new FailCommand(gridSystem, position);
-            await failCommand.Execute();
-        }
-        return isEligible;
+        IClickCommand failCommand = new FailCommand(gridSystem, position);
+        await failCommand.Execute();
+
+        return false;
     }
 }

@@ -4,39 +4,8 @@ using UnityEngine;
 
 public static class GridSearchUtils
 {
-    public static List<GridPosition> GetNeighborPositionsWithUnitTypePredicate(GridSystem gridSystem, GridPosition startPosition, HashSet<UnitType> filter)
-    {
 
-        List<GridPosition> neighborPositions = new List<GridPosition>();
-
-        GridPosition[] directions = {
-            new GridPosition(-1, 0),  // left
-            new GridPosition(1, 0),   // right
-            new GridPosition(0, 1),   // top
-            new GridPosition(0, -1)   // bottom
-        };
-
-        foreach (GridPosition direction in directions)
-        {
-            GridPosition neighborPosition = new GridPosition(
-                startPosition.x + direction.x,
-                startPosition.y + direction.y
-            );
-            if (gridSystem.CanPerformOnPosition(neighborPosition))
-            {
-                UnitType unitType = gridSystem.GetGridObject(neighborPosition).GetUnit().GetUnitType();
-                if (filter.Contains(unitType))
-                {
-                    neighborPositions.Add(neighborPosition);
-                }
-            }
-        }
-
-        return neighborPositions;
-
-    }
-
-    public static List<GridPosition> GetNeighborPositions(GridSystem gridSystem, GridPosition startPosition)
+    public static List<GridPosition> GetNeighborBlastablePositions(GridSystem gridSystem, GridPosition startPosition)
     {
         List<GridPosition> neighborPositions = new List<GridPosition>();
 
@@ -53,8 +22,8 @@ public static class GridSearchUtils
                 startPosition.x + direction.x,
                 startPosition.y + direction.y
             );
-
-            if (gridSystem.CanPerformOnPosition(neighborPosition))
+            
+            if (gridSystem.CanPerformOnPosition(neighborPosition) && gridSystem.CanBeAffectedByNeighborBlast(neighborPosition))
             {
                 neighborPositions.Add(neighborPosition);
             }

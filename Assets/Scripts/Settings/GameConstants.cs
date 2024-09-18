@@ -54,8 +54,8 @@ public static class GameConstants
     #endregion
 
     #region Grid Visual Constants
-    public const float VERTICAL_CELL_SIZE = 7.5f;
-    public const float HORIZONTAL_CELL_SIZE = 7.75f;
+    public const float VERTICAL_CELL_SIZE = 11.5f;
+    public const float HORIZONTAL_CELL_SIZE = 11.25f;
 
     public const int WIDTH = 1080;
     public const int HEIGHT = 1920;
@@ -69,6 +69,18 @@ public static class GameConstants
     /// Experimental offset of the background for units
     /// </summary>
     public const float UNIT_BACKGROUND_FRAME_SIZE_ADDITION = 2f;
+
+    /// <summary>
+    /// Unit elasticity before forming to the destination unit.
+    /// To go right, go left slightly and smash to the right.
+    /// </summary>
+    public const float UNIT_FORM_ELASTICITY_OFFSET = 1.25f;
+
+    /// <summary>
+    /// Yes for now it is here, 
+    /// I know animation system sucks.
+    /// </summary>
+    public const float UNIT_FORM_ELASTICITIY_ANIMATION_DURATION = 0.5f;
     #endregion
 
     #region Save System Constants

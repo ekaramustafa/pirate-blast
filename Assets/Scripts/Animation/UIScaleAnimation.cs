@@ -51,8 +51,8 @@ public class UIScaleAnimation :  UIAnimation
             }
         }
 
-        sequence.Append(rectTransform.DOScale(targetScale, duration / 2).SetEase(Ease.InOutQuad));
-        sequence.Append(rectTransform.DOScale(currentScale, duration / 2).SetEase(Ease.InOutQuad));
+        sequence.Append(rectTransform.DOScale(targetScale, duration / 2).SetEase(Ease.InExpo));
+        sequence.Append(rectTransform.DOScale(currentScale, duration / 2).SetEase(Ease.InExpo));
 
         return sequence;
     }

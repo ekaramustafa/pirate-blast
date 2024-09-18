@@ -695,7 +695,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 397182324}
   serializedVersion: 8
-  lengthInSec: 0.75
+  lengthInSec: 0.5
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -823,8 +823,8 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 60
-      minScalar: 30
+      scalar: 200
+      minScalar: 300
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -941,8 +941,8 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 2
-      minScalar: 5
+      scalar: 5
+      minScalar: 15
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -1265,7 +1265,7 @@ ParticleSystem:
     gravityModifier:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1
+      scalar: 15
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -1318,8 +1318,8 @@ ParticleSystem:
   ShapeModule:
     serializedVersion: 6
     enabled: 1
-    type: 0
-    angle: 25
+    type: 4
+    angle: 30.3
     length: 5
     boxThickness: {x: 0, y: 0, z: 0}
     radiusThickness: 1
@@ -1405,7 +1405,7 @@ ParticleSystem:
     sphericalDirectionAmount: 0
     randomPositionAmount: 0
     radius:
-      value: 10.03
+      value: 23.5
       mode: 0
       spread: 0
       speed:
@@ -1524,7 +1524,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 100
+      scalar: 150
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -2141,7 +2141,7 @@ ParticleSystem:
     uvChannelMask: -1
     rowMode: 1
     sprites:
-    - sprite: {fileID: 21300000, guid: b03992958548d4c99aac0a3d0e0c8f7b, type: 3}
+    - sprite: {fileID: 21300000, guid: d3545a61c553b8b488db8df11f4d3d7e, type: 3}
     flipU: 0
     flipV: 0
   VelocityModule:
@@ -5433,6 +5433,7 @@ MonoBehaviour:
   sceneTransitionDelay: 2
   levelCompletedText: {fileID: 636509274}
   successImage: {fileID: 1237456106}
+  victoryText: Victory
 --- !u!114 &397182330
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5568,7 +5569,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a1e3f7f6653ac46029e41339000a46a2, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 411068bf3a11ffb498e083576361be96, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -5880,7 +5881,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Perfect
+  m_text: Victory
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2248245dae395774d897e448554c2d4f, type: 2}
   m_sharedMaterial: {fileID: 408732275069149621, guid: 2248245dae395774d897e448554c2d4f, type: 2}
@@ -6679,8 +6680,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: 0, y: 0.000005722}
+  m_SizeDelta: {x: 128.704, y: 145.346}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1237456107
 MonoBehaviour:
@@ -6702,7 +6703,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 5dc6711aca01b4634908e49e48707beb, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d3545a61c553b8b488db8df11f4d3d7e, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -6745,7 +6746,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9669c393dd8e49c44a2b4fecb590c03d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  default_duration: 0.25
+  default_duration: 0.5
 --- !u!1 &1257279472
 GameObject:
   m_ObjectHideFlags: 0
@@ -7673,7 +7674,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 1
-  m_Size: {x: 79.4, y: 94}
+  m_Size: {x: 103.25, y: 117}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -7688,7 +7689,7 @@ Transform:
   m_GameObject: {fileID: 1825392382}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -20.6, z: 0}
+  m_LocalPosition: {x: 0, y: -21.75, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
