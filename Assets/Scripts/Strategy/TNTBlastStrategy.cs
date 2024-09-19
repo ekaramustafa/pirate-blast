@@ -36,10 +36,16 @@ public class TNTBlastStrategy : IBlastStrategy
         GridObject gridObject = gridSystem.GetGridObject(startPosition);
         Unit unit = gridObject.GetUnit();
         unit.SetSortingOrder(999);
-        ScaleAnimation scaleAnimation = unit.GetComponent<ScaleAnimation>();
+        IAnimationService animationService = AnimationServiceLocator.GetAnimationService();
+        Sequence seq = DOTween.Sequence();
+        Vector3 targetScale = new Vector3(2f, 2f, 1f);
+        Vector3 sourceScale = unit.transform.localScale;
+        Tween scalingUpTween = animationService.TriggerAnimation(unit.transform, unit.transform.localScale, targetScale, 0.25f, AnimationType.SCALE);
+        Tween scalingDownTween = animationService.TriggerAnimation(unit.transform, unit.transform.localScale, sourceScale, 0.25f, AnimationType.SCALE);
 
-        Tween tween = scaleAnimation.TriggerAnimationTo(0.5f,new Vector3(2f, 2f, 1f), AnimationType.SCALE);
-        await tween.AsyncWaitForCompletion();
+        seq.Append(scalingUpTween);
+        seq.Append(scalingDownTween);
+        await seq.AsyncWaitForCompletion();
     }
 
     private async UniTask HandleTNTBlast(GridSystem gridSystem, GridPosition startPosition)
