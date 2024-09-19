@@ -34,13 +34,13 @@ public class ShakeAnimation : PlayObjectAnimation
             switch (animationType)
             {
                 case AnimationType.SHAKEPOSITION:
-                    sequence.Append(animationTransform.DOShakePosition(defaultDuration, strength: from));
+                    sequence.Append(transform.DOShakePosition(defaultDuration, strength: from));
                     break;
                 case AnimationType.SHAKEROTATION:
-                    sequence.Append(animationTransform.DOShakeRotation(defaultDuration, strength: from));
+                    sequence.Append(transform.DOShakeRotation(defaultDuration, strength: from));
                     break;
                 case AnimationType.SHAKESCALE:
-                    sequence.Append(animationTransform.DOShakeScale(defaultDuration, strength: from));
+                    sequence.Append(transform.DOShakeScale(defaultDuration, strength: from));
                     break;
             }
         }

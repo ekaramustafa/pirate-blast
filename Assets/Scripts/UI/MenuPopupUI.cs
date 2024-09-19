@@ -37,7 +37,7 @@ public class MenuPopupUI : MonoBehaviour
     {
         if (playButton.enabled == false) return;
         playButton.enabled = false;
-        animatedPlayButton.GetComponent<UIScaleAnimation>().TriggerAnimation(new Vector3(0.9f, 1f, 1f), AnimationType.SCALEDOWN).OnComplete(() =>
+        animatedPlayButton.GetComponent<UIScaleAnimation>().TriggerAnimation(new Vector3(0.9f, 1f, 1f), AnimationType.SCALE).OnComplete(() =>
         {
             playButton.enabled = true;
             Hide();
@@ -54,7 +54,7 @@ public class MenuPopupUI : MonoBehaviour
     public void Show()
     {
         UIScaleAnimation scaleAnimation = animatedUITransform.GetComponent<UIScaleAnimation>();
-        scaleAnimation.TriggerAnimation(new Vector3(1.2f, 1f, 1f), AnimationType.SCALEUP).OnComplete(() => {
+        scaleAnimation.TriggerAnimation(new Vector3(1.2f, 1f, 1f), AnimationType.SCALE).OnComplete(() => {
             goalUI.gameObject.SetActive(true);
             goalUI.GetComponent<MenuPopupGoalUI>().SpawnGoalObjects();
         });

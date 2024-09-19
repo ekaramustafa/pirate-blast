@@ -37,20 +37,6 @@ public class UIScaleAnimation :  UIAnimation
         Vector3 currentScale = rectTransform.localScale;
         Sequence sequence = DOTween.Sequence();
 
-        foreach (AnimationType type in animationTypes)
-        {
-            switch (type)
-            {
-                case AnimationType.SCALEUP:
-                    rectTransform.localPosition = new Vector3(from.x, rectTransform.localPosition.y, 0f);
-                    break;
-
-                case AnimationType.SCALEDOWN:
-                    rectTransform.localPosition = new Vector3(from.x, rectTransform.localPosition.y, 0f);
-                    break;
-            }
-        }
-
         sequence.Append(rectTransform.DOScale(targetScale, duration / 2).SetEase(Ease.InExpo));
         sequence.Append(rectTransform.DOScale(currentScale, duration / 2).SetEase(Ease.InExpo));
 

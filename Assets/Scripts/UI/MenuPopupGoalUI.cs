@@ -30,7 +30,7 @@ public class MenuPopupGoalUI : MonoBehaviour
         }
 
         goalsText.gameObject.SetActive(true);
-        goalsText.GetComponent<UIScaleAnimation>().TriggerAnimation(new Vector3(1.2f, 1f, 1f), AnimationType.SCALEUP);
+        goalsText.GetComponent<UIScaleAnimation>().TriggerAnimation(new Vector3(1.2f, 1f, 1f), AnimationType.SCALE);
         Dictionary<Sprite, int> map = new Dictionary<Sprite, int>();
 
         string[] data_array = levelData.grid;
@@ -71,7 +71,7 @@ public class MenuPopupGoalUI : MonoBehaviour
             unitIconTransform.gameObject.SetActive(true);
             unitIconTransform.GetComponent<GoalUnitSingleUI>().SetVisual(sprite, count);
             UIScaleAnimation UIScaleAnimation = unitIconTransform.GetComponent<UIScaleAnimation>();
-            UIScaleAnimation.TriggerAnimation(new Vector3(1.2f, 1f, 1f), AnimationType.SCALEUP).WaitForCompletion();
+            UIScaleAnimation.TriggerAnimation(new Vector3(1.2f, 1f, 1f), AnimationType.SCALE).WaitForCompletion();
         }
     }
 

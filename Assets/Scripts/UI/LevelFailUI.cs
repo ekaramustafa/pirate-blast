@@ -20,13 +20,13 @@ public class LevelFailUI : MonoBehaviour
     private void OnEnable()
     {
         UIScaleAnimation scaleAnimation = GetComponent<UIScaleAnimation>();
-        scaleAnimation.TriggerAnimation(new Vector3(1.2f, 1f, 1f), AnimationType.SCALEUP);
+        scaleAnimation.TriggerAnimation(new Vector3(1.2f, 1f, 1f), AnimationType.SCALE);
     }
 
     #region Button Functions
     public void TryAgain()
     {
-        animatedTryAgainButton.GetComponent<UIScaleAnimation>().TriggerAnimation(new Vector3(0.9f, 1f, 1f), AnimationType.SCALEDOWN).OnComplete(() =>
+        animatedTryAgainButton.GetComponent<UIScaleAnimation>().TriggerAnimation(new Vector3(0.9f, 1f, 1f), AnimationType.SCALE).OnComplete(() =>
         {
             Loader.LoadLevel();
         });
@@ -34,7 +34,7 @@ public class LevelFailUI : MonoBehaviour
 
     public void ReturnToMainMenu()
     {
-        animatedExitButton.GetComponent<UIScaleAnimation>().TriggerAnimation(new Vector3(0.9f,1f,1f), AnimationType.SCALEDOWN).OnComplete( () =>
+        animatedExitButton.GetComponent<UIScaleAnimation>().TriggerAnimation(new Vector3(0.9f,1f,1f), AnimationType.SCALE).OnComplete( () =>
         {
             Loader.LoadMenu();
         });

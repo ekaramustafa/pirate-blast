@@ -12,7 +12,7 @@ public class LevelExitButton : MonoBehaviour
 
     public void ReturnToMainMenu()
     {
-        GetComponent<UIScaleAnimation>().TriggerAnimation(new Vector3(0.9f, 0f, 0f), AnimationType.SCALEDOWN).OnComplete(() =>
+        GetComponent<UIScaleAnimation>().TriggerAnimation(new Vector3(0.9f, 0f, 0f), AnimationType.SCALE).OnComplete(() =>
         {
              Loader.LoadMenu();
         }); 

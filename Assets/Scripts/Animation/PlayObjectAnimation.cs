@@ -8,12 +8,6 @@ using DG.Tweening;
 public abstract class PlayObjectAnimation : MonoBehaviour
 {
     [SerializeField] protected float defaultDuration = 0.25f;
-    protected Transform animationTransform;
-
-    private void Awake()
-    {
-        animationTransform = GetComponent<Transform>();
-    }
 
     public abstract Tween TriggerAnimation(Vector3 from, params AnimationType[] animationTypes);
 
@@ -35,8 +29,7 @@ public enum AnimationType
 {
     HORIZANTALSLIDE,
     VERTICALSLIDE,
-    SCALEDOWN,
-    SCALEUP,
+    SCALE,
     SHAKEPOSITION,
     SHAKEROTATION,
     SHAKESCALE,

@@ -32,26 +32,16 @@ public class ScaleAnimation : PlayObjectAnimation
     /// <returns>A Tween object representing the animation sequence.</returns>
     public override Tween TriggerAnimation(float duration, Vector3 from, params AnimationType[] animationTypes)
     {
-        Vector3 targetScale = animationTransform.localScale * from.x;
-        Vector3 currentScale = animationTransform.localScale;
+        Vector3 targetScale = transform.localScale * from.x;
+        Vector3 currentScale = transform.localScale;
         Sequence sequence = DOTween.Sequence();
 
-        foreach (AnimationType type in animationTypes)
-        {
-            switch (type)
-            {
-                case AnimationType.SCALEUP:
-                    animationTransform.localPosition = new Vector3(from.x, animationTransform.localPosition.y, 0f);
-                    break;
+        
+        transform.localPosition = new Vector3(from.x, transform.localPosition.y, 0f);
 
-                case AnimationType.SCALEDOWN:
-                    animationTransform.localPosition = new Vector3(from.x, animationTransform.localPosition.y, 0f);
-                    break;
-            }
-        }
 
-        sequence.Append(animationTransform.DOScale(targetScale, duration / 2).SetEase(Ease.InExpo));
-        sequence.Append(animationTransform.DOScale(currentScale, duration / 2).SetEase(Ease.InExpo));
+        sequence.Append(transform.DOScale(targetScale, duration / 2).SetEase(Ease.InExpo));
+        sequence.Append(transform.DOScale(currentScale, duration / 2).SetEase(Ease.InExpo));
 
         return sequence;
     }
@@ -79,12 +69,11 @@ public class ScaleAnimation : PlayObjectAnimation
     /// <returns>A Tween object representing the animation sequence.</returns>
     public override Tween TriggerAnimationTo(float duration, Vector3 to, params AnimationType[] animationTypes)
     {
-        animationTransform = GetComponent<Transform>();
-        Vector3 targetScale = animationTransform.localScale * to.x;
-        Vector3 currentScale = animationTransform.localScale;
+        Vector3 targetScale = transform.localScale * to.x;
+        Vector3 currentScale = transform.localScale;
         Sequence sequence = DOTween.Sequence();
-        sequence.Append(animationTransform.DOScale(targetScale, duration / 2).SetEase(Ease.InExpo));
-        sequence.Append(animationTransform.DOScale(currentScale, duration / 2).SetEase(Ease.InExpo));
+        sequence.Append(transform.DOScale(targetScale, duration / 2).SetEase(Ease.InExpo));
+        sequence.Append(transform.DOScale(currentScale, duration / 2).SetEase(Ease.InExpo));
 
         return sequence;
     }

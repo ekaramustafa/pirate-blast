@@ -21,7 +21,7 @@ public class LevelSuccessUI : MonoBehaviour
 
     private void OnEnable()
     {
-        successImage.GetComponent<UIScaleAnimation>().TriggerAnimation(new Vector3(2f, 0f, 0f), AnimationType.SCALEUP).OnComplete(() =>
+        successImage.GetComponent<UIScaleAnimation>().TriggerAnimation(new Vector3(2f, 0f, 0f), AnimationType.SCALE).OnComplete(() =>
         {
             gameObject.GetComponent<ParticleSystem>().Play();
         });

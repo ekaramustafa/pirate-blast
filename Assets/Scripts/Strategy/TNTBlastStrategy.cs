@@ -37,7 +37,7 @@ public class TNTBlastStrategy : IBlastStrategy
         Unit unit = gridObject.GetUnit();
         unit.SetSortingOrder(999);
         ScaleAnimation scaleAnimation = unit.GetComponent<ScaleAnimation>();
-        Tween tween = scaleAnimation.TriggerAnimationTo(0.5f,new Vector3(2f, 2f, 1f), AnimationType.SCALEUP);
+        Tween tween = scaleAnimation.TriggerAnimationTo(0.5f,new Vector3(2f, 2f, 1f), AnimationType.SCALE);
         await tween.AsyncWaitForCompletion();
     }
 

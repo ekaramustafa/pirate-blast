@@ -36,7 +36,7 @@ public class MenuUI : MonoBehaviour
         if (levelButton.enabled == false) return;
         if (popupUI.gameObject.activeSelf) return;
         levelButton.enabled = false;
-        animatedLevelButton.GetComponent<UIScaleAnimation>().TriggerAnimation(new Vector3(0.9f,1f,1f), AnimationType.SCALEDOWN).OnComplete(() =>
+        animatedLevelButton.GetComponent<UIScaleAnimation>().TriggerAnimation(new Vector3(0.9f,1f,1f), AnimationType.SCALE).OnComplete(() =>
         {
             popupUI.gameObject.SetActive(true);
             popupUI.GetComponent<MenuPopupUI>().Show();
@@ -50,7 +50,7 @@ public class MenuUI : MonoBehaviour
         GameConstants.CurrentLevel = 1;
         levelButton.enabled = false;
         resetButton.enabled = false;
-        animatedResetButton.GetComponent<UIScaleAnimation>().TriggerAnimation(new Vector3(0.9f, 1f, 1f), AnimationType.SCALEDOWN).OnComplete(() =>
+        animatedResetButton.GetComponent<UIScaleAnimation>().TriggerAnimation(new Vector3(0.9f, 1f, 1f), AnimationType.SCALE).OnComplete(() =>
         {
             resetButton.enabled = true;
             levelButton.enabled = true;

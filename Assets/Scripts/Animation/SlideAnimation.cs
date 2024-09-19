@@ -31,23 +31,23 @@ public class SlidingAnimation : PlayObjectAnimation
     /// <returns>A Tween object representing the sliding animation.</returns>
     public override Tween TriggerAnimation(float duration, Vector3 from, params AnimationType[] animationTypes)
     {
-        Vector3 currPos = new Vector3(animationTransform.localPosition.x, animationTransform.localPosition.y, 0f);
+        Vector3 currPos = new Vector3(transform.localPosition.x, transform.localPosition.y, 0f);
 
         foreach (AnimationType type in animationTypes)
         {
             switch (type)
             {
                 case AnimationType.HORIZANTALSLIDE:
-                    animationTransform.localPosition = new Vector3(from.x, animationTransform.localPosition.y, 0f);
+                    transform.localPosition = new Vector3(from.x, transform.localPosition.y, 0f);
                     break;
 
                 case AnimationType.VERTICALSLIDE:
-                    animationTransform.localPosition = new Vector3(animationTransform.localPosition.x, from.y, 0f);
+                    transform.localPosition = new Vector3(transform.localPosition.x, from.y, 0f);
                     break;
             }
         }
 
-        return animationTransform.DOLocalMove(currPos, duration, false).SetEase(Ease.OutBack, 0.5f);
+        return transform.DOLocalMove(currPos, duration, false).SetEase(Ease.OutBack, 0.5f);
     }
 
     /// <summary>
@@ -73,7 +73,7 @@ public class SlidingAnimation : PlayObjectAnimation
     /// <returns>A Tween object representing the sliding animation.</returns>
     public override Tween TriggerAnimationTo(float duration, Vector3 to, params AnimationType[] animationTypes)
     {
-        Vector3 destination = animationTransform.position;
+        Vector3 destination = transform.position;
         foreach (AnimationType type in animationTypes)
         {
             switch (type)
@@ -87,7 +87,7 @@ public class SlidingAnimation : PlayObjectAnimation
                     break;
             }
         }
-        return animationTransform.DOLocalMove(destination, duration, false).SetEase(Ease.OutQuad, 0.5f);
+        return transform.DOLocalMove(destination, duration, false).SetEase(Ease.OutQuad, 0.5f);
     }
 }
 
