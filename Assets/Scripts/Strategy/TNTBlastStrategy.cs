@@ -13,13 +13,10 @@ public class TNTBlastStrategy : IBlastStrategy
         if (comboPositions.Count != 0)
         {
             await HandleComboTNTFormationBlast(gridSystem, startPosition, comboPositions);
-            return true;
         }
-        else
-        {
-            await HandleTNTBlast(gridSystem, startPosition);
-            return true;
-        }
+        await HandleTNTBlast(gridSystem, startPosition);
+        return true;
+
 
     }
 
@@ -32,7 +29,6 @@ public class TNTBlastStrategy : IBlastStrategy
         }
         gridSystem.GetUnitManager().CreateComboTNTUnit(startPosition);
         await AnimateComboTNTCreation(gridSystem, startPosition);
-        BlastUtils.BlastBlockAtPosition(gridSystem, startPosition, BlastType.TNTBlast);
     }
 
     private async UniTask AnimateComboTNTCreation(GridSystem gridSystem, GridPosition startPosition)

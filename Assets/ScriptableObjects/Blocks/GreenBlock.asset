@@ -15,7 +15,7 @@ MonoBehaviour:
   defaultStateSprite: {fileID: 21300000, guid: e65dc4264f5d8cf4684a1e8c1c220a36, type: 3}
   unitType: 0
   health: 1
-  affectedByNeighborBlast: 1
+  affectedByNeighborBlast: 0
   blastParticleSystem: {fileID: 2220476824931831946, guid: 4e40a3e57ad38aa478dc689b2232134c, type: 3}
   tntExplosionParticleSystem: {fileID: 7544857655930263523, guid: e9c93caa341ce4740931cd30ecba2afb, type: 3}
   particleMaterial: {fileID: 2100000, guid: 7ecac998aca7b4e8bbc1ffd5c4b14b11, type: 2}

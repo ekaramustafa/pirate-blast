@@ -25,7 +25,6 @@ public class ScaleAnimation : PlayObjectAnimation
     /// <summary>
     /// Triggers a scale animation with a specified duration, using the provided Vector3 value and animation types.
     /// The target scale is the current scale.
-    /// 
     /// </summary>
     /// <param name="duration">The duration of the animation.</param>
     /// <param name="from">The Vector3 value used for scaling.</param>
