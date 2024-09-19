@@ -30,7 +30,7 @@ public class MenuPopupUI : MonoBehaviour
         levelText.text = $"Level {GameConstants.CurrentLevel.ToString()}";
     }
 
-    private void Start()
+    private void OnEnable()
     {
         UIanimationService = AnimationServiceLocator.GetUIAnimationService();
     }
@@ -39,7 +39,8 @@ public class MenuPopupUI : MonoBehaviour
     {
         if (playButton.enabled == false) return;
         playButton.enabled = false;
-        Tween transition = UIanimationService.TriggerAnimation(animatedPlayButton.transform, animatedPlayButton.transform.position, new Vector3(0.9f, 1f, 1f), AnimationConstants.SCALEBOUNCE_DEFAULT_DURATION, AnimationType.SCALEBOUNCE);
+        Tween transition = UIanimationService.TriggerAnimation(animatedPlayButton.transform, animatedPlayButton.transform.position, 
+            new Vector3(0.9f, 1f, 1f), AnimationConstants.SCALEBOUNCE_DEFAULT_DURATION, AnimationType.SCALEBOUNCE);
         transition.OnComplete(() =>
         {
             playButton.enabled = true;
@@ -49,24 +50,18 @@ public class MenuPopupUI : MonoBehaviour
     }
 
     public void Hide()
-    {
-        UIanimationService = AnimationServiceLocator.GetUIAnimationService();
-        Tween transition = UIanimationService.TriggerAnimation(animatedExitButton.transform, animatedExitButton.transform.position, new Vector3(0.9f, 1f, 1f), AnimationConstants.SCALEBOUNCE_DEFAULT_DURATION, AnimationType.SCALEBOUNCE);
-        transition.OnComplete(() =>
-        {
-            gameObject.SetActive(false);
-            goalUI.gameObject.SetActive(false);
-        });
-
+    {   
+        gameObject.SetActive(false);
+        goalUI.gameObject.SetActive(false);
     }
 
     public void Show()
     {
-        UIScaleAnimation scaleAnimation = animatedUITransform.GetComponent<UIScaleAnimation>();
-        scaleAnimation.TriggerAnimation(new Vector3(1.2f, 1f, 1f), AnimationType.SCALE).OnComplete(() => {
-            goalUI.gameObject.SetActive(true);
-            goalUI.GetComponent<MenuPopupGoalUI>().SpawnGoalObjects();
-        });
+        Tween transition = UIanimationService.TriggerAnimation(animatedUITransform, animatedUITransform.position, 
+            new Vector3(0.9f, 1f, 1f), AnimationConstants.SCALEBOUNCE_DEFAULT_DURATION, AnimationType.SCALEBOUNCE);
+        goalUI.gameObject.SetActive(true);
+        goalUI.GetComponent<MenuPopupGoalUI>().SpawnGoalObjects();
+
     }
 
 }

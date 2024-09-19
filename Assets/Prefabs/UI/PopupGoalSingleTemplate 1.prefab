@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4113846335711863951}
   - component: {fileID: 5629252864600860683}
-  - component: {fileID: -6342394582853535691}
   m_Layer: 0
   m_Name: PopupGoalSingleTemplate 1
   m_TagString: Untagged
@@ -54,19 +53,6 @@ MonoBehaviour:
   iconTemplate: {fileID: 1065356413144194770}
   countText: {fileID: 8063335668284194477}
   goalCheckImage: {fileID: 3385758632040335213}
---- !u!114 &-6342394582853535691
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1255506524186711267}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9669c393dd8e49c44a2b4fecb590c03d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  default_duration: 0.25
 --- !u!1 &2193784122222064119
 GameObject:
   m_ObjectHideFlags: 0
@@ -261,7 +247,7 @@ SpriteRenderer:
   m_Size: {x: 0.47, y: 0.43}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &6668695917165238730

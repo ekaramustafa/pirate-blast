@@ -21,7 +21,9 @@ public class LevelSuccessUI : MonoBehaviour
 
     private void OnEnable()
     {
-        successImage.GetComponent<UIScaleAnimation>().TriggerAnimation(new Vector3(2f, 0f, 0f), AnimationType.SCALE).OnComplete(() =>
+        IAnimationService UIanimationService = AnimationServiceLocator.GetUIAnimationService();
+        Tween successTween = UIanimationService.TriggerAnimation(successImage.transform, successImage.transform.position, new Vector3(2f, 0f, 0f), AnimationConstants.SCALEBOUNCE_DEFAULT_DURATION, AnimationType.SCALEBOUNCE);
+        successTween.OnComplete(() =>
         {
             gameObject.GetComponent<ParticleSystem>().Play();
         });
@@ -32,6 +34,7 @@ public class LevelSuccessUI : MonoBehaviour
         {
             StartCoroutine(DelayAndLoadMenu());
         });
+
     }
 
     private IEnumerator DelayAndLoadMenu()

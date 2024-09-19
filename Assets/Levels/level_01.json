@@ -2,7 +2,7 @@
     "level_number": 1,
     "grid_width": 9,
     "grid_height": 10,
-    "move_count": 1,
+    "move_count": 20,
     "grid": [
         "r",
         "r",

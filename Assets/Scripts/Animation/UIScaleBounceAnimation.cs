@@ -10,8 +10,8 @@ public class UIScaleBounceAnimation : IAnimationStrategy
         Vector3 currentScale = rectTransform.localScale;
         Sequence sequence = DOTween.Sequence();
 
-        sequence.Append(rectTransform.DOScale(targetScale, duration).SetEase(Ease.InExpo));
-        sequence.Append(rectTransform.DOScale(currentScale, duration).SetEase(Ease.InExpo));
+        sequence.Append(rectTransform.DOScale(targetScale, duration).SetEase(Ease.OutBack));
+        sequence.Append(rectTransform.DOScale(currentScale, duration).SetEase(Ease.OutBack));
 
         return sequence;
     }

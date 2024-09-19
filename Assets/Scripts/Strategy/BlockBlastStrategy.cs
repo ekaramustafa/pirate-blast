@@ -112,8 +112,8 @@ public class BlockBlastStrategy : IBlastStrategy
 
             Vector3 offset = GetOffsetVector(gridSystem, unit.transform.position, destination);
             
-            Tween initialTween = animationService.TriggerAnimation(unit.transform, unit.transform.position, unit.transform.position + offset, GameConstants.UNIT_FORM_ELASTICITIY_ANIMATION_DURATION, AnimationType.SLIDE);
-            Tween tween = animationService.TriggerAnimation(unit.transform, unit.transform.position, destination, GameConstants.UNIT_FORM_FORWARD_ANIMATION_DURATION, AnimationType.SLIDE);
+            Tween initialTween = animationService.TriggerAnimation(unit.transform, unit.transform.position, unit.transform.position + offset, AnimationConstants.UNIT_FORM_ELASTICITIY_ANIMATION_DURATION, AnimationType.SLIDE);
+            Tween tween = animationService.TriggerAnimation(unit.transform, unit.transform.position, destination, AnimationConstants.UNIT_FORM_FORWARD_ANIMATION_DURATION, AnimationType.SLIDE);
             
             Sequence subSequence = DOTween.Sequence();
             subSequence.Append(initialTween);
@@ -130,7 +130,7 @@ public class BlockBlastStrategy : IBlastStrategy
     {
         GridPosition currentGridPosition = gridSystem.GetGridPosition(position);
         GridPosition destinationGridPosition = gridSystem.GetGridPosition(destination);
-        float offsetCoefficient = GameConstants.UNIT_FORM_ELASTICITY_OFFSET;
+        float offsetCoefficient = AnimationConstants.UNIT_FORM_ELASTICITY_OFFSET;
         float yMultiplier = currentGridPosition.y - destinationGridPosition.y;
         float xMultiplier = currentGridPosition.x - destinationGridPosition.x;
         return new Vector3(offsetCoefficient * xMultiplier, offsetCoefficient * yMultiplier);

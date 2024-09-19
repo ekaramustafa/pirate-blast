@@ -116,7 +116,7 @@ public class GridSystem
                 GridObject gridObject = GetGridObject(gridPosition);
                 Unit unit = gridObject.GetUnit();
                 Vector3 destination = unit.transform.position;
-                animationService.TriggerAnimation(unit.transform, new Vector3(GameConstants.WIDTH, destination.y, destination.z), destination, 0.5f, AnimationType.SLIDE);
+                animationService.TriggerAnimation(unit.transform, new Vector3(GameConstants.WIDTH, destination.y, destination.z), destination, AnimationConstants.SLIDE_GAMESETUP_DEFAULT_DURATION, AnimationType.SLIDE);
             }
         }
     }
@@ -126,7 +126,7 @@ public class GridSystem
         IAnimationService animationService = AnimationServiceLocator.GetAnimationService();
         Transform rendererTransform = frameSpriteRenderer.transform;
         Vector3 destination = rendererTransform.position;
-        animationService.TriggerAnimation(rendererTransform.transform, new Vector3(GameConstants.WIDTH, destination.y, destination.z), destination, 0.5f, AnimationType.SLIDE);
+        animationService.TriggerAnimation(rendererTransform.transform, new Vector3(GameConstants.WIDTH, destination.y, destination.z), destination, AnimationConstants.SLIDE_GAMESETUP_DEFAULT_DURATION, AnimationType.SLIDE);
     }
     #endregion
 
