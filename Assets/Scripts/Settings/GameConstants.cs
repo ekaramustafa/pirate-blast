@@ -70,17 +70,6 @@ public static class GameConstants
     /// </summary>
     public const float UNIT_BACKGROUND_FRAME_SIZE_ADDITION = 2f;
 
-    /// <summary>
-    /// Unit elasticity before forming to the destination unit.
-    /// To go right, go left slightly and smash to the right.
-    /// </summary>
-    public const float UNIT_FORM_ELASTICITY_OFFSET = 1.25f;
-
-    /// <summary>
-    /// Yes for now it is here, 
-    /// I know animation system sucks.
-    /// </summary>
-    public const float UNIT_FORM_ELASTICITIY_ANIMATION_DURATION = 0.25f;
     #endregion
 
     #region Save System Constants

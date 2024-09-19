@@ -9,15 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d96fe5a31518da4882bdca6f76fdf6e, type: 3}
-  m_Name: YellowBlock
+  m_Script: {fileID: 11500000, guid: faf312acb0c58cf4497424c13385ed0a, type: 3}
+  m_Name: StoneUnitTwoHit
   m_EditorClassIdentifier: 
-  defaultStateSprite: {fileID: 21300000, guid: 04f004c49d28ab541816d5920bf8518f, type: 3}
-  unitType: 0
-  health: 1
+  defaultStateSprite: {fileID: 21300000, guid: fc89bbee232b6e64bbff9e93221c0c6d, type: 3}
+  unitType: 3
+  health: 2
   affectedByNeighborBlast: 0
   blastParticleSystem: {fileID: 2220476824931831946, guid: 4e40a3e57ad38aa478dc689b2232134c, type: 3}
   tntExplosionParticleSystem: {fileID: 7544857655930263523, guid: e9c93caa341ce4740931cd30ecba2afb, type: 3}
-  particleMaterial: {fileID: 2100000, guid: 0a8f0ec653e4e4d2fac4afc054e61ff6, type: 2}
-  blockColor: 2
-  tntStateSprite: {fileID: 21300000, guid: c600e67747de95e449a5b55989668978, type: 3}
+  particleMaterial: {fileID: 2100000, guid: 1ac575d9b22d26341a29e4ea72f0beb7, type: 2}

@@ -11,16 +11,18 @@ public class MenuPopupGoalUI : MonoBehaviour
     [SerializeField] private Transform goalsText;
 
     private LevelData levelData;
-
+    IAnimationService animationService;
     private void Awake()
     {
         goalsText.gameObject.SetActive(false);
         template.gameObject.SetActive(false);
         levelData = LevelDataLoaderWriter.LoadLevelData();
+        animationService = AnimationServiceLocator.GetUIAnimationService();
     }
 
     public void SpawnGoalObjects()
     {
+        animationService = AnimationServiceLocator.GetUIAnimationService();
         foreach (Transform child in container.transform)
         {
            if(child != template || child != goalsText)
@@ -30,7 +32,7 @@ public class MenuPopupGoalUI : MonoBehaviour
         }
 
         goalsText.gameObject.SetActive(true);
-        goalsText.GetComponent<UIScaleAnimation>().TriggerAnimation(new Vector3(1.2f, 1f, 1f), AnimationType.SCALEUP);
+        animationService.TriggerAnimation(goalsText.transform, goalsText.transform.position, new Vector3(1.2f, 1f, 1f), AnimationConstants.SCALEBOUNCE_DEFAULT_DURATION, AnimationType.SCALEBOUNCE);
         Dictionary<Sprite, int> map = new Dictionary<Sprite, int>();
 
         string[] data_array = levelData.grid;
@@ -70,8 +72,7 @@ public class MenuPopupGoalUI : MonoBehaviour
             Transform unitIconTransform = Instantiate(template, container);
             unitIconTransform.gameObject.SetActive(true);
             unitIconTransform.GetComponent<GoalUnitSingleUI>().SetVisual(sprite, count);
-            UIScaleAnimation UIScaleAnimation = unitIconTransform.GetComponent<UIScaleAnimation>();
-            UIScaleAnimation.TriggerAnimation(new Vector3(1.2f, 1f, 1f), AnimationType.SCALEUP).WaitForCompletion();
+            animationService.TriggerAnimation(unitIconTransform, unitIconTransform.position, new Vector3(1.2f, 1f, 1f), AnimationConstants.SCALEBOUNCE_DEFAULT_DURATION, AnimationType.SCALEBOUNCE);
         }
     }
 

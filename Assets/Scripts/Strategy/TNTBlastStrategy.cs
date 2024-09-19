@@ -13,13 +13,10 @@ public class TNTBlastStrategy : IBlastStrategy
         if (comboPositions.Count != 0)
         {
             await HandleComboTNTFormationBlast(gridSystem, startPosition, comboPositions);
-            return true;
         }
-        else
-        {
-            await HandleTNTBlast(gridSystem, startPosition);
-            return true;
-        }
+        await HandleTNTBlast(gridSystem, startPosition);
+        return true;
+
 
     }
 
@@ -32,7 +29,6 @@ public class TNTBlastStrategy : IBlastStrategy
         }
         gridSystem.GetUnitManager().CreateComboTNTUnit(startPosition);
         await AnimateComboTNTCreation(gridSystem, startPosition);
-        BlastUtils.BlastBlockAtPosition(gridSystem, startPosition, BlastType.TNTBlast);
     }
 
     private async UniTask AnimateComboTNTCreation(GridSystem gridSystem, GridPosition startPosition)
@@ -40,9 +36,16 @@ public class TNTBlastStrategy : IBlastStrategy
         GridObject gridObject = gridSystem.GetGridObject(startPosition);
         Unit unit = gridObject.GetUnit();
         unit.SetSortingOrder(999);
-        ScaleAnimation scaleAnimation = unit.GetComponent<ScaleAnimation>();
-        Tween tween = scaleAnimation.TriggerAnimationTo(0.5f,new Vector3(2f, 2f, 1f), AnimationType.SCALEUP);
-        await tween.AsyncWaitForCompletion();
+        IAnimationService animationService = AnimationServiceLocator.GetAnimationService();
+        Sequence seq = DOTween.Sequence();
+        Vector3 targetScale = new Vector3(2f, 2f, 1f);
+        Vector3 sourceScale = unit.transform.localScale;
+        Tween scalingUpTween = animationService.TriggerAnimation(unit.transform, unit.transform.localScale, targetScale, 0.25f, AnimationType.SCALE);
+        Tween scalingDownTween = animationService.TriggerAnimation(unit.transform, unit.transform.localScale, sourceScale, 0.25f, AnimationType.SCALE);
+
+        seq.Append(scalingUpTween);
+        seq.Append(scalingDownTween);
+        await seq.AsyncWaitForCompletion();
     }
 
     private async UniTask HandleTNTBlast(GridSystem gridSystem, GridPosition startPosition)
@@ -107,6 +110,7 @@ public class TNTBlastStrategy : IBlastStrategy
     {
         Vector3 destination = gridSystem.GetWorldPosition(startPosition);
         Sequence parentSequence = DOTween.Sequence();
+        IAnimationService animationService = AnimationServiceLocator.GetAnimationService();
 
         foreach (GridPosition currentPosition in comboPositions)
         {
@@ -114,10 +118,11 @@ public class TNTBlastStrategy : IBlastStrategy
 
             GridObject gridObject = gridSystem.GetGridObject(currentPosition);
             Unit unit = gridObject.GetUnit();
-            SlidingAnimation slidingAnimation = unit.GetComponent<SlidingAnimation>();
             Vector3 offset = GetOffsetVector(gridSystem, unit.transform.position, destination);
-            Tween initialTween = slidingAnimation.TriggerAnimationTo(GameConstants.UNIT_FORM_ELASTICITIY_ANIMATION_DURATION, unit.transform.position + offset, AnimationType.HORIZANTALSLIDE, AnimationType.VERTICALSLIDE);
-            Tween tween = slidingAnimation.TriggerAnimationTo(destination, AnimationType.HORIZANTALSLIDE, AnimationType.VERTICALSLIDE);
+
+            Tween initialTween = animationService.TriggerAnimation(unit.transform, unit.transform.position, unit.transform.position + offset, AnimationConstants.UNIT_FORM_ELASTICITIY_ANIMATION_DURATION, AnimationType.SLIDE);
+            Tween tween = animationService.TriggerAnimation(unit.transform, unit.transform.position, destination, AnimationConstants.UNIT_FORM_FORWARD_ANIMATION_DURATION, AnimationType.SLIDE);
+            
             Sequence subSequence = DOTween.Sequence();
             subSequence.Append(initialTween);
             subSequence.Append(tween);
@@ -133,7 +138,7 @@ public class TNTBlastStrategy : IBlastStrategy
     {
         GridPosition currentGridPosition = gridSystem.GetGridPosition(position);
         GridPosition destinationGridPosition = gridSystem.GetGridPosition(destination);
-        float offsetCoefficient = GameConstants.UNIT_FORM_ELASTICITY_OFFSET;
+        float offsetCoefficient = AnimationConstants.UNIT_FORM_ELASTICITY_OFFSET;
         float yMultiplier = currentGridPosition.y - destinationGridPosition.y;
         float xMultiplier = currentGridPosition.x - destinationGridPosition.x;
         return new Vector3(offsetCoefficient * xMultiplier, offsetCoefficient * yMultiplier);

@@ -12,10 +12,12 @@ public class MenuPopupUI : MonoBehaviour
     [SerializeField] private Button playButton;
     [SerializeField] private Transform animatedPlayButton;
 
+    [SerializeField] private Transform animatedExitButton;
+
     [SerializeField] private Transform goalUI;
 
 
-
+    private IAnimationService UIanimationService;
     private void Awake()
     {
         Hide();
@@ -28,16 +30,18 @@ public class MenuPopupUI : MonoBehaviour
         levelText.text = $"Level {GameConstants.CurrentLevel.ToString()}";
     }
 
-    private void Start()
+    private void OnEnable()
     {
-       
+        UIanimationService = AnimationServiceLocator.GetUIAnimationService();
     }
 
     public void LoadLevel()
     {
         if (playButton.enabled == false) return;
         playButton.enabled = false;
-        animatedPlayButton.GetComponent<UIScaleAnimation>().TriggerAnimation(new Vector3(0.9f, 1f, 1f), AnimationType.SCALEDOWN).OnComplete(() =>
+        Tween transition = UIanimationService.TriggerAnimation(animatedPlayButton.transform, animatedPlayButton.transform.position, 
+            new Vector3(0.9f, 1f, 1f), AnimationConstants.SCALEBOUNCE_DEFAULT_DURATION, AnimationType.SCALEBOUNCE);
+        transition.OnComplete(() =>
         {
             playButton.enabled = true;
             Hide();
@@ -46,18 +50,18 @@ public class MenuPopupUI : MonoBehaviour
     }
 
     public void Hide()
-    {
+    {   
         gameObject.SetActive(false);
         goalUI.gameObject.SetActive(false);
     }
 
     public void Show()
     {
-        UIScaleAnimation scaleAnimation = animatedUITransform.GetComponent<UIScaleAnimation>();
-        scaleAnimation.TriggerAnimation(new Vector3(1.2f, 1f, 1f), AnimationType.SCALEUP).OnComplete(() => {
-            goalUI.gameObject.SetActive(true);
-            goalUI.GetComponent<MenuPopupGoalUI>().SpawnGoalObjects();
-        });
+        Tween transition = UIanimationService.TriggerAnimation(animatedUITransform, animatedUITransform.position, 
+            new Vector3(0.9f, 1f, 1f), AnimationConstants.SCALEBOUNCE_DEFAULT_DURATION, AnimationType.SCALEBOUNCE);
+        goalUI.gameObject.SetActive(true);
+        goalUI.GetComponent<MenuPopupGoalUI>().SpawnGoalObjects();
+
     }
 
 }

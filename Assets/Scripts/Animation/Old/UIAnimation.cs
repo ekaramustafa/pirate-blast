@@ -14,6 +14,7 @@ public abstract class UIAnimation : MonoBehaviour
     private void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
+        
     }
 
     public abstract Tween TriggerAnimation(Vector3 from, params AnimationType[] animationTypes);

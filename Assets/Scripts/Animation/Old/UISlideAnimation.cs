@@ -31,6 +31,7 @@ public class UISlideAnimation : UIAnimation
     /// <returns>A Tween object representing the sliding animation.</returns>
     public override Tween TriggerAnimation(float duration, Vector3 from, params AnimationType[] animationTypes)
     {
+        RectTransform rectTransform = (RectTransform)transform;
         Vector3 currPos = new Vector3(rectTransform.localPosition.x, rectTransform.localPosition.y, 0f);
 
         foreach (AnimationType type in animationTypes)
