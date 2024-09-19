@@ -12,6 +12,8 @@ public class LevelFailUI : MonoBehaviour
     [SerializeField] private Transform animatedTryAgainButton;
     [SerializeField] private Transform animatedExitButton;
 
+    IAnimationService animationService;
+
     private void Awake()
     {
         gameObject.SetActive(false);
@@ -19,14 +21,15 @@ public class LevelFailUI : MonoBehaviour
 
     private void OnEnable()
     {
-        UIScaleAnimation scaleAnimation = GetComponent<UIScaleAnimation>();
-        scaleAnimation.TriggerAnimation(new Vector3(1.2f, 1f, 1f), AnimationType.SCALE);
+        animationService = AnimationServiceLocator.GetUIAnimationService();
+        animationService.TriggerAnimation(transform, transform.position, new Vector3(1.2f, 1f, 1f), AnimationConstants.SCALEBOUNCE_DEFAULT_DURATION, AnimationType.SCALEBOUNCE);
     }
 
     #region Button Functions
     public void TryAgain()
     {
-        animatedTryAgainButton.GetComponent<UIScaleAnimation>().TriggerAnimation(new Vector3(0.9f, 1f, 1f), AnimationType.SCALE).OnComplete(() =>
+        Tween tween = animationService.TriggerAnimation(transform, transform.position, new Vector3(0.9f, 1f, 1f), AnimationConstants.SCALEBOUNCE_DEFAULT_DURATION, AnimationType.SCALEBOUNCE);
+        tween.OnComplete(() =>
         {
             Loader.LoadLevel();
         });
@@ -34,7 +37,8 @@ public class LevelFailUI : MonoBehaviour
 
     public void ReturnToMainMenu()
     {
-        animatedExitButton.GetComponent<UIScaleAnimation>().TriggerAnimation(new Vector3(0.9f,1f,1f), AnimationType.SCALE).OnComplete( () =>
+        Tween tween = animationService.TriggerAnimation(transform, transform.position, new Vector3(0.9f, 1f, 1f), AnimationConstants.SCALEBOUNCE_DEFAULT_DURATION, AnimationType.SCALEBOUNCE);
+        tween.OnComplete(() =>
         {
             Loader.LoadMenu();
         });

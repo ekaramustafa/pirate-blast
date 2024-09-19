@@ -11,5 +11,5 @@ public enum AnimationType
     SHAKEPOSITION,
     SHAKEROTATION,
     SHAKESCALE,
-    HIGHLIGHT,
+    SCALEBOUNCE,
 }

@@ -21,7 +21,7 @@ public class FailCommand : IClickCommand
         GridObject gridObject = gridSystem.GetGridObject(gridPosition);
         Unit unit = gridObject.GetUnit();
         IAnimationService animationService = AnimationServiceLocator.GetAnimationService();
-        Tween shake = animationService.TriggerAnimation(unit.transform, unit.transform.localScale, new Vector3(0f, 0f, 10f), 1f, AnimationType.SHAKEROTATION);
+        Tween shake = animationService.TriggerAnimation(unit.transform, unit.transform.localScale, new Vector3(0f, 0f, 10f), 0.25f, AnimationType.SHAKEROTATION);
         gridObject.SetBeingAnimated(true);
         shake.OnComplete(() =>
         {
