@@ -29,6 +29,7 @@ public enum AnimationType
 {
     HORIZANTALSLIDE,
     VERTICALSLIDE,
+    SLIDE,
     SCALE,
     SHAKEPOSITION,
     SHAKEROTATION,

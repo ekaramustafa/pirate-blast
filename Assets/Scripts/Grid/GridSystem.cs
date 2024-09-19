@@ -105,22 +105,27 @@ public class GridSystem
     #region Grid Initialization Animation Functions
     private void AnimateBlocks()
     {
+        IAnimationService animationService = AnimationServiceLocator.GetAnimationService();
+        
         for (int i = 0; i < width; i++)
         {
             for (int j = 0; j < height; j++)
             {
                 GridPosition gridPosition = new GridPosition(i, j);
                 GridObject gridObject = GetGridObject(gridPosition);
-                SlidingAnimation slideAnimation = gridObject.GetUnit().GetComponent<SlidingAnimation>();
-                slideAnimation.TriggerAnimation(0.5f,new Vector3(GameConstants.WIDTH, 0f, 0f), AnimationType.HORIZANTALSLIDE);
+                Unit unit = gridObject.GetUnit();
+                Vector3 destination = unit.transform.position;
+                animationService.TriggerAnimation(unit.transform, new Vector3(GameConstants.WIDTH, destination.y, destination.z), destination, 0.5f, AnimationType.SLIDE);
             }
         }
     }
 
     private void AnimateFrame()
     {
-        SlidingAnimation slideAnimation = frameSpriteRenderer.GetComponent<SlidingAnimation>();
-        slideAnimation.TriggerAnimation(new Vector3(GameConstants.WIDTH, 0f, 0f), AnimationType.HORIZANTALSLIDE);
+        IAnimationService animationService = AnimationServiceLocator.GetAnimationService();
+        Transform rendererTransform = frameSpriteRenderer.transform;
+        Vector3 destination = rendererTransform.position;
+        animationService.TriggerAnimation(rendererTransform.transform, new Vector3(GameConstants.WIDTH, destination.y, destination.z), destination, 0.5f, AnimationType.SLIDE);
     }
     #endregion
 

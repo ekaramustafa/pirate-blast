@@ -98,6 +98,10 @@ public class BlockBlastStrategy : IBlastStrategy
     {
         Vector3 destination = gridSystem.GetWorldPosition(startPosition);
         Sequence parentSequence = DOTween.Sequence();
+        
+        IAnimationService animationService = AnimationServiceLocator.GetAnimationService();
+
+
 
         foreach (GridPosition currentPosition in formedPositions)
         {
@@ -105,10 +109,12 @@ public class BlockBlastStrategy : IBlastStrategy
 
             GridObject gridObject = gridSystem.GetGridObject(currentPosition);
             Unit unit = gridObject.GetUnit();
-            SlidingAnimation slidingAnimation = unit.GetComponent<SlidingAnimation>();
+
             Vector3 offset = GetOffsetVector(gridSystem, unit.transform.position, destination);
-            Tween initialTween = slidingAnimation.TriggerAnimationTo(GameConstants.UNIT_FORM_ELASTICITIY_ANIMATION_DURATION, unit.transform.position + offset, AnimationType.HORIZANTALSLIDE, AnimationType.VERTICALSLIDE);
-            Tween tween = slidingAnimation.TriggerAnimationTo(destination, AnimationType.HORIZANTALSLIDE, AnimationType.VERTICALSLIDE);
+            
+            Tween initialTween = animationService.TriggerAnimation(unit.transform, unit.transform.position, unit.transform.position + offset, GameConstants.UNIT_FORM_ELASTICITIY_ANIMATION_DURATION, AnimationType.SLIDE);
+            Tween tween = animationService.TriggerAnimation(unit.transform, unit.transform.position, destination, GameConstants.UNIT_FORM_FORWARD_ANIMATION_DURATION, AnimationType.SLIDE);
+            
             Sequence subSequence = DOTween.Sequence();
             subSequence.Append(initialTween);
             subSequence.Append(tween);

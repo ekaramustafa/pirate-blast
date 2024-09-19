@@ -81,6 +81,10 @@ public static class GameConstants
     /// I know animation system sucks.
     /// </summary>
     public const float UNIT_FORM_ELASTICITIY_ANIMATION_DURATION = 0.25f;
+
+    /// <summary>
+    /// </summary>
+    public const float UNIT_FORM_FORWARD_ANIMATION_DURATION = 0.25f;
     #endregion
 
     #region Save System Constants
