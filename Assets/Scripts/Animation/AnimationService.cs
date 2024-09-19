@@ -12,7 +12,8 @@ public class AnimationService : IAnimationService
         _animationStrategies = new Dictionary<AnimationType, IAnimationStrategy>
         {
             { AnimationType.SLIDE, new SlideAnimation() },
-            { AnimationType.SCALE, new NewScaleAnimation() },
+            { AnimationType.SCALE, new ScaleAnimation() },
+            { AnimationType.SHAKEROTATION, new ShakeRotationAnimation() },
             /*
             
             { AnimationType.SHAKEPOSITION, new ShakePositionAnimation() },

@@ -1,7 +1,7 @@
 ﻿using DG.Tweening;
 using UnityEngine;
 
-public class NewScaleAnimation : IAnimationStrategy
+public class ScaleAnimation : IAnimationStrategy
 {
     public Tween Animate(Transform animatedTransform, Vector3 from, Vector3 to, float duration)
     {

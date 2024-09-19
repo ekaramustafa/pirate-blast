@@ -8,10 +8,11 @@ public class GridObject
 
     private GridPosition gridPosition;
     private Unit unit;
-
+    private bool isBeingAnimated;
     public GridObject(GridPosition gridPosition)
     {
         this.gridPosition = gridPosition;
+        isBeingAnimated = false;
     }
 
     public void SetUnit(Unit unit)
@@ -26,6 +27,13 @@ public class GridObject
     public override string ToString()
     {
         return base.ToString() + "\n" + unit;
+    }
+
+    public bool IsBeingAnimated() => isBeingAnimated;
+
+    public void SetBeingAnimated(bool val)
+    {
+        isBeingAnimated = val;
     }
 
     public void HitUnit(BlastType blastType)

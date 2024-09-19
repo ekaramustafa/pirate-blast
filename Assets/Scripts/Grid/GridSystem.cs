@@ -17,6 +17,7 @@ public class GridSystem
 
     private float horizantalCellSize;
     private float verticalCellSize;
+
     private float xWorldPositionOffsetBlockGenerator;
     private float yWorldPositionOffset;
     private float xWorldPositionOffset;
@@ -142,6 +143,12 @@ public class GridSystem
     {
         GridObject gridObject = GetGridObject(gridPosition);
         return gridObject.GetUnit() != null;
+    }
+
+    public bool IsBeingAnimated(GridPosition position)
+    {
+        GridObject gridObject = GetGridObject(position);
+        return gridObject.IsBeingAnimated();
     }
 
     private bool IsValidGridPosition(GridPosition gridPosition)

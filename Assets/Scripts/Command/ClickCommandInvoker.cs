@@ -12,7 +12,7 @@ public class ClickCommandInvoker
     public async UniTask<bool> HandleClick(Vector3 mousePos)
     {
         GridPosition position = gridSystem.GetGridPosition(mousePos);
-        if (!gridSystem.CanPerformOnPosition(position))
+        if (!gridSystem.CanPerformOnPosition(position) || gridSystem.IsBeingAnimated(position))
         {
             return false;
         }
