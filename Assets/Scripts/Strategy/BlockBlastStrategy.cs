@@ -44,8 +44,8 @@ public class BlockBlastStrategy : IBlastStrategy
         int endRow = gridSystem.GetHeight();
         int startCol = blastablePositions.Min(pos => pos.x);
         int endCol = blastablePositions.Max(pos => pos.x) + 1;
-        gridSystem.GetUnitManager().DropUnits(startRow, endRow, startCol, endCol);
-
+        TaskScheduler.EnqueueTask(gridSystem.GetUnitManager().DropUnits(startRow, endRow, startCol, endCol));
+        
     }
 
     private void HandleTNTFormationBlast(GridSystem gridSystem, GridPosition startPosition, List<GridPosition> blastablePositions)
@@ -69,26 +69,17 @@ public class BlockBlastStrategy : IBlastStrategy
         //gridSystem.GetUnitManager().DeActivateUnits(startRow, endRow, startCol, endCol); // For now, let's not be able to form a new unit when it is dropping.
         mergedPositions.ForEach(pos => gridSystem.GetGridObject(pos).SetIsInteractable(false));
         Tween sequence = AnimateFormation(gridSystem, startPosition, blastablePositions);
-        UniTask task = sequence.AsyncWaitForCompletion().AsUniTask();
 
         List<Unit> unitsToBeDestoryed = blastablePositions.Select(pos => gridSystem.GetGridObject(pos).GetUnit()).ToList();
 
-        TaskScheduler.EnqueueTaskBatch(
-            new List<UniTask>(){ task }, 
-            
-            onStartCallback: () =>
-            {
-                Debug.Log("Form Animation Started");
-            },
-            
-            onCompleteCallback : () =>
-            {
-                Debug.Log("Form Animation Finished");
-                unitsToBeDestoryed.ForEach(unit => UnityEngine.GameObject.Destroy(unit.gameObject));
-                gridSystem.GetUnitManager().DropUnits(startRow, endRow, startCol, endCol);
-                mergedPositions.ForEach(pos => gridSystem.GetGridObject(pos).SetIsInteractable(true));
-            }
-        );
+        sequence.OnComplete(() =>
+        {
+            unitsToBeDestoryed.ForEach(unit => UnityEngine.GameObject.Destroy(unit.gameObject));
+            TaskScheduler.EnqueueTask(gridSystem.GetUnitManager().DropUnits(startRow, endRow, startCol, endCol),
+                onStartCallback: () => Debug.Log("Drop Unit after animation started"),
+                onCompleteCallback: () => Debug.Log("Drop Unit after animation finished"));
+            mergedPositions.ForEach(pos => gridSystem.GetGridObject(pos).SetIsInteractable(true));
+        });
 
         blastablePositions.ForEach(pos => gridSystem.GetGridObject(pos).SetUnit(null));
         gridSystem.GetUnitManager().CreateTNTUnit(startPosition);

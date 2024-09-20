@@ -113,7 +113,7 @@ public class UnitManager
         gridObject.SetUnit(unit);
     }
 
-    public void DropUnits(int startRow, int endRow, int startCol, int endCol)
+    public async UniTask DropUnits(int startRow, int endRow, int startCol, int endCol)
     {
         DeActivateUnits(startRow, endRow, startCol, endCol);
         int height = gridSystem.GetHeight();
@@ -156,18 +156,8 @@ public class UnitManager
             }
         }
         FillEmptyCells(moveTasks);
-        
-        TaskScheduler.EnqueueTaskBatch(
-            moveTasks,
-            onStartCallback: () =>
-            {
-                Debug.Log("Drop Units Started");
-            },
-            onCompleteCallback: () =>
-            {
-                Debug.Log("Drop Units Completed");
-                ActivateUnits(startRow, endRow, startCol, endCol);
-            });
+        await UniTask.WhenAll(moveTasks);
+        ActivateUnits(startRow, endRow, startCol, endCol);
     }
 
 
