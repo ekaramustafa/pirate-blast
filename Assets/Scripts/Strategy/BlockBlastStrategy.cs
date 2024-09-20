@@ -44,7 +44,7 @@ public class BlockBlastStrategy : IBlastStrategy
         int endRow = gridSystem.GetHeight();
         int startCol = blastablePositions.Min(pos => pos.x);
         int endCol = blastablePositions.Max(pos => pos.x) + 1;
-        gridSystem.GetUnitManager().DropUnits(startRow, endRow, startCol, endCol).Forget();
+        gridSystem.GetUnitManager().DropUnits(startRow, endRow, startCol, endCol);
 
     }
 
@@ -67,17 +67,18 @@ public class BlockBlastStrategy : IBlastStrategy
         int endCol = mergedPositions.Max(pos => pos.x) + 1;
 
         gridSystem.GetUnitManager().DeActivateUnits(startRow, endRow, startCol, endCol); // For now, let's not be able to form a new unit when it is dropping.
-
-        AnimateFormation(gridSystem, startPosition, blastablePositions).OnComplete(() =>{
+        Tween sequence = AnimateFormation(gridSystem, startPosition, blastablePositions);
+        UniTask task = sequence.AsyncWaitForCompletion().AsUniTask();
+        TaskScheduler.EnqueueTaskBatch(new List<UniTask>(){ task }, () =>
+        {
             foreach (GridPosition position in blastablePositions)
             {
                 BlastUtils.BlastBlockAtPosition(gridSystem, position, BlastType.BlockBlastForm);
             }
-
             gridSystem.GetUnitManager().CreateTNTUnit(startPosition);
-            gridSystem.GetUnitManager().DropUnits(startRow, endRow, startCol, endCol).Forget();
-            BlastUtils.PublishBlastedParts(gridSystem, positionSpriteMap, spriteCountMap);
+            gridSystem.GetUnitManager().DropUnits(startRow, endRow, startCol, endCol);
         });
+        BlastUtils.PublishBlastedParts(gridSystem, positionSpriteMap, spriteCountMap);
 
     }
 
