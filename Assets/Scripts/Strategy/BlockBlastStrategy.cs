@@ -51,23 +51,34 @@ public class BlockBlastStrategy : IBlastStrategy
     private void HandleTNTFormationBlast(GridSystem gridSystem, GridPosition startPosition, List<GridPosition> blastablePositions)
     {
         List<GridPosition> neighbors = GetNeighborAffectableUnits(gridSystem, blastablePositions);
-        List<GridPosition> blastedPositions = new List<GridPosition>(blastablePositions);
-        blastedPositions.AddRange(neighbors);
-        Dictionary<Sprite, int> spriteCountMap = BlastUtils.GetBlastedSpritesCountMap(gridSystem, blastedPositions);
-        Dictionary<GridPosition, Sprite> positionSpriteMap = BlastUtils.GetBlastedPositionsSpriteMap(gridSystem, blastedPositions);
+        List<GridPosition> mergedPositions = new List<GridPosition>(blastablePositions);
+        mergedPositions.AddRange(neighbors);
+        Dictionary<Sprite, int> spriteCountMap = BlastUtils.GetBlastedSpritesCountMap(gridSystem, mergedPositions);
+        Dictionary<GridPosition, Sprite> positionSpriteMap = BlastUtils.GetBlastedPositionsSpriteMap(gridSystem, mergedPositions);
 
         foreach (GridPosition position in neighbors)
         {
             BlastUtils.BlastBlockAtPosition(gridSystem, position, BlastType.BlockBlast);
         }
-        AnimateFormation(gridSystem, startPosition, blastablePositions);
-        foreach (GridPosition position in blastablePositions)
-        {
-            BlastUtils.BlastBlockAtPosition(gridSystem, position, BlastType.BlockBlastForm);
-        }
 
-        gridSystem.GetUnitManager().CreateTNTUnit(startPosition);
-        BlastUtils.PublishBlastedParts(gridSystem, positionSpriteMap, spriteCountMap);
+        int startRow = mergedPositions.Min(pos => pos.y);
+        int endRow = gridSystem.GetHeight();
+        int startCol = mergedPositions.Min(pos => pos.x);
+        int endCol = mergedPositions.Max(pos => pos.x) + 1;
+
+        gridSystem.GetUnitManager().DeActivateUnits(startRow, endRow, startCol, endCol); // For now, let's not be able to form a new unit when it is dropping.
+
+        AnimateFormation(gridSystem, startPosition, blastablePositions).OnComplete(() =>{
+            foreach (GridPosition position in blastablePositions)
+            {
+                BlastUtils.BlastBlockAtPosition(gridSystem, position, BlastType.BlockBlastForm);
+            }
+
+            gridSystem.GetUnitManager().CreateTNTUnit(startPosition);
+            gridSystem.GetUnitManager().DropUnits(startRow, endRow, startCol, endCol).Forget();
+            BlastUtils.PublishBlastedParts(gridSystem, positionSpriteMap, spriteCountMap);
+        });
+
     }
 
     public List<GridPosition> GetBlastablePositions(GridSystem gridSystem, GridPosition startPosition)
@@ -103,14 +114,12 @@ public class BlockBlastStrategy : IBlastStrategy
         return AllNeighborPositions;
     }
 
-    public void AnimateFormation(GridSystem gridSystem, GridPosition startPosition, List<GridPosition> formedPositions)
+    public Tween AnimateFormation(GridSystem gridSystem, GridPosition startPosition, List<GridPosition> formedPositions)
     {
         Vector3 destination = gridSystem.GetWorldPosition(startPosition);
         Sequence parentSequence = DOTween.Sequence();
         
         IAnimationService animationService = AnimationServiceLocator.GetAnimationService();
-
-
 
         foreach (GridPosition currentPosition in formedPositions)
         {
@@ -129,9 +138,7 @@ public class BlockBlastStrategy : IBlastStrategy
             subSequence.Append(tween);
             parentSequence.Join(subSequence);
         }
-
-        // Await the completion of the animation sequence
-        //await parentSequence.AsyncWaitForCompletion();
+        return parentSequence;
 
     }
 

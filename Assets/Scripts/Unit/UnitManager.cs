@@ -136,7 +136,7 @@ public class UnitManager
                 GridPosition lowerEmptyPosition = GridSearchUtils.FindLowerEmptyPositionBelow(gridSystem, currentPosition);
 
                 GridPosition posPtr = new GridPosition(currentPosition.x, currentPosition.y);
-                while (lowerEmptyPosition != posPtr && lowerEmptyPosition.y < height && lowerEmptyPosition.y > 0)
+                while (lowerEmptyPosition != posPtr && lowerEmptyPosition.y < height && lowerEmptyPosition.y >= 0)
                 {
                     moveQueue.Enqueue(lowerEmptyPosition);  // Queue all the moves first
                     posPtr = lowerEmptyPosition;   // Update current position
@@ -151,7 +151,6 @@ public class UnitManager
                     UniTask moveTask = unit.MoveCoroutine(gridSystem.GetWorldPosition(targetPosition), GameConstants.DROP_TIME).ToUniTask();
                     moveTasks.Add(moveTask);
                     MoveUnitToNewPosition(currentPosition, targetPosition);  // Update the grid positions after moving
-                    //await moveTask;  // Wait for each move to complete before proceeding to the next
                     currentPosition = targetPosition;  // Update the current position after the move
                 }
             }
