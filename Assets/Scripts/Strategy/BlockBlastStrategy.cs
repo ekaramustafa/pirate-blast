@@ -66,7 +66,8 @@ public class BlockBlastStrategy : IBlastStrategy
         int startCol = mergedPositions.Min(pos => pos.x);
         int endCol = mergedPositions.Max(pos => pos.x) + 1;
 
-        gridSystem.GetUnitManager().DeActivateUnits(startRow, endRow, startCol, endCol); // For now, let's not be able to form a new unit when it is dropping.
+        //gridSystem.GetUnitManager().DeActivateUnits(startRow, endRow, startCol, endCol); // For now, let's not be able to form a new unit when it is dropping.
+        mergedPositions.ForEach(pos => gridSystem.GetGridObject(pos).SetIsInteractable(false));
         Tween sequence = AnimateFormation(gridSystem, startPosition, blastablePositions);
         UniTask task = sequence.AsyncWaitForCompletion().AsUniTask();
 
@@ -85,8 +86,10 @@ public class BlockBlastStrategy : IBlastStrategy
                 Debug.Log("Form Animation Finished");
                 unitsToBeDestoryed.ForEach(unit => UnityEngine.GameObject.Destroy(unit.gameObject));
                 gridSystem.GetUnitManager().DropUnits(startRow, endRow, startCol, endCol);
+                mergedPositions.ForEach(pos => gridSystem.GetGridObject(pos).SetIsInteractable(true));
             }
         );
+
         blastablePositions.ForEach(pos => gridSystem.GetGridObject(pos).SetUnit(null));
         gridSystem.GetUnitManager().CreateTNTUnit(startPosition);
         BlastUtils.PublishBlastedParts(gridSystem, positionSpriteMap, spriteCountMap);

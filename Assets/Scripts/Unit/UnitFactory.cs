@@ -14,6 +14,7 @@ public static class UnitFactory
             // Instantiate normally if in Play Mode
             unitTransform = GameObject.Instantiate(unitTemplatePrefab, position, Quaternion.identity);
         }
+    #if UNITY_EDITOR
         else
         {
             // Instantiate in Edit Mode using PrefabUtility
@@ -23,6 +24,7 @@ public static class UnitFactory
             EditorUtility.SetDirty(unitTransform.gameObject);
 
         }
+    #endif
 
         Unit unit = unitTransform.GetComponent<Unit>();
         unit.SetUnitSO(unitSO);
