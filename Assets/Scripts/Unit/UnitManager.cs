@@ -156,11 +156,18 @@ public class UnitManager
             }
         }
         FillEmptyCells(moveTasks);
-        TaskScheduler.EnqueueTaskBatch(moveTasks, () =>
-        {
-            Debug.Log("Drop Units completed");
-            ActivateUnits(startRow, endRow, startCol, endCol);
-        });
+        
+        TaskScheduler.EnqueueTaskBatch(
+            moveTasks,
+            onStartCallback: () =>
+            {
+                Debug.Log("Drop Units Started");
+            },
+            onCompleteCallback: () =>
+            {
+                Debug.Log("Drop Units Completed");
+                ActivateUnits(startRow, endRow, startCol, endCol);
+            });
     }
 
 

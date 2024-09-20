@@ -69,15 +69,26 @@ public class BlockBlastStrategy : IBlastStrategy
         gridSystem.GetUnitManager().DeActivateUnits(startRow, endRow, startCol, endCol); // For now, let's not be able to form a new unit when it is dropping.
         Tween sequence = AnimateFormation(gridSystem, startPosition, blastablePositions);
         UniTask task = sequence.AsyncWaitForCompletion().AsUniTask();
-        TaskScheduler.EnqueueTaskBatch(new List<UniTask>(){ task }, () =>
-        {
-            foreach (GridPosition position in blastablePositions)
+
+        List<Unit> unitsToBeDestoryed = blastablePositions.Select(pos => gridSystem.GetGridObject(pos).GetUnit()).ToList();
+
+        TaskScheduler.EnqueueTaskBatch(
+            new List<UniTask>(){ task }, 
+            
+            onStartCallback: () =>
             {
-                BlastUtils.BlastBlockAtPosition(gridSystem, position, BlastType.BlockBlastForm);
+                Debug.Log("Form Animation Started");
+            },
+            
+            onCompleteCallback : () =>
+            {
+                Debug.Log("Form Animation Finished");
+                unitsToBeDestoryed.ForEach(unit => UnityEngine.GameObject.Destroy(unit.gameObject));
+                gridSystem.GetUnitManager().DropUnits(startRow, endRow, startCol, endCol);
             }
-            gridSystem.GetUnitManager().CreateTNTUnit(startPosition);
-            gridSystem.GetUnitManager().DropUnits(startRow, endRow, startCol, endCol);
-        });
+        );
+        blastablePositions.ForEach(pos => gridSystem.GetGridObject(pos).SetUnit(null));
+        gridSystem.GetUnitManager().CreateTNTUnit(startPosition);
         BlastUtils.PublishBlastedParts(gridSystem, positionSpriteMap, spriteCountMap);
 
     }

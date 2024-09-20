@@ -5,7 +5,7 @@ using UnityEngine;
 
 public static class TaskScheduler
 {
-    private static Queue<(List<UniTask>, Action)> taskBatchQueue = new Queue<(List<UniTask>, Action)>();
+    private static Queue<(List<UniTask>, Action, Action)> taskBatchQueue = new Queue<(List<UniTask>, Action, Action)>();
     private static bool isRunning = false;
 
     public static void EnqueueTask(UniTask task)
@@ -14,9 +14,9 @@ public static class TaskScheduler
         EnqueueTaskBatch(taskBatch, null);
     }
 
-    public static void EnqueueTaskBatch(List<UniTask> taskBatch, Action onCompleteCallback = null)
+    public static void EnqueueTaskBatch(List<UniTask> taskBatch,Action onStartCallback = null, Action onCompleteCallback = null)
     {
-        taskBatchQueue.Enqueue((taskBatch, onCompleteCallback));
+        taskBatchQueue.Enqueue((taskBatch, onStartCallback, onCompleteCallback));
 
         if (!isRunning)
         {
@@ -24,21 +24,23 @@ public static class TaskScheduler
         }
     }
 
+
     private static async UniTaskVoid ProcessQueue()
     {
         isRunning = true;
 
         while (taskBatchQueue.Count > 0)
         {
-            var (currentBatch, callback) = taskBatchQueue.Dequeue();
+            var (currentBatch, onStartCallback, onCompleteCallback) = taskBatchQueue.Dequeue();
+            
+            onStartCallback?.Invoke();
 
             await UniTask.WhenAll(currentBatch);
 
-            callback?.Invoke();
-
-            Debug.Log("Batch completed");
+            onCompleteCallback?.Invoke();
         }
 
         isRunning = false;
     }
+
 }
