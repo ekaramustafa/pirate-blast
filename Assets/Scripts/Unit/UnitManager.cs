@@ -155,7 +155,7 @@ public class UnitManager
                 }
             }
         }
-        //FillEmptyCells(moveTasks);
+        FillEmptyCells(moveTasks);
         await UniTask.WhenAll(moveTasks);
         ActivateUnits(startRow, endRow, startCol, endCol);
     }
