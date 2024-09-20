@@ -117,57 +117,48 @@ public class UnitManager
     {
         DeActivateUnits(startRow, endRow, startCol, endCol);
         int height = gridSystem.GetHeight();
-        List<UniTask> columnTasks = new List<UniTask>();
+        List<UniTask> moveTasks = new List<UniTask>();
 
         for (int x = startCol; x < endCol; x++)
         {
-            // For each column, create a task that will handle all the moves within that column
-            columnTasks.Add(DropColumnUnits(x, startRow, endRow, height));
-        }
+            for (int y = startRow; y < endRow; y++)
+            {
+                GridPosition currentPosition = new GridPosition(x, y);
+                GridObject currentGridObject = gridSystem.GetGridObject(currentPosition);
 
-        await UniTask.WhenAll(columnTasks); // Wait for all columns to finish moving units
+                if (!gridSystem.CanPerformOnPosition(currentPosition))
+                    continue;
+
+                UnitType unitType = currentGridObject.GetUnit().GetUnitType();
+                if (unitType == UnitType.Stone || unitType == UnitType.Ice) continue;
+
+                Queue<GridPosition> moveQueue = new Queue<GridPosition>();
+                GridPosition lowerEmptyPosition = GridSearchUtils.FindLowerEmptyPositionBelow(gridSystem, currentPosition);
+
+                GridPosition posPtr = new GridPosition(currentPosition.x, currentPosition.y);
+                while (lowerEmptyPosition != posPtr && lowerEmptyPosition.y < height && lowerEmptyPosition.y > 0)
+                {
+                    moveQueue.Enqueue(lowerEmptyPosition);  // Queue all the moves first
+                    posPtr = lowerEmptyPosition;   // Update current position
+                    lowerEmptyPosition = GridSearchUtils.FindLowerEmptyPositionBelow(gridSystem, posPtr);
+                }
+
+                // Now execute the queued moves
+                while (moveQueue.Count > 0)
+                {
+                    GridPosition targetPosition = moveQueue.Dequeue();
+                    Unit unit = gridSystem.GetGridObject(currentPosition).GetUnit();
+                    UniTask moveTask = unit.MoveCoroutine(gridSystem.GetWorldPosition(targetPosition), GameConstants.DROP_TIME).ToUniTask();
+                    moveTasks.Add(moveTask);
+                    MoveUnitToNewPosition(currentPosition, targetPosition);  // Update the grid positions after moving
+                    //await moveTask;  // Wait for each move to complete before proceeding to the next
+                    currentPosition = targetPosition;  // Update the current position after the move
+                }
+            }
+        }
+        //FillEmptyCells(moveTasks);
+        await UniTask.WhenAll(moveTasks);
         ActivateUnits(startRow, endRow, startCol, endCol);
-    }
-
-    private async UniTask DropColumnUnits(int column, int startRow, int endRow, int height)
-    {
-        List<UniTask> moveTasks = new List<UniTask>();
-
-        for (int y = startRow; y < endRow; y++)
-        {
-            GridPosition currentPosition = new GridPosition(column, y);
-            GridObject currentGridObject = gridSystem.GetGridObject(currentPosition);
-
-            if (!gridSystem.CanPerformOnPosition(currentPosition))
-                continue;
-
-            UnitType unitType = currentGridObject.GetUnit().GetUnitType();
-            if (unitType == UnitType.Stone || unitType == UnitType.Ice) continue;
-
-            Queue<GridPosition> moveQueue = new Queue<GridPosition>();
-            GridPosition lowerEmptyPosition = GridSearchUtils.FindLowerEmptyPositionBelow(gridSystem, currentPosition);
-            GridPosition posPtr = new GridPosition(currentPosition.x, currentPosition.y);
-            while (lowerEmptyPosition != posPtr && lowerEmptyPosition.y < height && lowerEmptyPosition.y > 0)
-            {
-                moveQueue.Enqueue(lowerEmptyPosition);  // Queue all the moves first
-                posPtr = lowerEmptyPosition;   // Update current position
-                lowerEmptyPosition = GridSearchUtils.FindLowerEmptyPositionBelow(gridSystem, posPtr);
-            }
-
-            // Now execute the queued moves for this unit sequentially
-            while (moveQueue.Count > 0)
-            {
-                GridPosition targetPosition = moveQueue.Dequeue();
-                Unit unit = gridSystem.GetGridObject(currentPosition).GetUnit();
-                UniTask moveTask = unit.MoveCoroutine(gridSystem.GetWorldPosition(targetPosition), GameConstants.DROP_TIME).ToUniTask();
-                moveTasks.Add(moveTask);
-                MoveUnitToNewPosition(currentPosition, targetPosition);  // Update the grid positions after moving
-                //await moveTask;  // Wait for each move to complete before proceeding to the next
-                await UniTask.WaitForFixedUpdate();
-                currentPosition = targetPosition;  // Update the current position after the move
-            }
-        }
-
     }
 
 
