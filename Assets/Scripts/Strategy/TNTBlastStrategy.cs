@@ -7,31 +7,31 @@ using DG.Tweening;
 public class TNTBlastStrategy : IBlastStrategy
 {
 
-    public async UniTask<bool> Blast(GridSystem gridSystem, GridPosition startPosition)
+    public bool Blast(GridSystem gridSystem, GridPosition startPosition)
     {
         List<GridPosition> comboPositions = GridSearchUtils.GetAdjacentSameUnitType(gridSystem, startPosition);
         if (comboPositions.Count != 0)
         {
-            await HandleComboTNTFormationBlast(gridSystem, startPosition, comboPositions);
+            HandleComboTNTFormationBlast(gridSystem, startPosition, comboPositions);
         }
-        await HandleTNTBlast(gridSystem, startPosition);
+        HandleTNTBlast(gridSystem, startPosition);
         return true;
 
 
     }
 
-    private async UniTask HandleComboTNTFormationBlast(GridSystem gridSystem, GridPosition startPosition, List<GridPosition> comboPositions)
+    private void HandleComboTNTFormationBlast(GridSystem gridSystem, GridPosition startPosition, List<GridPosition> comboPositions)
     {
-        await AnimateFormation(gridSystem, startPosition, comboPositions);
+        AnimateFormation(gridSystem, startPosition, comboPositions);
         foreach (GridPosition gridPosition in comboPositions)
         {
             BlastUtils.BlastBlockAtPosition(gridSystem, gridPosition, BlastType.TNTBlastForm);
         }
         gridSystem.GetUnitManager().CreateComboTNTUnit(startPosition);
-        await AnimateComboTNTCreation(gridSystem, startPosition);
+        AnimateComboTNTCreation(gridSystem, startPosition);
     }
 
-    private async UniTask AnimateComboTNTCreation(GridSystem gridSystem, GridPosition startPosition)
+    private void AnimateComboTNTCreation(GridSystem gridSystem, GridPosition startPosition)
     {
         GridObject gridObject = gridSystem.GetGridObject(startPosition);
         Unit unit = gridObject.GetUnit();
@@ -45,12 +45,10 @@ public class TNTBlastStrategy : IBlastStrategy
 
         seq.Append(scalingUpTween);
         seq.Append(scalingDownTween);
-        await seq.AsyncWaitForCompletion();
     }
 
-    private async UniTask HandleTNTBlast(GridSystem gridSystem, GridPosition startPosition)
+    private void HandleTNTBlast(GridSystem gridSystem, GridPosition startPosition)
     {
-        await UniTask.Yield();
         List<GridPosition> blastablePositions = GetBlastablePositions(gridSystem, startPosition);
         Dictionary<Sprite, int> spriteCountMap = BlastUtils.GetBlastedSpritesCountMap(gridSystem, blastablePositions);
         Dictionary<GridPosition, Sprite> positionSpriteMap = BlastUtils.GetBlastedPositionsSpriteMap(gridSystem, blastablePositions);
@@ -106,7 +104,7 @@ public class TNTBlastStrategy : IBlastStrategy
         return blastablePositions;
     }
 
-    private async UniTask AnimateFormation(GridSystem gridSystem, GridPosition startPosition, List<GridPosition> comboPositions)
+    private void AnimateFormation(GridSystem gridSystem, GridPosition startPosition, List<GridPosition> comboPositions)
     {
         Vector3 destination = gridSystem.GetWorldPosition(startPosition);
         Sequence parentSequence = DOTween.Sequence();
@@ -130,7 +128,7 @@ public class TNTBlastStrategy : IBlastStrategy
         }
 
         // Await the completion of the animation sequence
-        await parentSequence.AsyncWaitForCompletion();
+        //await parentSequence.AsyncWaitForCompletion();
 
     }
 

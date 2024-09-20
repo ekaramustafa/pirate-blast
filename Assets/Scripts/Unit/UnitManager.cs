@@ -68,6 +68,30 @@ public class UnitManager
 
     }
 
+    public void DeActivateUnits(int startRow, int endRow, int startCol, int endCol)
+    {
+        for(int i = startCol; i < endCol; i++)
+        {
+            for(int j= startRow; j < endRow; j++)
+            {
+                GridObject gridObject = gridSystem.GetGridObject(new GridPosition(i, j));
+                gridObject.SetIsInteractable(false);
+            }
+        }
+    }
+
+    public void ActivateUnits(int startRow, int endRow, int startCol, int endCol)
+    {
+        for (int i = startCol; i < endCol; i++)
+        {
+            for (int j = startRow; j < endRow; j++)
+            {
+                GridObject gridObject = gridSystem.GetGridObject(new GridPosition(i, j));
+                gridObject.SetIsInteractable(true);
+            }
+        }
+    }
+
     public void CreateComboTNTUnit(GridPosition gridPosition)
     {
         UnitData unitData = unitAssetsSO.GetTNTSOByTNTType(TNTType.LARGE);
@@ -89,8 +113,9 @@ public class UnitManager
         gridObject.SetUnit(unit);
     }
 
-    public async UniTask DropUnits()
+    public async UniTask DropUnits(int startRow, int endRow, int startCol, int endCol)
     {
+        DeActivateUnits(startRow, endRow, startCol, endCol);
         int width = gridSystem.GetWidth();
         int height = gridSystem.GetHeight();
         List<UniTask> moveTasks = new List<UniTask>();
@@ -120,6 +145,7 @@ public class UnitManager
         }
         FillEmptyCells(moveTasks);
         await UniTask.WhenAll(moveTasks);
+        ActivateUnits(startRow, endRow, startCol, endCol);
     }
 
     public void MoveUnitToNewPosition(GridPosition from, GridPosition to)

@@ -4,30 +4,30 @@ using UnityEngine;
 using DG.Tweening;
 using System.Threading.Tasks;
 using System;
+using System.Linq;
 
 public class BlockBlastStrategy : IBlastStrategy
 {
-    public async UniTask<bool> Blast(GridSystem gridSystem, GridPosition startPosition)
+    public bool Blast(GridSystem gridSystem, GridPosition startPosition)
     {
 
         List<GridPosition> blastablePositions = GetBlastablePositions(gridSystem, startPosition);
         if (blastablePositions.Count >= GameConstants.TNT_FORMATION_BLOCKS_THRESHOLD)
         {
-            await HandleTNTFormationBlast(gridSystem, startPosition, blastablePositions);
+            HandleTNTFormationBlast(gridSystem, startPosition, blastablePositions);
             return true;
 
         }
         else if (blastablePositions.Count >= GameConstants.BLAST_THRESHOLD)
         {
-            await HandleBlockBlast(gridSystem, blastablePositions);
+            HandleBlockBlast(gridSystem, blastablePositions);
             return true;
         }
         return false;
     }
 
-    private async Task HandleBlockBlast(GridSystem gridSystem, List<GridPosition> blastablePositions)
+    private void HandleBlockBlast(GridSystem gridSystem, List<GridPosition> blastablePositions)
     {
-        await UniTask.Yield(); // there are no animations requiring blocking, for now...
         List<GridPosition> neighbors = GetNeighborAffectableUnits(gridSystem, blastablePositions);
         blastablePositions.AddRange(neighbors);
         Dictionary<Sprite, int> spriteCountMap = BlastUtils.GetBlastedSpritesCountMap(gridSystem, blastablePositions);
@@ -37,9 +37,18 @@ public class BlockBlastStrategy : IBlastStrategy
             BlastUtils.BlastBlockAtPosition(gridSystem, position, BlastType.BlockBlast);
         }
         BlastUtils.PublishBlastedParts(gridSystem, positionSpriteMap, spriteCountMap);
+        //Deactive the upper part, and drop them 
+        //get the lowest row and col
+        //Calculate left and right
+        int startRow = blastablePositions.Min(pos => pos.y);
+        int endRow = gridSystem.GetHeight() - 1;
+        int startCol = blastablePositions.Min(pos => pos.x);
+        int endCol = blastablePositions.Max(pos => pos.x);
+        gridSystem.GetUnitManager().DropUnits(startRow, endRow, startCol, endCol).Forget();
+
     }
 
-    private async Task HandleTNTFormationBlast(GridSystem gridSystem, GridPosition startPosition, List<GridPosition> blastablePositions)
+    private void HandleTNTFormationBlast(GridSystem gridSystem, GridPosition startPosition, List<GridPosition> blastablePositions)
     {
         List<GridPosition> neighbors = GetNeighborAffectableUnits(gridSystem, blastablePositions);
         List<GridPosition> blastedPositions = new List<GridPosition>(blastablePositions);
@@ -51,7 +60,7 @@ public class BlockBlastStrategy : IBlastStrategy
         {
             BlastUtils.BlastBlockAtPosition(gridSystem, position, BlastType.BlockBlast);
         }
-        await AnimateFormation(gridSystem, startPosition, blastablePositions);
+        AnimateFormation(gridSystem, startPosition, blastablePositions);
         foreach (GridPosition position in blastablePositions)
         {
             BlastUtils.BlastBlockAtPosition(gridSystem, position, BlastType.BlockBlastForm);
@@ -94,7 +103,7 @@ public class BlockBlastStrategy : IBlastStrategy
         return AllNeighborPositions;
     }
 
-    public async UniTask AnimateFormation(GridSystem gridSystem, GridPosition startPosition, List<GridPosition> formedPositions)
+    public void AnimateFormation(GridSystem gridSystem, GridPosition startPosition, List<GridPosition> formedPositions)
     {
         Vector3 destination = gridSystem.GetWorldPosition(startPosition);
         Sequence parentSequence = DOTween.Sequence();
@@ -122,7 +131,7 @@ public class BlockBlastStrategy : IBlastStrategy
         }
 
         // Await the completion of the animation sequence
-        await parentSequence.AsyncWaitForCompletion();
+        //await parentSequence.AsyncWaitForCompletion();
 
     }
 

@@ -10,7 +10,7 @@ public class BlastCommand : IClickCommand
         this.gridPosition = gridPosition;
     }
 
-    public async UniTask<bool> Execute()
+    public bool Execute()
     {
         GridObject startGridObject = gridSystem.GetGridObject(gridPosition);
         UnitType unitType = startGridObject.GetUnit().GetUnitType();
@@ -28,7 +28,7 @@ public class BlastCommand : IClickCommand
         {
             return false;
         }
-        bool val = await blastStrategy.Blast(gridSystem, gridPosition);
+        bool val = blastStrategy.Blast(gridSystem, gridPosition);
 
         return val;        
     }
