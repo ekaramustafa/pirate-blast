@@ -174,7 +174,7 @@ public static class GridSearchUtils
         return columCountMap;
     }
 
-    public static GridPosition FindLowestEmptyPositionBelow(GridSystem gridSystem,GridPosition startPosition)
+    public static GridPosition FindLowerEmptyPositionBelow(GridSystem gridSystem,GridPosition startPosition)
     {
         int x = startPosition.x;
         int y = startPosition.y;

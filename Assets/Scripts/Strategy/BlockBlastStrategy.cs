@@ -41,9 +41,9 @@ public class BlockBlastStrategy : IBlastStrategy
         //get the lowest row and col
         //Calculate left and right
         int startRow = blastablePositions.Min(pos => pos.y);
-        int endRow = gridSystem.GetHeight() - 1;
+        int endRow = gridSystem.GetHeight();
         int startCol = blastablePositions.Min(pos => pos.x);
-        int endCol = blastablePositions.Max(pos => pos.x);
+        int endCol = blastablePositions.Max(pos => pos.x) + 1;
         gridSystem.GetUnitManager().DropUnits(startRow, endRow, startCol, endCol).Forget();
 
     }
