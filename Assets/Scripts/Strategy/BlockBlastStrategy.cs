@@ -38,7 +38,8 @@ public class BlockBlastStrategy : IBlastStrategy
         }
         BlastUtils.PublishBlastedParts(gridSystem, positionSpriteMap, spriteCountMap);
 
-        int startRow = blastablePositions.Min(pos => pos.y);
+        //int startRow = blastablePositions.Min(pos => pos.y);
+        int startRow = 0;
         int endRow = gridSystem.GetHeight();
         int startCol = blastablePositions.Min(pos => pos.x);
         int endCol = blastablePositions.Max(pos => pos.x) + 1;

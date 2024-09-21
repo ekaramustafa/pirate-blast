@@ -71,7 +71,7 @@ public class LevelGrid : MonoBehaviour
 
         //var dropTask = UniTask.WhenAll(gridSystem.GetUnitManager().DropUnits()); //wait until block fall down
         
-        gridSystem.GetUnitManager().AdjustPossibleUnitFormationsVisual();
+        //gridSystem.GetUnitManager().AdjustPossibleUnitFormationsVisual();
 
         //Make sure not to active the game to avoid bugs
         if (moves != 0 && goalsReached < totalGoals)

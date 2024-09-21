@@ -178,22 +178,14 @@ public static class GridSearchUtils
     {
         int x = startPosition.x;
         int y = startPosition.y;
-        y = Mathf.Min(y, gridSystem.GetHeight()); //startPosition can be from hidden row
+        y = Mathf.Min(y, gridSystem.GetHeight() + 1); //startPosition can be from hidden row
 
         GridPosition belowPosition = new GridPosition(x, y - 1);
         if (!gridSystem.CanPerformOnPosition(belowPosition))
         {
             y--;
         }
-
-        if (y == gridSystem.GetHeight())
-        {
-            return new GridPosition(x, startPosition.y);
-        }
-        else
-        {
-            return new GridPosition(x, y);
-        }
+        return new GridPosition(x, y);
 
     }
 

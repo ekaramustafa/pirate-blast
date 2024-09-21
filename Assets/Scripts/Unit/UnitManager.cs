@@ -151,12 +151,14 @@ public class UnitManager
                     Unit unit = gridSystem.GetGridObject(currentPosition).GetUnit();
                     UniTask moveTask = unit.GetComponent<UnitMover>().MoveWithDOTween(gridSystem.GetWorldPosition(targetPosition), GameConstants.DROP_DURATION);
                     moveTasks.Add(moveTask);
+                    RevertTNTUnitFormationsVisualSingle(gridSystem, currentPosition);
                     MoveUnitToNewPosition(currentPosition, targetPosition);  // Update the grid positions after moving
                     currentPosition = targetPosition;  // Update the current position after the move
+                    UpdateTNTUnitFormationsVisualSingle(gridSystem, currentPosition);
                 }
             }
         }
-        FillEmptyCells(moveTasks);
+        //FillEmptyCells(moveTasks, startCol, endCol);
         await UniTask.WhenAll(moveTasks);
         ActivateUnits(startRow, endRow, startCol, endCol);
     }
@@ -175,7 +177,7 @@ public class UnitManager
     }
 
     
-    public void FillEmptyCells(List<UniTask> moveTasks)
+    public void FillEmptyCells(List<UniTask> moveTasks, int startCol, int endCol)
     {
         int height = gridSystem.GetHeight();
         float xWorldPositionOffsetBlockGenerator = gridSystem.GetBlockGeneratorOffset();
@@ -189,15 +191,15 @@ public class UnitManager
             Vector3 worldPosition = gridSystem.GetWorldPosition(currentPosition);
             for (int i = 0; i < val; i++)
             {
-                currentPosition = new GridPosition(key, adjustedY);
+                currentPosition.y = adjustedY;
                 currentPosition.x = key;
                 Queue<GridPosition> moveQueue = new Queue<GridPosition>();
-                GridPosition lowerEmptyPosition = GridSearchUtils.FindLowerEmptyPositionBelow(gridSystem, currentPosition);
-                
+                GridPosition lowerEmptyPosition = new GridPosition(currentPosition.x, height - 1);
                 BlockColor blockColor = BlockColorExtensions.GetRandomBlockColor();
                 UnitData unitData = unitAssetsSO.GetBlockDataByBlockColor(blockColor);
                 Transform unitTemplatePrefab = unitAssetsSO.GetPrefabByUnitType(unitData.unitType);
                 Unit unit = UnitFactory.CreateUnit(unitData, unitTemplatePrefab, worldPosition, lowerEmptyPosition.y);
+                //if (!gridSystem.CanPerformOnPosition(lowerEmptyPosition)) continue;
                 gridSystem.GetGridObject(lowerEmptyPosition).SetUnit(unit);
 
                 GridPosition posPtr = new GridPosition(currentPosition.x, currentPosition.y);
@@ -205,9 +207,9 @@ public class UnitManager
 
                 while (lowerEmptyPosition != posPtr && lowerEmptyPosition.y < height && lowerEmptyPosition.y >= 0)
                 {
-                    moveQueue.Enqueue(lowerEmptyPosition);  // Queue all the moves first
                     posPtr = lowerEmptyPosition;   // Update current position
                     lowerEmptyPosition = GridSearchUtils.FindLowerEmptyPositionBelow(gridSystem, posPtr);
+                    moveQueue.Enqueue(lowerEmptyPosition);  // Queue all the moves first
                 }
                 
                 // Now execute the queued moves
@@ -217,8 +219,10 @@ public class UnitManager
                     Unit currentUnit = gridSystem.GetGridObject(currentPosition).GetUnit();
                     UniTask moveTask = currentUnit.GetComponent<UnitMover>().MoveWithDOTween(gridSystem.GetWorldPosition(targetPosition), GameConstants.DROP_DURATION);
                     moveTasks.Add(moveTask);
+                    RevertTNTUnitFormationsVisualSingle(gridSystem, currentPosition);
                     MoveUnitToNewPosition(currentPosition, targetPosition);
                     currentPosition = targetPosition;  // Update the current position after the move
+                    UpdateTNTUnitFormationsVisualSingle(gridSystem, currentPosition);
                 }
             }
         }
@@ -257,6 +261,56 @@ public class UnitManager
             }
         }
     }
+
+    public void UpdateTNTUnitFormationsVisualSingle(GridSystem gridSystem, GridPosition startPosition)
+    {
+        if (!gridSystem.CanPerformOnPosition(startPosition)) return;
+        
+        GridObject gridObject = gridSystem.GetGridObject(startPosition);
+        UnitType unitType = gridObject.GetUnit().GetUnitType();
+        
+        if (unitType != UnitType.Block) return;
+        
+        List<GridPosition> formableGridPositions = GridSearchUtils.GetAdjacentSameColorBlocks(gridSystem, startPosition);
+        if (formableGridPositions.Count >= GameConstants.TNT_FORMATION_BLOCKS_THRESHOLD)
+        {
+            foreach (GridPosition position in formableGridPositions)
+            {
+                GridObject formableGridObject = gridSystem.GetGridObject(position);
+                Unit unit = formableGridObject.GetUnit();
+                BlockData blockSO = unit.GetUnitData() as BlockData;
+                unit.GetComponent<SpriteRenderer>().sprite = blockSO.tntStateSprite;
+            }
+        }
+        else
+        {
+            Unit unit = gridObject.GetUnit();
+            unit.GetComponent<SpriteRenderer>().sprite = unit.GetDefaultSprite();
+        }
+    }
+
+    public void RevertTNTUnitFormationsVisualSingle(GridSystem gridSystem, GridPosition startPosition)
+    {
+        if (!gridSystem.CanPerformOnPosition(startPosition)) return;
+
+        GridObject gridObject = gridSystem.GetGridObject(startPosition);
+        UnitType unitType = gridObject.GetUnit().GetUnitType();
+
+        if (unitType != UnitType.Block) return;
+
+        List<GridPosition> formableGridPositions = GridSearchUtils.GetAdjacentSameColorBlocks(gridSystem, startPosition);
+        if (formableGridPositions.Count == GameConstants.TNT_FORMATION_BLOCKS_THRESHOLD)
+        {
+            foreach (GridPosition position in formableGridPositions)
+            {
+                GridObject formableGridObject = gridSystem.GetGridObject(position);
+                Unit unit = formableGridObject.GetUnit();
+                unit.GetComponent<SpriteRenderer>().sprite = unit.GetDefaultSprite();
+            }
+        }
+    }
+
+
 
 
 
