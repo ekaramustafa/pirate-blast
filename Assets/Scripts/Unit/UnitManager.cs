@@ -158,7 +158,7 @@ public class UnitManager
                 }
             }
         }
-        //FillEmptyCells(moveTasks, startCol, endCol);
+        FillEmptyCells(moveTasks, startCol, endCol);
         await UniTask.WhenAll(moveTasks);
         ActivateUnits(startRow, endRow, startCol, endCol);
     }
@@ -219,10 +219,9 @@ public class UnitManager
                     Unit currentUnit = gridSystem.GetGridObject(currentPosition).GetUnit();
                     UniTask moveTask = currentUnit.GetComponent<UnitMover>().MoveWithDOTween(gridSystem.GetWorldPosition(targetPosition), GameConstants.DROP_DURATION);
                     moveTasks.Add(moveTask);
-                    RevertTNTUnitFormationsVisualSingle(gridSystem, currentPosition);
                     MoveUnitToNewPosition(currentPosition, targetPosition);
                     currentPosition = targetPosition;  // Update the current position after the move
-                    UpdateTNTUnitFormationsVisualSingle(gridSystem, currentPosition);
+                    AdjustPossibleUnitFormationsVisual();
                 }
             }
         }
@@ -299,15 +298,7 @@ public class UnitManager
         if (unitType != UnitType.Block) return;
 
         List<GridPosition> formableGridPositions = GridSearchUtils.GetAdjacentSameColorBlocks(gridSystem, startPosition);
-        if (formableGridPositions.Count == GameConstants.TNT_FORMATION_BLOCKS_THRESHOLD)
-        {
-            foreach (GridPosition position in formableGridPositions)
-            {
-                GridObject formableGridObject = gridSystem.GetGridObject(position);
-                Unit unit = formableGridObject.GetUnit();
-                unit.GetComponent<SpriteRenderer>().sprite = unit.GetDefaultSprite();
-            }
-        }
+        formableGridPositions.ForEach(pos => UpdateTNTUnitFormationsVisualSingle(gridSystem, pos));
     }
 
 
