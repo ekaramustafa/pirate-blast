@@ -4,17 +4,23 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using DG.Tweening;
+using System.Linq;
 public class TNTBlastStrategy : IBlastStrategy
 {
 
     public bool Blast(GridSystem gridSystem, GridPosition startPosition)
     {
         List<GridPosition> comboPositions = GridSearchUtils.GetAdjacentSameUnitType(gridSystem, startPosition);
+        if (comboPositions.Any(pos => !gridSystem.GetGridObject(pos).IsInteractable())) return false;
+
         if (comboPositions.Count != 0)
         {
             HandleComboTNTFormationBlast(gridSystem, startPosition, comboPositions);
         }
-        HandleTNTBlast(gridSystem, startPosition);
+        else
+        {
+            HandleTNTBlast(gridSystem, startPosition);
+        }
         return true;
 
 
@@ -22,34 +28,55 @@ public class TNTBlastStrategy : IBlastStrategy
 
     private void HandleComboTNTFormationBlast(GridSystem gridSystem, GridPosition startPosition, List<GridPosition> comboPositions)
     {
-        AnimateFormation(gridSystem, startPosition, comboPositions);
-        foreach (GridPosition gridPosition in comboPositions)
+        int startRow = 0;
+        int endRow = gridSystem.GetHeight();
+        int startCol = comboPositions.Min(pos => pos.x);
+        int endCol = comboPositions.Max(pos => pos.x) + 1;
+        gridSystem.GetUnitManager().DeActivateUnits(startRow, endRow, startCol, endCol);
+
+
+        AnimateFormation(gridSystem, startPosition, comboPositions).OnComplete(() =>
         {
-            BlastUtils.BlastBlockAtPosition(gridSystem, gridPosition, BlastType.TNTBlastForm);
-        }
-        gridSystem.GetUnitManager().CreateComboTNTUnit(startPosition);
-        AnimateComboTNTCreation(gridSystem, startPosition);
+            foreach (GridPosition gridPosition in comboPositions)
+            {
+                BlastUtils.BlastBlockAtPosition(gridSystem, gridPosition, BlastType.TNTBlastForm);
+            }
+            gridSystem.GetUnitManager().CreateComboTNTUnit(startPosition);
+            AnimateComboTNTCreation(gridSystem, startPosition).OnComplete(() =>
+            {
+                HandleTNTBlast(gridSystem, startPosition);
+            });
+        });
+        
     }
 
-    private void AnimateComboTNTCreation(GridSystem gridSystem, GridPosition startPosition)
+    private Tween AnimateComboTNTCreation(GridSystem gridSystem, GridPosition startPosition)
     {
         GridObject gridObject = gridSystem.GetGridObject(startPosition);
         Unit unit = gridObject.GetUnit();
         unit.SetSortingOrder(999);
         IAnimationService animationService = AnimationServiceLocator.GetAnimationService();
         Sequence seq = DOTween.Sequence();
-        Vector3 targetScale = new Vector3(2f, 2f, 1f);
+        Vector3 targetScale = new Vector3(5f, 5f, 1f);
         Vector3 sourceScale = unit.transform.localScale;
         Tween scalingUpTween = animationService.TriggerAnimation(unit.transform, unit.transform.localScale, targetScale, 0.25f, AnimationType.SCALE);
-        Tween scalingDownTween = animationService.TriggerAnimation(unit.transform, unit.transform.localScale, sourceScale, 0.25f, AnimationType.SCALE);
+        //Tween scalingDownTween = animationService.TriggerAnimation(unit.transform, unit.transform.localScale, sourceScale, 0.25f, AnimationType.SCALE);
 
         seq.Append(scalingUpTween);
-        seq.Append(scalingDownTween);
+        //seq.Append(scalingDownTween);
+        return seq;
     }
 
     private void HandleTNTBlast(GridSystem gridSystem, GridPosition startPosition)
     {
         List<GridPosition> blastablePositions = GetBlastablePositions(gridSystem, startPosition);
+        
+        int startRow = 0;
+        int endRow = gridSystem.GetHeight();
+        int startCol = blastablePositions.Min(pos => pos.x);
+        int endCol = blastablePositions.Max(pos => pos.x) + 1;
+        gridSystem.GetUnitManager().DeActivateUnits(startRow, endRow, startCol, endCol);
+
         Dictionary<Sprite, int> spriteCountMap = BlastUtils.GetBlastedSpritesCountMap(gridSystem, blastablePositions);
         Dictionary<GridPosition, Sprite> positionSpriteMap = BlastUtils.GetBlastedPositionsSpriteMap(gridSystem, blastablePositions);
         foreach (GridPosition position in blastablePositions)
@@ -104,7 +131,7 @@ public class TNTBlastStrategy : IBlastStrategy
         return blastablePositions;
     }
 
-    private void AnimateFormation(GridSystem gridSystem, GridPosition startPosition, List<GridPosition> comboPositions)
+    private Tween AnimateFormation(GridSystem gridSystem, GridPosition startPosition, List<GridPosition> comboPositions)
     {
         Vector3 destination = gridSystem.GetWorldPosition(startPosition);
         Sequence parentSequence = DOTween.Sequence();
@@ -126,9 +153,7 @@ public class TNTBlastStrategy : IBlastStrategy
             subSequence.Append(tween);
             parentSequence.Join(subSequence);
         }
-
-        // Await the completion of the animation sequence
-        //await parentSequence.AsyncWaitForCompletion();
+        return parentSequence;
 
     }
 

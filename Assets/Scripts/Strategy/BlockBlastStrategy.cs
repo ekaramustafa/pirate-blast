@@ -12,6 +12,10 @@ public class BlockBlastStrategy : IBlastStrategy
     {
 
         List<GridPosition> blastablePositions = GetBlastablePositions(gridSystem, startPosition);
+        if(blastablePositions.Any(pos => !gridSystem.GetGridObject(pos).IsInteractable()))
+        {
+            return false;
+        }
         if (blastablePositions.Count >= GameConstants.TNT_FORMATION_BLOCKS_THRESHOLD)
         {
             HandleTNTFormationBlast(gridSystem, startPosition, blastablePositions);
@@ -38,7 +42,6 @@ public class BlockBlastStrategy : IBlastStrategy
         }
         BlastUtils.PublishBlastedParts(gridSystem, positionSpriteMap, spriteCountMap);
 
-        //int startRow = blastablePositions.Min(pos => pos.y);
         int startRow = 0;
         int endRow = gridSystem.GetHeight();
         int startCol = blastablePositions.Min(pos => pos.x);
@@ -60,7 +63,7 @@ public class BlockBlastStrategy : IBlastStrategy
             BlastUtils.BlastBlockAtPosition(gridSystem, position, BlastType.BlockBlast);
         }
 
-        int startRow = mergedPositions.Min(pos => pos.y);
+        int startRow = 0;
         int endRow = gridSystem.GetHeight();
         int startCol = mergedPositions.Min(pos => pos.x);
         int endCol = mergedPositions.Max(pos => pos.x) + 1;
