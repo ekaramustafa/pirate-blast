@@ -7,7 +7,7 @@ public static class UnitFactory
 {
     public static Unit CreateUnit(UnitData unitSO, Transform unitTemplatePrefab, Vector3 position, int sortingOrder)
     {
-        Transform unitTransform;
+        Transform unitTransform = null;
 
         if (Application.isPlaying)
         {

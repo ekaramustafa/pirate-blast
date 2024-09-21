@@ -119,10 +119,11 @@ public class UnitManager
         DeActivateUnits(startRow, endRow, startCol, endCol);
         int height = gridSystem.GetHeight();
         List<UniTask> moveTasks = new List<UniTask>();
+        int startRowAdjusted = Mathf.Max(1, startRow);
 
         for (int x = startCol; x < endCol; x++)
         {
-            for (int y = startRow; y < endRow; y++)
+            for (int y = startRowAdjusted; y < endRow; y++)
             {
                 GridPosition currentPosition = new GridPosition(x, y);
                 GridObject currentGridObject = gridSystem.GetGridObject(currentPosition);

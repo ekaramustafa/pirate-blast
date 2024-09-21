@@ -42,7 +42,7 @@ public class BlockBlastStrategy : IBlastStrategy
         }
         BlastUtils.PublishBlastedParts(gridSystem, positionSpriteMap, spriteCountMap);
 
-        int startRow = 0;
+        int startRow = blastablePositions.Min(pos => pos.y);
         int endRow = gridSystem.GetHeight();
         int startCol = blastablePositions.Min(pos => pos.x);
         int endCol = blastablePositions.Max(pos => pos.x) + 1;
@@ -63,7 +63,7 @@ public class BlockBlastStrategy : IBlastStrategy
             BlastUtils.BlastBlockAtPosition(gridSystem, position, BlastType.BlockBlast);
         }
 
-        int startRow = 0;
+        int startRow = mergedPositions.Min(pos => pos.y);
         int endRow = gridSystem.GetHeight();
         int startCol = mergedPositions.Min(pos => pos.x);
         int endCol = mergedPositions.Max(pos => pos.x) + 1;
@@ -79,7 +79,14 @@ public class BlockBlastStrategy : IBlastStrategy
             gridSystem.GetUnitManager().DropUnits(startRow, endRow, startCol, endCol).Forget();
         });
 
-        blastablePositions.ForEach(pos => gridSystem.GetGridObject(pos).SetUnit(null));
+        blastablePositions.ForEach(pos =>
+        {
+            if(pos != startPosition)
+            {
+                gridSystem.GetGridObject(pos).SetUnit(null);
+            }
+        });
+
         BlastUtils.PublishBlastedParts(gridSystem, positionSpriteMap, spriteCountMap);
 
     }
