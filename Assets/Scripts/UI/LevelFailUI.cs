@@ -22,7 +22,7 @@ public class LevelFailUI : MonoBehaviour
     private void OnEnable()
     {
         animationService = AnimationServiceLocator.GetUIAnimationService();
-        animationService.TriggerAnimation(transform, transform.position, new Vector3(1.2f, 1f, 1f), AnimationConstants.SCALEBOUNCE_DEFAULT_DURATION, AnimationType.SCALEBOUNCE);
+        animationService.TriggerAnimation(banner, banner.position, new Vector3(1.2f, 1f, 1f), AnimationConstants.SCALEBOUNCE_DEFAULT_DURATION, AnimationType.SCALEBOUNCE);
     }
 
     #region Button Functions

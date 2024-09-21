@@ -145,10 +145,10 @@ public class GridSystem
         return gridObject.GetUnit() != null;
     }
 
-    public bool IsBeingAnimated(GridPosition position)
+    public bool IsInteractable(GridPosition position)
     {
         GridObject gridObject = GetGridObject(position);
-        return gridObject.IsBeingAnimated();
+        return gridObject.IsInteractable();
     }
 
     private bool IsValidGridPosition(GridPosition gridPosition)

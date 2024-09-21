@@ -14,18 +14,17 @@ public class FailCommand : IClickCommand
         this.gridSystem = gridSystem;
         this.gridPosition = position;
     }
-    public async UniTask<bool> Execute()
+    public bool Execute()
     {
-        await UniTask.Yield(); 
-
+        
         GridObject gridObject = gridSystem.GetGridObject(gridPosition);
         Unit unit = gridObject.GetUnit();
         IAnimationService animationService = AnimationServiceLocator.GetAnimationService();
         Tween shake = animationService.TriggerAnimation(unit.transform, unit.transform.localScale, new Vector3(0f, 0f, 10f), 0.25f, AnimationType.SHAKEROTATION);
-        gridObject.SetBeingAnimated(true);
+        gridObject.SetIsInteractable(false);
         shake.OnComplete(() =>
         {
-            gridObject.SetBeingAnimated(false);
+            gridObject.SetIsInteractable(true);
         });
 
         return true;

@@ -4,30 +4,34 @@ using UnityEngine;
 using DG.Tweening;
 using System.Threading.Tasks;
 using System;
+using System.Linq;
 
 public class BlockBlastStrategy : IBlastStrategy
 {
-    public async UniTask<bool> Blast(GridSystem gridSystem, GridPosition startPosition)
+    public bool Blast(GridSystem gridSystem, GridPosition startPosition)
     {
 
         List<GridPosition> blastablePositions = GetBlastablePositions(gridSystem, startPosition);
+        if(blastablePositions.Any(pos => !gridSystem.GetGridObject(pos).IsInteractable()))
+        {
+            return false;
+        }
         if (blastablePositions.Count >= GameConstants.TNT_FORMATION_BLOCKS_THRESHOLD)
         {
-            await HandleTNTFormationBlast(gridSystem, startPosition, blastablePositions);
+            HandleTNTFormationBlast(gridSystem, startPosition, blastablePositions);
             return true;
 
         }
         else if (blastablePositions.Count >= GameConstants.BLAST_THRESHOLD)
         {
-            await HandleBlockBlast(gridSystem, blastablePositions);
+            HandleBlockBlast(gridSystem, blastablePositions);
             return true;
         }
         return false;
     }
 
-    private async Task HandleBlockBlast(GridSystem gridSystem, List<GridPosition> blastablePositions)
+    private void HandleBlockBlast(GridSystem gridSystem, List<GridPosition> blastablePositions)
     {
-        await UniTask.Yield(); // there are no animations requiring blocking, for now...
         List<GridPosition> neighbors = GetNeighborAffectableUnits(gridSystem, blastablePositions);
         blastablePositions.AddRange(neighbors);
         Dictionary<Sprite, int> spriteCountMap = BlastUtils.GetBlastedSpritesCountMap(gridSystem, blastablePositions);
@@ -37,28 +41,47 @@ public class BlockBlastStrategy : IBlastStrategy
             BlastUtils.BlastBlockAtPosition(gridSystem, position, BlastType.BlockBlast);
         }
         BlastUtils.PublishBlastedParts(gridSystem, positionSpriteMap, spriteCountMap);
+
+        int startRow = 0;
+        int endRow = gridSystem.GetHeight();
+        int startCol = blastablePositions.Min(pos => pos.x);
+        int endCol = blastablePositions.Max(pos => pos.x) + 1;
+        gridSystem.GetUnitManager().DropUnits(startRow, endRow, startCol, endCol).Forget();
+        
     }
 
-    private async Task HandleTNTFormationBlast(GridSystem gridSystem, GridPosition startPosition, List<GridPosition> blastablePositions)
+    private void HandleTNTFormationBlast(GridSystem gridSystem, GridPosition startPosition, List<GridPosition> blastablePositions)
     {
         List<GridPosition> neighbors = GetNeighborAffectableUnits(gridSystem, blastablePositions);
-        List<GridPosition> blastedPositions = new List<GridPosition>(blastablePositions);
-        blastedPositions.AddRange(neighbors);
-        Dictionary<Sprite, int> spriteCountMap = BlastUtils.GetBlastedSpritesCountMap(gridSystem, blastedPositions);
-        Dictionary<GridPosition, Sprite> positionSpriteMap = BlastUtils.GetBlastedPositionsSpriteMap(gridSystem, blastedPositions);
+        List<GridPosition> mergedPositions = new List<GridPosition>(blastablePositions);
+        mergedPositions.AddRange(neighbors);
+        Dictionary<Sprite, int> spriteCountMap = BlastUtils.GetBlastedSpritesCountMap(gridSystem, mergedPositions);
+        Dictionary<GridPosition, Sprite> positionSpriteMap = BlastUtils.GetBlastedPositionsSpriteMap(gridSystem, mergedPositions);
 
         foreach (GridPosition position in neighbors)
         {
             BlastUtils.BlastBlockAtPosition(gridSystem, position, BlastType.BlockBlast);
         }
-        await AnimateFormation(gridSystem, startPosition, blastablePositions);
-        foreach (GridPosition position in blastablePositions)
-        {
-            BlastUtils.BlastBlockAtPosition(gridSystem, position, BlastType.BlockBlastForm);
-        }
 
-        gridSystem.GetUnitManager().CreateTNTUnit(startPosition);
+        int startRow = 0;
+        int endRow = gridSystem.GetHeight();
+        int startCol = mergedPositions.Min(pos => pos.x);
+        int endCol = mergedPositions.Max(pos => pos.x) + 1;
+        gridSystem.GetUnitManager().DeActivateUnits(startRow, endRow, startCol, endCol);
+        mergedPositions.ForEach(pos => gridSystem.GetGridObject(pos).SetIsInteractable(false));
+        List<Unit> unitsToBeDestoryed = blastablePositions.Select(pos => gridSystem.GetGridObject(pos).GetUnit()).ToList();
+
+        Tween sequence = AnimateFormation(gridSystem, startPosition, blastablePositions);
+        sequence.OnComplete(() =>
+        {
+            unitsToBeDestoryed.ForEach(unit => UnityEngine.GameObject.Destroy(unit.gameObject));
+            gridSystem.GetUnitManager().CreateTNTUnit(startPosition);
+            gridSystem.GetUnitManager().DropUnits(startRow, endRow, startCol, endCol).Forget();
+        });
+
+        blastablePositions.ForEach(pos => gridSystem.GetGridObject(pos).SetUnit(null));
         BlastUtils.PublishBlastedParts(gridSystem, positionSpriteMap, spriteCountMap);
+
     }
 
     public List<GridPosition> GetBlastablePositions(GridSystem gridSystem, GridPosition startPosition)
@@ -94,14 +117,12 @@ public class BlockBlastStrategy : IBlastStrategy
         return AllNeighborPositions;
     }
 
-    public async UniTask AnimateFormation(GridSystem gridSystem, GridPosition startPosition, List<GridPosition> formedPositions)
+    public Tween AnimateFormation(GridSystem gridSystem, GridPosition startPosition, List<GridPosition> formedPositions)
     {
         Vector3 destination = gridSystem.GetWorldPosition(startPosition);
         Sequence parentSequence = DOTween.Sequence();
         
         IAnimationService animationService = AnimationServiceLocator.GetAnimationService();
-
-
 
         foreach (GridPosition currentPosition in formedPositions)
         {
@@ -120,9 +141,7 @@ public class BlockBlastStrategy : IBlastStrategy
             subSequence.Append(tween);
             parentSequence.Join(subSequence);
         }
-
-        // Await the completion of the animation sequence
-        await parentSequence.AsyncWaitForCompletion();
+        return parentSequence;
 
     }
 

@@ -9,22 +9,22 @@ public class ClickCommandInvoker
         this.gridSystem = gridSystem;
     }
 
-    public async UniTask<bool> HandleClick(Vector3 mousePos)
+    public bool HandleClick(Vector3 mousePos)
     {
         GridPosition position = gridSystem.GetGridPosition(mousePos);
-        if (!gridSystem.CanPerformOnPosition(position) || gridSystem.IsBeingAnimated(position))
+        if (!gridSystem.CanPerformOnPosition(position) || !gridSystem.IsInteractable(position))
         {
             return false;
         }
 
         IClickCommand blastCommand = new BlastCommand(gridSystem, position);
-        if(await blastCommand.Execute())
+        if(blastCommand.Execute())
         {
             return true;
         }
 
         IClickCommand failCommand = new FailCommand(gridSystem, position);
-        await failCommand.Execute();
+        failCommand.Execute();
 
         return false;
     }

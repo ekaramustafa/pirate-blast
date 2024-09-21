@@ -8,11 +8,11 @@ public class GridObject
 
     private GridPosition gridPosition;
     private Unit unit;
-    private bool isBeingAnimated;
+    private bool isInteractable;
     public GridObject(GridPosition gridPosition)
     {
         this.gridPosition = gridPosition;
-        isBeingAnimated = false;
+        isInteractable = true;
     }
 
     public void SetUnit(Unit unit)
@@ -29,11 +29,11 @@ public class GridObject
         return base.ToString() + "\n" + unit;
     }
 
-    public bool IsBeingAnimated() => isBeingAnimated;
+    public bool IsInteractable() => isInteractable;
 
-    public void SetBeingAnimated(bool val)
+    public void SetIsInteractable(bool val)
     {
-        isBeingAnimated = val;
+        isInteractable = val;
     }
 
     public void HitUnit(BlastType blastType)

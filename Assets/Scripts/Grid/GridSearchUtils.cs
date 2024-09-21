@@ -174,32 +174,18 @@ public static class GridSearchUtils
         return columCountMap;
     }
 
-    public static GridPosition FindLowestEmptyPositionBelow(GridSystem gridSystem,GridPosition startPosition)
+    public static GridPosition FindLowerEmptyPositionBelow(GridSystem gridSystem,GridPosition startPosition)
     {
         int x = startPosition.x;
         int y = startPosition.y;
         y = Mathf.Min(y, gridSystem.GetHeight() + 1); //startPosition can be from hidden row
 
-        while (y > 0)
+        GridPosition belowPosition = new GridPosition(x, y - 1);
+        if (!gridSystem.CanPerformOnPosition(belowPosition))
         {
-            GridPosition belowPosition = new GridPosition(x, y - 1);
-            if (!gridSystem.CanPerformOnPosition(belowPosition))
-            {
-                y--;
-            }
-            else
-            {
-                break;
-            }
+            y--;
         }
-        if (y == gridSystem.GetHeight() + 1)
-        {
-            return new GridPosition(x, startPosition.y);
-        }
-        else
-        {
-            return new GridPosition(x, y);
-        }
+        return new GridPosition(x, y);
 
     }
 
