@@ -12,10 +12,6 @@ public class BlockBlastStrategy : IBlastStrategy
     {
 
         List<GridPosition> blastablePositions = GetBlastablePositions(gridSystem, startPosition);
-        if(blastablePositions.Any(pos => !gridSystem.GetGridObject(pos).IsInteractable()))
-        {
-            return false;
-        }
         if (blastablePositions.Count >= GameConstants.TNT_FORMATION_BLOCKS_THRESHOLD)
         {
             HandleTNTFormationBlast(gridSystem, startPosition, blastablePositions);

@@ -125,7 +125,7 @@ public static class GridSearchUtils
             {
                 GridPosition adjacentPosition = new GridPosition(currentPosition.x + direction.x, currentPosition.y + direction.y);
 
-                if (gridSystem.CanPerformOnPosition(adjacentPosition))
+                if (gridSystem.CanPerformOnPosition(adjacentPosition) && gridSystem.IsInteractable(adjacentPosition))
                 {
                     GridObject adjacentGridObject = gridSystem.GetGridObject(adjacentPosition);
                     UnitType adjacentUnitType = adjacentGridObject.GetUnit().GetUnitType();
