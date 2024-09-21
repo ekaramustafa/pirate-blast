@@ -11,7 +11,7 @@ public static class AnimationConstants
 
     public const float UNIT_FORM_ELASTICITIY_ANIMATION_DURATION = 0.25f;
 
-    public const float UNIT_FORM_FORWARD_ANIMATION_DURATION = 2f;
+    public const float UNIT_FORM_FORWARD_ANIMATION_DURATION = 0.5f;
 
     /// <summary>
     /// Unit elasticity before forming to the destination unit.

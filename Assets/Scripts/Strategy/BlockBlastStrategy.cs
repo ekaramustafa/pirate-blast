@@ -37,14 +37,12 @@ public class BlockBlastStrategy : IBlastStrategy
             BlastUtils.BlastBlockAtPosition(gridSystem, position, BlastType.BlockBlast);
         }
         BlastUtils.PublishBlastedParts(gridSystem, positionSpriteMap, spriteCountMap);
-        //Deactive the upper part, and drop them 
-        //get the lowest row and col
-        //Calculate left and right
+
         int startRow = blastablePositions.Min(pos => pos.y);
         int endRow = gridSystem.GetHeight();
         int startCol = blastablePositions.Min(pos => pos.x);
         int endCol = blastablePositions.Max(pos => pos.x) + 1;
-        TaskScheduler.EnqueueTask(gridSystem.GetUnitManager().DropUnits(startRow, endRow, startCol, endCol));
+        gridSystem.GetUnitManager().DropUnits(startRow, endRow, startCol, endCol).Forget();
         
     }
 
@@ -65,24 +63,19 @@ public class BlockBlastStrategy : IBlastStrategy
         int endRow = gridSystem.GetHeight();
         int startCol = mergedPositions.Min(pos => pos.x);
         int endCol = mergedPositions.Max(pos => pos.x) + 1;
-
-        //gridSystem.GetUnitManager().DeActivateUnits(startRow, endRow, startCol, endCol); // For now, let's not be able to form a new unit when it is dropping.
+        gridSystem.GetUnitManager().DeActivateUnits(startRow, endRow, startCol, endCol);
         mergedPositions.ForEach(pos => gridSystem.GetGridObject(pos).SetIsInteractable(false));
-        Tween sequence = AnimateFormation(gridSystem, startPosition, blastablePositions);
-
         List<Unit> unitsToBeDestoryed = blastablePositions.Select(pos => gridSystem.GetGridObject(pos).GetUnit()).ToList();
 
+        Tween sequence = AnimateFormation(gridSystem, startPosition, blastablePositions);
         sequence.OnComplete(() =>
         {
             unitsToBeDestoryed.ForEach(unit => UnityEngine.GameObject.Destroy(unit.gameObject));
-            TaskScheduler.EnqueueTask(gridSystem.GetUnitManager().DropUnits(startRow, endRow, startCol, endCol),
-                onStartCallback: () => Debug.Log("Drop Unit after animation started"),
-                onCompleteCallback: () => Debug.Log("Drop Unit after animation finished"));
-            mergedPositions.ForEach(pos => gridSystem.GetGridObject(pos).SetIsInteractable(true));
+            gridSystem.GetUnitManager().CreateTNTUnit(startPosition);
+            gridSystem.GetUnitManager().DropUnits(startRow, endRow, startCol, endCol).Forget();
         });
 
         blastablePositions.ForEach(pos => gridSystem.GetGridObject(pos).SetUnit(null));
-        gridSystem.GetUnitManager().CreateTNTUnit(startPosition);
         BlastUtils.PublishBlastedParts(gridSystem, positionSpriteMap, spriteCountMap);
 
     }

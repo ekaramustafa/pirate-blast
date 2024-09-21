@@ -51,7 +51,7 @@ public class UnitAssetsData : ScriptableObject
         return null;
     }
 
-    public UnitData GetBlockSOByBlockColor(BlockColor blockColor)
+    public UnitData GetBlockDataByBlockColor(BlockColor blockColor)
     {
         foreach (UnitAsset unitAsset in unitAssets)
         {

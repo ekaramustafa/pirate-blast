@@ -45,7 +45,7 @@ public static class GameConstants
     /// <summary>
     /// Time for blocks to drop
     /// </summary>
-    public const float DROP_TIME = 2f;
+    public const float DROP_DURATION = 1f;
     #endregion
 
 
