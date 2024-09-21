@@ -13,7 +13,7 @@ public class TNTBlastStrategy : IBlastStrategy
         List<GridPosition> comboPositions = GridSearchUtils.GetAdjacentSameUnitType(gridSystem, startPosition);
         if (comboPositions.Any(pos => !gridSystem.GetGridObject(pos).IsInteractable())) return false;
 
-        if (comboPositions.Count != 0)
+        if (comboPositions.Count >= GameConstants.TNT_COMBO_FORMATION_THRESHOLD)
         {
             HandleComboTNTFormationBlast(gridSystem, startPosition, comboPositions);
         }
@@ -37,10 +37,8 @@ public class TNTBlastStrategy : IBlastStrategy
 
         AnimateFormation(gridSystem, startPosition, comboPositions).OnComplete(() =>
         {
-            foreach (GridPosition gridPosition in comboPositions)
-            {
-                BlastUtils.BlastBlockAtPosition(gridSystem, gridPosition, BlastType.TNTBlastForm);
-            }
+            comboPositions.ForEach(pos => gridSystem.GetGridObject(pos).SetIsInteractable(false));
+            UnityEngine.GameObject.Destroy(gridSystem.GetGridObject(startPosition).GetUnit().gameObject);
             gridSystem.GetUnitManager().CreateComboTNTUnit(startPosition);
             AnimateComboTNTCreation(gridSystem, startPosition).OnComplete(() =>
             {
@@ -83,8 +81,8 @@ public class TNTBlastStrategy : IBlastStrategy
         {
             BlastUtils.BlastBlockAtPosition(gridSystem, position, BlastType.TNTBlast);
         }
-        blastablePositions.Clear();
         BlastUtils.PublishBlastedParts(gridSystem, positionSpriteMap, spriteCountMap);
+        gridSystem.GetUnitManager().DropUnits(startRow, endRow, startCol, endCol).Forget();
     }
 
     public List<GridPosition> GetBlastablePositions(GridSystem gridSystem, GridPosition startPosition)
