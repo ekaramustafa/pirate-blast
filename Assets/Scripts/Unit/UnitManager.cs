@@ -151,10 +151,9 @@ public class UnitManager
                     Unit unit = gridSystem.GetGridObject(currentPosition).GetUnit();
                     UniTask moveTask = unit.GetComponent<UnitMover>().MoveWithDOTween(gridSystem.GetWorldPosition(targetPosition), GameConstants.DROP_DURATION);
                     moveTasks.Add(moveTask);
-                    RevertTNTUnitFormationsVisualSingle(gridSystem, currentPosition);
                     MoveUnitToNewPosition(currentPosition, targetPosition);  // Update the grid positions after moving
                     currentPosition = targetPosition;  // Update the current position after the move
-                    UpdateTNTUnitFormationsVisualSingle(gridSystem, currentPosition);
+                    AdjustPossibleUnitFormationsVisual();
                 }
             }
         }
@@ -199,7 +198,6 @@ public class UnitManager
                 UnitData unitData = unitAssetsSO.GetBlockDataByBlockColor(blockColor);
                 Transform unitTemplatePrefab = unitAssetsSO.GetPrefabByUnitType(unitData.unitType);
                 Unit unit = UnitFactory.CreateUnit(unitData, unitTemplatePrefab, worldPosition, lowerEmptyPosition.y);
-                //if (!gridSystem.CanPerformOnPosition(lowerEmptyPosition)) continue;
                 gridSystem.GetGridObject(lowerEmptyPosition).SetUnit(unit);
 
                 GridPosition posPtr = new GridPosition(currentPosition.x, currentPosition.y);
