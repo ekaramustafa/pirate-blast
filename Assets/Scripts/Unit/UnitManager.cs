@@ -260,47 +260,6 @@ public class UnitManager
         }
     }
 
-    public void UpdateTNTUnitFormationsVisualSingle(GridSystem gridSystem, GridPosition startPosition)
-    {
-        if (!gridSystem.CanPerformOnPosition(startPosition)) return;
-        
-        GridObject gridObject = gridSystem.GetGridObject(startPosition);
-        UnitType unitType = gridObject.GetUnit().GetUnitType();
-        
-        if (unitType != UnitType.Block) return;
-        
-        List<GridPosition> formableGridPositions = GridSearchUtils.GetAdjacentSameColorBlocks(gridSystem, startPosition);
-        if (formableGridPositions.Count >= GameConstants.TNT_FORMATION_BLOCKS_THRESHOLD)
-        {
-            foreach (GridPosition position in formableGridPositions)
-            {
-                GridObject formableGridObject = gridSystem.GetGridObject(position);
-                Unit unit = formableGridObject.GetUnit();
-                BlockData blockSO = unit.GetUnitData() as BlockData;
-                unit.GetComponent<SpriteRenderer>().sprite = blockSO.tntStateSprite;
-            }
-        }
-        else
-        {
-            Unit unit = gridObject.GetUnit();
-            unit.GetComponent<SpriteRenderer>().sprite = unit.GetDefaultSprite();
-        }
-    }
-
-    public void RevertTNTUnitFormationsVisualSingle(GridSystem gridSystem, GridPosition startPosition)
-    {
-        if (!gridSystem.CanPerformOnPosition(startPosition)) return;
-
-        GridObject gridObject = gridSystem.GetGridObject(startPosition);
-        UnitType unitType = gridObject.GetUnit().GetUnitType();
-
-        if (unitType != UnitType.Block) return;
-
-        List<GridPosition> formableGridPositions = GridSearchUtils.GetAdjacentSameColorBlocks(gridSystem, startPosition);
-        formableGridPositions.ForEach(pos => UpdateTNTUnitFormationsVisualSingle(gridSystem, pos));
-    }
-
-
 
 
 
