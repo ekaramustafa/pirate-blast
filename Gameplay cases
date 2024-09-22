@@ -1,7 +1,7 @@
 Aynı anda birden fazla blok kırılabilr.
 Blok birleşiminden sonra başka bir şeye tıklanamaz.
 Bomba gibi özel itemlerden sonra başka bir şeye tıklanamaz.
-Patlatıp düşmekte olan blokların üstündeki bloklara dokunulamaz.
+Patlatıp düşmekte olan blokların üstündeki bloklara birleşik olasalar bile dokunulamaz.
 Patlatıp düşmekte olan blokların altındaki bloklar eğer hareket etmiyorsa patlatılabilir.
 Düşmekte olan bloklar düşmesini tamamlamadan birleşse dahi patlatılamaz veya düşerken sağdan soldan oluşturulan yan yana bloklar patlatılamaz.
 Düşmekte olan blokların yanında bomba patlarsa düşmekte olan balonlar da bundan etkilenir.
