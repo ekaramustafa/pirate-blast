@@ -6,3 +6,7 @@ Blocks below the falling blocks can be detonated if they are not moving.
 Falling blocks may not be detonated even if they are joined before they have completed their fall, nor may side-by-side blocks formed from left or right as they fall be detonated.
 If a bomb explodes next to falling blocks, falling blocks will also be affected.
 Can't touch unbreakable objects (ice,vase etc.)
+
+5 or 6 blocks become an anchor. Anchor destroy a row or column.
+7 blocks become an bomb. Bomb destroy 3x3 space.
+8+ blocks become an ship. Ship destroy all space.
