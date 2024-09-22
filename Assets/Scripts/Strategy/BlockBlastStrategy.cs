@@ -64,6 +64,7 @@ public class BlockBlastStrategy : IBlastStrategy
         int startCol = mergedPositions.Min(pos => pos.x);
         int endCol = mergedPositions.Max(pos => pos.x) + 1;
         gridSystem.GetUnitManager().DeActivateUnits(startRow, endRow, startCol, endCol);
+
         mergedPositions.ForEach(pos => gridSystem.GetGridObject(pos).SetIsInteractable(false));
         List<Unit> unitsToBeDestoryed = blastablePositions.Select(pos => gridSystem.GetGridObject(pos).GetUnit()).ToList();
 

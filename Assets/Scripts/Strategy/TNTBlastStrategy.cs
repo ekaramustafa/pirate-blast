@@ -30,8 +30,10 @@ public class TNTBlastStrategy : IBlastStrategy
     {
         int startRow = 0;
         int endRow = gridSystem.GetHeight();
-        int startCol = comboPositions.Min(pos => pos.x);
-        int endCol = comboPositions.Max(pos => pos.x) + 1;
+        //int startCol = comboPositions.Min(pos => pos.x);
+        int startCol = 0;
+        int endCol = gridSystem.GetWidth();
+        //int endCol = comboPositions.Max(pos => pos.x) + 1;
         gridSystem.GetUnitManager().DeActivateUnits(startRow, endRow, startCol, endCol);
 
 
@@ -43,6 +45,7 @@ public class TNTBlastStrategy : IBlastStrategy
             AnimateComboTNTCreation(gridSystem, startPosition).OnComplete(() =>
             {
                 HandleTNTBlast(gridSystem, startPosition);
+                gridSystem.GetUnitManager().ActivateUnits(startRow, endRow, startCol, endCol);
             });
         });
         

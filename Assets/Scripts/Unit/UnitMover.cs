@@ -28,6 +28,11 @@ public class UnitMover : MonoBehaviour
         return moveSequence.AsyncWaitForCompletion().AsUniTask();
     }
 
+    private void OnDestroy()
+    {
+        //DOTween.KillAll();
+    }
+
 
     public IEnumerator MoveCoroutine(Vector3 targetPosition, float speed)
     {
