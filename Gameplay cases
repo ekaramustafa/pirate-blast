@@ -5,3 +5,4 @@ Blocks above exploding blocks cannot be touched even if they are combined.
 Blocks below the falling blocks can be detonated if they are not moving.
 Falling blocks may not be detonated even if they are joined before they have completed their fall, nor may side-by-side blocks formed from left or right as they fall be detonated.
 If a bomb explodes next to falling blocks, falling blocks will also be affected.
+Can't touch unbreakable objects (ice,vase etc.)
