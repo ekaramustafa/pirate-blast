@@ -87,10 +87,12 @@ public class BlockBlastStrategy : IBlastStrategy
         {
             Debug.Log("[TNT_FORMATION] Callback execution is being executed for request : " + request);
             unitsToBeDestoryed.ForEach(unit => UnityEngine.GameObject.Destroy(unit.gameObject));
-            gridSystem.GetUnitManager().CreateTNTUnit(startPosition);
             await gridSystem.GetUnitManager().DropUnits(request);
             gridSystem.GetRequestManager().FinishCallback(request);
-            mergedPositions.ForEach(pos => gridSystem.GetGridObject(pos).SetIsInteractable(true));
+            foreach(GridPosition pos in request.AffectedPositions)
+            {
+                gridSystem.GetGridObject(pos).SetIsInteractable(true);
+            }
             Debug.Log("[TNT_FORMATION] Callback execution is finished for request : " + request);
         });
 
@@ -100,6 +102,7 @@ public class BlockBlastStrategy : IBlastStrategy
         Tween sequence = AnimateFormation(gridSystem, startPosition, blastablePositions);
         sequence.OnComplete(() =>
         {
+            gridSystem.GetUnitManager().CreateTNTUnit(startPosition);
             Debug.Log("TNT_FORMATION] User Request is finished request : " + userRequest);
             gridSystem.GetRequestManager().FinishUserRequest(userRequest);
         });

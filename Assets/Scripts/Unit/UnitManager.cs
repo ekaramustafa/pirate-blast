@@ -119,7 +119,7 @@ public class UnitManager
         DeActivateUnits(startRow, endRow, startCol, endCol);
         int height = gridSystem.GetHeight();
         List<UniTask> moveTasks = new List<UniTask>();
-        int startRowAdjusted = Mathf.Max(1, startRow);
+        int startRowAdjusted = Mathf.Max(1, startRow); // exclude the first column, they cannot fall
 
         for (int x = startCol; x < endCol; x++)
         {
