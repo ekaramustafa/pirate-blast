@@ -40,12 +40,6 @@ public class BlockBlastStrategy : IBlastStrategy
         }
         BlastUtils.PublishBlastedParts(gridSystem, positionSpriteMap, spriteCountMap);
 
-        int startRow = blastablePositions.Min(pos => pos.y);
-        int endRow = gridSystem.GetHeight();
-        int startCol = blastablePositions.Min(pos => pos.x);
-        int endCol = blastablePositions.Max(pos => pos.x) + 1;
-
-
         UserRequest userRequest = new UserRequest(blastablePositions.ToArray(), async (request) =>
         {
             Debug.Log("[BLOCK_BLAST] Callback execution is being executed for request : " + request);
@@ -74,13 +68,6 @@ public class BlockBlastStrategy : IBlastStrategy
             BlastUtils.BlastBlockAtPosition(gridSystem, position, BlastType.BlockBlast);
         }
 
-        int startRow = mergedPositions.Min(pos => pos.y);
-        int endRow = gridSystem.GetHeight();
-        int startCol = mergedPositions.Min(pos => pos.x);
-        int endCol = mergedPositions.Max(pos => pos.x) + 1;
-        gridSystem.GetUnitManager().DeActivateUnits(startRow, endRow, startCol, endCol);
-
-        mergedPositions.ForEach(pos => gridSystem.GetGridObject(pos).SetIsInteractable(false));
         List<Unit> unitsToBeDestoryed = blastablePositions.Select(pos => gridSystem.GetGridObject(pos).GetUnit()).ToList();
 
         UserRequest userRequest = new UserRequest(mergedPositions.ToArray(), async (request) =>
@@ -89,10 +76,6 @@ public class BlockBlastStrategy : IBlastStrategy
             unitsToBeDestoryed.ForEach(unit => UnityEngine.GameObject.Destroy(unit.gameObject));
             await gridSystem.GetUnitManager().DropUnits(request);
             gridSystem.GetRequestManager().FinishCallback(request);
-            foreach(GridPosition pos in request.AffectedPositions)
-            {
-                gridSystem.GetGridObject(pos).SetIsInteractable(true);
-            }
             Debug.Log("[TNT_FORMATION] Callback execution is finished for request : " + request);
         });
 
