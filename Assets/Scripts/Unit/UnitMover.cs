@@ -18,9 +18,9 @@ public class UnitMover : MonoBehaviour
 
         Sequence moveSequence = DOTween.Sequence();
 
-        moveSequence.Append(transform.DOMove(overshootPosition, totalTime * 0.5f).SetEase(Ease.OutQuad));
+        moveSequence.Append(transform.DOMove(overshootPosition, totalTime * 0.6f).SetEase(Ease.OutQuad));
 
-        moveSequence.Append(transform.DOMove(undershootPosition, totalTime * 0.3f).SetEase(Ease.OutQuad));
+        moveSequence.Append(transform.DOMove(undershootPosition, totalTime * 0.2f).SetEase(Ease.OutQuad));
 
         moveSequence.Append(transform.DOMove(targetPosition, totalTime * 0.2f).SetEase(Ease.OutQuad));
         moveSequence.SetId(transform.gameObject);

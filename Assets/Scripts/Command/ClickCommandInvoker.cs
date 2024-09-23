@@ -4,9 +4,14 @@ public class ClickCommandInvoker
 {
     private GridSystem gridSystem;
 
+    IClickCommand blastCommand;
+    IClickCommand failCommand;
+
     public ClickCommandInvoker(GridSystem gridSystem)
     {
         this.gridSystem = gridSystem;
+        blastCommand = new BlastCommand(gridSystem);
+        failCommand = new FailCommand(gridSystem);
     }
 
     public bool HandleClick(Vector3 mousePos)
@@ -17,14 +22,12 @@ public class ClickCommandInvoker
             return false;
         }
 
-        IClickCommand blastCommand = new BlastCommand(gridSystem, position);
-        if(blastCommand.Execute())
+        if(blastCommand.Execute(position))
         {
             return true;
         }
 
-        IClickCommand failCommand = new FailCommand(gridSystem, position);
-        failCommand.Execute();
+        failCommand.Execute(position);
 
         return false;
     }

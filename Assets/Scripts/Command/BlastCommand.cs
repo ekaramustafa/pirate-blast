@@ -1,35 +1,39 @@
 using Cysharp.Threading.Tasks;
+using System;
+using System.Runtime.InteropServices;
+
 public class BlastCommand : IClickCommand
 {
     private GridSystem gridSystem;
-    private GridPosition gridPosition;
 
-    public BlastCommand(GridSystem gridSystem, GridPosition gridPosition)
+    IBlastStrategy blockBlastStrategy;
+    IBlastStrategy tntblastStrategy;
+    public BlastCommand(GridSystem gridSystem)
     {
         this.gridSystem = gridSystem;
-        this.gridPosition = gridPosition;
+        blockBlastStrategy = new BlockBlastStrategy();
+        tntblastStrategy = new TNTBlastStrategy();
+
     }
 
-    public bool Execute()
+    public bool Execute(GridPosition position)
     {
-        GridObject startGridObject = gridSystem.GetGridObject(gridPosition);
+        GridObject startGridObject = gridSystem.GetGridObject(position);
         UnitType unitType = startGridObject.GetUnit().GetUnitType();
 
-        IBlastStrategy blastStrategy;
         if (unitType == UnitType.Block)
         {
-            blastStrategy = new BlockBlastStrategy();
+            bool val = blockBlastStrategy.Blast(gridSystem, position);
+            return val;
         }
         else if (unitType == UnitType.TNT)
         {
-            blastStrategy = new TNTBlastStrategy();
+            bool val = tntblastStrategy.Blast(gridSystem, position);
+            return val;
         }
         else
         {
             return false;
-        }
-        bool val = blastStrategy.Blast(gridSystem, gridPosition);
-
-        return val;        
+        }  
     }
 }

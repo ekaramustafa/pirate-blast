@@ -7,17 +7,15 @@ using DG.Tweening;
 public class FailCommand : IClickCommand
 {
     private GridSystem gridSystem;
-    private GridPosition gridPosition;
 
-    public FailCommand(GridSystem gridSystem, GridPosition position)
+    public FailCommand(GridSystem gridSystem)
     {
         this.gridSystem = gridSystem;
-        this.gridPosition = position;
     }
-    public bool Execute()
+    public bool Execute(GridPosition position)
     {
         
-        GridObject gridObject = gridSystem.GetGridObject(gridPosition);
+        GridObject gridObject = gridSystem.GetGridObject(position);
         Unit unit = gridObject.GetUnit();
         IAnimationService animationService = AnimationServiceLocator.GetAnimationService();
         Tween shake = animationService.TriggerAnimation(unit.transform, unit.transform.localScale, new Vector3(0f, 0f, 10f), 0.25f, AnimationType.SHAKEROTATION);

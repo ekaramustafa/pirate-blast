@@ -164,6 +164,16 @@ public class UnitManager
     }
 
 
+    public async UniTask DropUnits(UserRequest request)
+    {
+        int startCol = request.GetMinCol();
+        int endCol = request.GetMaxCol() + 1;
+        int startRow = request.GetMinRow();
+        int endRow = gridSystem.GetHeight();
+        await DropUnits(startRow,  endRow,  startCol, endCol);
+    }
+
+
     public void MoveUnitToNewPosition(GridPosition from, GridPosition to)
     {
         GridObject fromGridObject = gridSystem.GetGridObject(from);

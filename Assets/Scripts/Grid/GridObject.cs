@@ -55,7 +55,7 @@ public class GridObject
         if (unit.GetHealth() == 0)
         {
             PlayBlastParticleSystem(blastType);
-            DOTween.KillAll(unit.transform.gameObject);
+            DOTween.Kill(unit.transform.gameObject);
             UnityEngine.GameObject.Destroy(unit.gameObject);
             unit = null;
         }

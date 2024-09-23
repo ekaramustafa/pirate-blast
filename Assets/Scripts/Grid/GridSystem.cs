@@ -8,6 +8,7 @@ using System;
 public class GridSystem
 {
     private UnitManager unitManager;
+    private RequestManager requestManager;
 
     private int width;
     private int height;
@@ -40,7 +41,8 @@ public class GridSystem
         InitializeOffsets();
         InitializeGridObjects();
 
-
+        requestManager = new RequestManager(width);
+        
         unitManager = new UnitManager(this);
         unitManager.CreateUnits();
         InitializeFrame();
@@ -190,11 +192,14 @@ public class GridSystem
             );
     }
 
+    public UnitManager GetUnitManager() => unitManager;
+
+    public RequestManager GetRequestManager() => requestManager;
+
     public int GetWidth() => width;
     public int GetHeight() => height;
     public UnitAssetsData GetUnitAssetsSO() => unitAssetsSO;
     public LevelData GetLevelData() => levelData;
-    public UnitManager GetUnitManager() => unitManager;
     public float GetBlockGeneratorOffset() => xWorldPositionOffsetBlockGenerator;
     public GridObject GetGridObject(GridPosition gridPosition) => gridObjectsArray[gridPosition.x, gridPosition.y];
 
