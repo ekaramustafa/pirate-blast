@@ -42,16 +42,15 @@ public class BlockBlastStrategy : IBlastStrategy
 
         UserRequest userRequest = new UserRequest(blastablePositions.ToArray(), async (request) =>
         {
-            Debug.Log("[BLOCK_BLAST] Callback execution is being executed for request : " + request);
+            //Debug.Log("[BLOCK_BLAST] Callback execution is being executed for request : " + request);
             await gridSystem.GetUnitManager().DropUnits(request);
             gridSystem.GetRequestManager().FinishCallback(request);
-            Debug.Log("BLOCK_BLAST] Callback execution is finished for request : " + request);
+            //Debug.Log("BLOCK_BLAST] Callback execution is finished for request : " + request);
 
         });
-        Debug.Log("BLOCK_BLAST] User Request is posted request : " + userRequest);
+        //Debug.Log("BLOCK_BLAST] User Request is posted request : " + userRequest);
         gridSystem.GetRequestManager().PostRequest(userRequest);
-        UserRequest currentRequest = userRequest;
-        Debug.Log("BLOCK_BLAST] User Request is finished request : " + userRequest);
+        //Debug.Log("BLOCK_BLAST] User Request is finished request : " + userRequest);
         gridSystem.GetRequestManager().FinishUserRequest(userRequest);
     }
 
@@ -72,21 +71,21 @@ public class BlockBlastStrategy : IBlastStrategy
 
         UserRequest userRequest = new UserRequest(mergedPositions.ToArray(), async (request) =>
         {
-            Debug.Log("[TNT_FORMATION] Callback execution is being executed for request : " + request);
+            //Debug.Log("[TNT_FORMATION] Callback execution is being executed for request : " + request);
             unitsToBeDestoryed.ForEach(unit => UnityEngine.GameObject.Destroy(unit.gameObject));
             await gridSystem.GetUnitManager().DropUnits(request);
             gridSystem.GetRequestManager().FinishCallback(request);
-            Debug.Log("[TNT_FORMATION] Callback execution is finished for request : " + request);
+            //Debug.Log("[TNT_FORMATION] Callback execution is finished for request : " + request);
         });
 
-        Debug.Log("[TNT_FORMATION] User Request is posted request : " + userRequest);
+        //Debug.Log("[TNT_FORMATION] User Request is posted request : " + userRequest);
         gridSystem.GetRequestManager().PostRequest(userRequest);
 
         Tween sequence = AnimateFormation(gridSystem, startPosition, blastablePositions);
         sequence.OnComplete(() =>
         {
             gridSystem.GetUnitManager().CreateTNTUnit(startPosition);
-            Debug.Log("TNT_FORMATION] User Request is finished request : " + userRequest);
+            //Debug.Log("TNT_FORMATION] User Request is finished request : " + userRequest);
             gridSystem.GetRequestManager().FinishUserRequest(userRequest);
         });
 

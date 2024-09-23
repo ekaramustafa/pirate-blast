@@ -14,15 +14,15 @@ public class UnitMover : MonoBehaviour
         Vector3 startPosition = transform.position;
         
         Vector3 overshootPosition = targetPosition + (targetPosition - startPosition).normalized * overshootAmount;
-        Vector3 undershootPosition = targetPosition - (targetPosition - startPosition).normalized * (overshootAmount * 0.2f);
+        Vector3 undershootPosition = targetPosition - (targetPosition - startPosition).normalized * (overshootAmount * 1f);
 
         Sequence moveSequence = DOTween.Sequence();
 
-        moveSequence.Append(transform.DOMove(overshootPosition, totalTime * 0.6f).SetEase(Ease.OutQuad));
+        moveSequence.Append(transform.DOMove(overshootPosition, totalTime * 0.4f).SetEase(Ease.OutQuad));
 
         moveSequence.Append(transform.DOMove(undershootPosition, totalTime * 0.2f).SetEase(Ease.OutQuad));
 
-        moveSequence.Append(transform.DOMove(targetPosition, totalTime * 0.2f).SetEase(Ease.OutQuad));
+        moveSequence.Append(transform.DOMove(targetPosition, totalTime * 0.4f).SetEase(Ease.OutQuad));
         moveSequence.SetId(transform.gameObject);
         
         return moveSequence.AsyncWaitForCompletion().AsUniTask();

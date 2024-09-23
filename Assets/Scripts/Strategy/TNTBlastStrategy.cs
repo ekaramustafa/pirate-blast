@@ -61,32 +61,45 @@ public class TNTBlastStrategy : IBlastStrategy
         Vector3 targetScale = new Vector3(5f, 5f, 1f);
         Vector3 sourceScale = unit.transform.localScale;
         Tween scalingUpTween = animationService.TriggerAnimation(unit.transform, unit.transform.localScale, targetScale, 0.25f, AnimationType.SCALE);
-        //Tween scalingDownTween = animationService.TriggerAnimation(unit.transform, unit.transform.localScale, sourceScale, 0.25f, AnimationType.SCALE);
 
         seq.Append(scalingUpTween);
-        //seq.Append(scalingDownTween);
         return seq;
     }
 
     private void HandleTNTBlast(GridSystem gridSystem, GridPosition startPosition)
     {
+        RequestManager requestManager = gridSystem.GetRequestManager();
+        UnitManager unitManager = gridSystem.GetUnitManager();
+
         List<GridPosition> blastablePositions = GetBlastablePositions(gridSystem, startPosition);
         
+        /*
         int startRow = 0;
         int endRow = gridSystem.GetHeight();
         int startCol = blastablePositions.Min(pos => pos.x);
         int endCol = blastablePositions.Max(pos => pos.x) + 1;
-        gridSystem.GetUnitManager().DeActivateUnits(startRow, endRow, startCol, endCol);
+        unitManager.DeActivateUnits(startRow, endRow, startCol, endCol);
+        */
 
         Dictionary<Sprite, int> spriteCountMap = BlastUtils.GetBlastedSpritesCountMap(gridSystem, blastablePositions);
         Dictionary<GridPosition, Sprite> positionSpriteMap = BlastUtils.GetBlastedPositionsSpriteMap(gridSystem, blastablePositions);
+        
         foreach (GridPosition position in blastablePositions)
         {
             BlastUtils.BlastBlockAtPosition(gridSystem, position, BlastType.TNTBlast);
         }
+
+        UserRequest userRequest = new UserRequest(blastablePositions.ToArray(), async (request) =>
+        {
+            await UniTask.WaitForSeconds(0.2f);
+            await unitManager.DropUnits(request);
+            requestManager.FinishCallback(request);
+        });
+
+        requestManager.PostRequest(userRequest);
+        requestManager.FinishUserRequest(userRequest);
         BlastUtils.PublishBlastedParts(gridSystem, positionSpriteMap, spriteCountMap);
 
-        gridSystem.GetUnitManager().DropUnits(startRow, endRow, startCol, endCol).Forget();
     }
 
     public List<GridPosition> GetBlastablePositions(GridSystem gridSystem, GridPosition startPosition)
