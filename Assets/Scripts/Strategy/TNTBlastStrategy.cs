@@ -28,24 +28,37 @@ public class TNTBlastStrategy : IBlastStrategy
 
     private void HandleComboTNTFormationBlast(GridSystem gridSystem, GridPosition startPosition, List<GridPosition> comboPositions)
     {
-        int startRow = 0;
-        int endRow = gridSystem.GetHeight();
-        //int startCol = comboPositions.Min(pos => pos.x);
-        int startCol = 0;
-        int endCol = gridSystem.GetWidth();
-        //int endCol = comboPositions.Max(pos => pos.x) + 1;
-        gridSystem.GetUnitManager().DeActivateUnits(startRow, endRow, startCol, endCol);
-
-
-        AnimateFormation(gridSystem, startPosition, comboPositions).OnComplete(() =>
+        List<Unit> unitsToBeDestoryed = comboPositions.Select(pos => gridSystem.GetGridObject(pos).GetUnit()).ToList();
+        /*
+        comboPositions.ForEach(pos =>
         {
-            comboPositions.ForEach(pos => gridSystem.GetGridObject(pos).SetIsInteractable(false));
-            UnityEngine.GameObject.Destroy(gridSystem.GetGridObject(startPosition).GetUnit().gameObject);
+            gridSystem.GetGridObject(pos).SetIsInteractable(false);
+            if(pos != startPosition)
+            {
+                gridSystem.GetGridObject(pos).SetUnit(null);
+            }
+        });
+        */
+
+        AnimateFormation(gridSystem, startPosition, comboPositions)
+            .OnPlay(() =>
+        {
+            comboPositions.ForEach(pos =>
+            {
+                gridSystem.GetGridObject(pos).SetIsInteractable(false);
+                if (pos != startPosition)
+                {
+                    gridSystem.GetGridObject(pos).SetUnit(null);
+                }
+            });
+        })
+            .OnComplete(() =>
+        {
+            unitsToBeDestoryed.ForEach(unit => UnityEngine.GameObject.Destroy(unit.gameObject));
             gridSystem.GetUnitManager().CreateComboTNTUnit(startPosition);
             AnimateComboTNTCreation(gridSystem, startPosition).OnComplete(() =>
             {
                 HandleTNTBlast(gridSystem, startPosition);
-                gridSystem.GetUnitManager().ActivateUnits(startRow, endRow, startCol, endCol);
             });
         });
         
@@ -59,7 +72,6 @@ public class TNTBlastStrategy : IBlastStrategy
         IAnimationService animationService = AnimationServiceLocator.GetAnimationService();
         Sequence seq = DOTween.Sequence();
         Vector3 targetScale = new Vector3(5f, 5f, 1f);
-        Vector3 sourceScale = unit.transform.localScale;
         Tween scalingUpTween = animationService.TriggerAnimation(unit.transform, unit.transform.localScale, targetScale, 0.25f, AnimationType.SCALE);
 
         seq.Append(scalingUpTween);
@@ -73,14 +85,6 @@ public class TNTBlastStrategy : IBlastStrategy
 
         List<GridPosition> blastablePositions = GetBlastablePositions(gridSystem, startPosition);
         
-        /*
-        int startRow = 0;
-        int endRow = gridSystem.GetHeight();
-        int startCol = blastablePositions.Min(pos => pos.x);
-        int endCol = blastablePositions.Max(pos => pos.x) + 1;
-        unitManager.DeActivateUnits(startRow, endRow, startCol, endCol);
-        */
-
         Dictionary<Sprite, int> spriteCountMap = BlastUtils.GetBlastedSpritesCountMap(gridSystem, blastablePositions);
         Dictionary<GridPosition, Sprite> positionSpriteMap = BlastUtils.GetBlastedPositionsSpriteMap(gridSystem, blastablePositions);
         
@@ -91,7 +95,6 @@ public class TNTBlastStrategy : IBlastStrategy
 
         UserRequest userRequest = new UserRequest(blastablePositions.ToArray(), async (request) =>
         {
-            await UniTask.WaitForSeconds(0.2f);
             await unitManager.DropUnits(request);
             requestManager.FinishCallback(request);
         });
@@ -99,6 +102,43 @@ public class TNTBlastStrategy : IBlastStrategy
         requestManager.PostRequest(userRequest);
         requestManager.FinishUserRequest(userRequest);
         BlastUtils.PublishBlastedParts(gridSystem, positionSpriteMap, spriteCountMap);
+
+    }
+
+    private Tween AnimateFormation(GridSystem gridSystem, GridPosition startPosition, List<GridPosition> comboPositions)
+    {
+        Vector3 destination = gridSystem.GetWorldPosition(startPosition);
+        Sequence parentSequence = DOTween.Sequence();
+        IAnimationService animationService = AnimationServiceLocator.GetAnimationService();
+
+        foreach (GridPosition currentPosition in comboPositions)
+        {
+            if (currentPosition == startPosition) continue;
+
+            GridObject gridObject = gridSystem.GetGridObject(currentPosition);
+            Unit unit = gridObject.GetUnit();
+            Vector3 offset = GetOffsetVector(gridSystem, unit.transform.position, destination);
+
+            Tween initialTween = animationService.TriggerAnimation(unit.transform, unit.transform.position, unit.transform.position + offset, AnimationConstants.UNIT_FORM_ELASTICITIY_ANIMATION_DURATION, AnimationType.SLIDE);
+            Tween tween = animationService.TriggerAnimation(unit.transform, unit.transform.position, destination, AnimationConstants.UNIT_FORM_FORWARD_ANIMATION_DURATION, AnimationType.SLIDE);
+
+            Sequence subSequence = DOTween.Sequence();
+            subSequence.Append(initialTween);
+            subSequence.Append(tween);
+            parentSequence.Join(subSequence);
+        }
+        return parentSequence;
+
+    }
+
+    private Vector3 GetOffsetVector(GridSystem gridSystem, Vector3 position, Vector3 destination)
+    {
+        GridPosition currentGridPosition = gridSystem.GetGridPosition(position);
+        GridPosition destinationGridPosition = gridSystem.GetGridPosition(destination);
+        float offsetCoefficient = AnimationConstants.UNIT_FORM_ELASTICITY_OFFSET;
+        float yMultiplier = currentGridPosition.y - destinationGridPosition.y;
+        float xMultiplier = currentGridPosition.x - destinationGridPosition.x;
+        return new Vector3(offsetCoefficient * xMultiplier, offsetCoefficient * yMultiplier);
 
     }
 
@@ -146,42 +186,7 @@ public class TNTBlastStrategy : IBlastStrategy
         return blastablePositions;
     }
 
-    private Tween AnimateFormation(GridSystem gridSystem, GridPosition startPosition, List<GridPosition> comboPositions)
-    {
-        Vector3 destination = gridSystem.GetWorldPosition(startPosition);
-        Sequence parentSequence = DOTween.Sequence();
-        IAnimationService animationService = AnimationServiceLocator.GetAnimationService();
-
-        foreach (GridPosition currentPosition in comboPositions)
-        {
-            if (currentPosition == startPosition) continue;
-
-            GridObject gridObject = gridSystem.GetGridObject(currentPosition);
-            Unit unit = gridObject.GetUnit();
-            Vector3 offset = GetOffsetVector(gridSystem, unit.transform.position, destination);
-
-            Tween initialTween = animationService.TriggerAnimation(unit.transform, unit.transform.position, unit.transform.position + offset, AnimationConstants.UNIT_FORM_ELASTICITIY_ANIMATION_DURATION, AnimationType.SLIDE);
-            Tween tween = animationService.TriggerAnimation(unit.transform, unit.transform.position, destination, AnimationConstants.UNIT_FORM_FORWARD_ANIMATION_DURATION, AnimationType.SLIDE);
-            
-            Sequence subSequence = DOTween.Sequence();
-            subSequence.Append(initialTween);
-            subSequence.Append(tween);
-            parentSequence.Join(subSequence);
-        }
-        return parentSequence;
-
-    }
-
-    private Vector3 GetOffsetVector(GridSystem gridSystem, Vector3 position, Vector3 destination)
-    {
-        GridPosition currentGridPosition = gridSystem.GetGridPosition(position);
-        GridPosition destinationGridPosition = gridSystem.GetGridPosition(destination);
-        float offsetCoefficient = AnimationConstants.UNIT_FORM_ELASTICITY_OFFSET;
-        float yMultiplier = currentGridPosition.y - destinationGridPosition.y;
-        float xMultiplier = currentGridPosition.x - destinationGridPosition.x;
-        return new Vector3(offsetCoefficient * xMultiplier, offsetCoefficient * yMultiplier);
-
-    }
+    
 
 
 }
