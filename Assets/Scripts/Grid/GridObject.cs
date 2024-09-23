@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using DG.Tweening;
 public class GridObject
 {
 
@@ -55,9 +55,12 @@ public class GridObject
         if (unit.GetHealth() == 0)
         {
             PlayBlastParticleSystem(blastType);
+            DOTween.KillAll(unit.transform.gameObject);
             UnityEngine.GameObject.Destroy(unit.gameObject);
             unit = null;
         }
+
+
 
     }
 

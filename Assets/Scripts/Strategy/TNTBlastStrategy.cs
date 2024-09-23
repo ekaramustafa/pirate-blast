@@ -85,6 +85,7 @@ public class TNTBlastStrategy : IBlastStrategy
             BlastUtils.BlastBlockAtPosition(gridSystem, position, BlastType.TNTBlast);
         }
         BlastUtils.PublishBlastedParts(gridSystem, positionSpriteMap, spriteCountMap);
+
         gridSystem.GetUnitManager().DropUnits(startRow, endRow, startCol, endCol).Forget();
     }
 

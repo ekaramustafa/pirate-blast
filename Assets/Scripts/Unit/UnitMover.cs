@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using Cysharp.Threading.Tasks;
+using System;
 
 public class UnitMover : MonoBehaviour
 {
     [SerializeField] private float overshootAmount = 1f;
-    
-
 
     public UniTask MoveWithDOTween(Vector3 targetPosition, float totalTime)
     {
@@ -24,21 +23,15 @@ public class UnitMover : MonoBehaviour
         moveSequence.Append(transform.DOMove(undershootPosition, totalTime * 0.3f).SetEase(Ease.OutQuad));
 
         moveSequence.Append(transform.DOMove(targetPosition, totalTime * 0.2f).SetEase(Ease.OutQuad));
-
+        moveSequence.SetId(transform.gameObject);
+        
         return moveSequence.AsyncWaitForCompletion().AsUniTask();
     }
 
-    private void OnDestroy()
-    {
-        //DOTween.KillAll();
-    }
 
-
-    public IEnumerator MoveCoroutine(Vector3 targetPosition, float speed)
+    public IEnumerator MoveCoroutine(Vector3 targetPosition, float totalTime)
     {
         Vector3 startPosition = transform.position;
-        float distance = Vector3.Distance(startPosition, targetPosition);
-        float totalTime = distance / speed;  // Calculate time based on speed and distance
         float elapsedTime = 0f;
 
         Vector3 overshootPosition = targetPosition + (targetPosition - startPosition).normalized * overshootAmount;
@@ -46,6 +39,7 @@ public class UnitMover : MonoBehaviour
 
         while (elapsedTime < totalTime)
         {
+            if (transform == null || this == null) yield return null;
             float t = elapsedTime / totalTime;
             float easedT = EaseInQuad(t);
 
@@ -71,9 +65,8 @@ public class UnitMover : MonoBehaviour
             yield return null;
         }
 
-        transform.position = targetPosition;
+        //transform.position = targetPosition;
     }
-
     /// <summary>
     /// Eases out with a quadratic function, creating a decelerating effect.
     /// This function takes an input value `t` (ranging from 0 to 1) and returns `t * (2 - t)`,
