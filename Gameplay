@@ -1,0 +1,23 @@
+Simple Gameplay is :
+Blocks can be broken same time but can not do same thing when combination becoming. (Its supports ALL combination)
+
+More than one block can be broken at the same time.
+Nothing else can be clicked after a block combination.
+Nothing else can be clicked after special items such as bombs.
+Blocks above exploding blocks cannot be touched even if they are combined.
+Blocks below the falling blocks can be detonated if they are not moving.
+Falling blocks may not be detonated even if they are joined before they have completed their fall, nor may side-by-side blocks formed from left or right as they fall be detonated.
+If a bomb explodes next to falling blocks, falling blocks will also be affected.
+Can't touch unbreakable objects (ice,vase etc.)
+
+5 or 6 blocks become an anchor. Anchor destroy a row or column.
+7 blocks become an bomb. Bomb destroy 3x3 space.
+8+ blocks become an ship. Ship destroy all space.
+
+2 Anchor destroy row and column same time. 2+ doing same.
+7 blocks bomb name is a litte bomb. 2 Little bomb merge and become Big bomb. Big bomb destroy 9x9 space.
+1 Ship destroy which block match. 2 Ship destroy all space.
+
+Bombs and anchors can match. Become destroy 3x3 row and column same time with anchor effects.
+Ships and bombs and anchors can match. Ship destroy all space.
+
