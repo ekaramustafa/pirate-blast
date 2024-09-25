@@ -1,7 +1,5 @@
 using Cysharp.Threading.Tasks;
-using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
 using DG.Tweening;
 using System.Linq;
@@ -33,36 +31,33 @@ public class TNTBlastStrategy : IBlastStrategy
 
         List<Unit> unitsToBeDestoryed = comboPositions.Select(pos => gridSystem.GetGridObject(pos).GetUnit()).ToList();
 
-        UserRequest userRequest = new UserRequest(comboPositions.ToArray(), async (request) =>
-        {
-            AnimateFormation(gridSystem, startPosition, comboPositions)
-            .OnPlay(() =>
-            {
-                comboPositions.ForEach(pos =>
-                {
-                    gridSystem.GetGridObject(pos).SetIsInteractable(false);
-                    if (pos != startPosition)
-                    {
-                        gridSystem.GetGridObject(pos).SetUnit(null);
-                    }
-                });
-            })
-            .OnComplete(() =>
-            {
-                unitsToBeDestoryed.ForEach(unit => UnityEngine.GameObject.Destroy(unit.gameObject));
-                gridSystem.GetUnitManager().CreateComboTNTUnit(startPosition);
-                AnimateComboTNTCreation(gridSystem, startPosition).OnComplete(() =>
-                {
-                    HandleTNTBlast(gridSystem, startPosition);
-                });
-            });
-            requestManager.FinishCallback(request);
-            await UniTask.Yield();
+        int startCol = 0;
+        int endCol = gridSystem.GetWidth();
+        int startRow = 0;
+        int endRow = gridSystem.GetHeight();
+        unitManager.DeActivateUnits(startRow, endRow, startCol, endCol);
 
+        Tween sequence = AnimateFormation(gridSystem, startPosition, comboPositions);
+        sequence.OnComplete(() =>
+        {
+            unitsToBeDestoryed.ForEach(unit => UnityEngine.GameObject.Destroy(unit.gameObject));
+            unitManager.CreateComboTNTUnit(startPosition);
+            AnimateComboTNTCreation(gridSystem, startPosition).OnComplete(() =>
+            {
+                HandleTNTBlast(gridSystem, startPosition);
+                unitManager.ActivateUnits(startRow, endRow, startCol, endCol);
+            });
         });
 
-        requestManager.PostRequest(userRequest);
-        requestManager.FinishRequest(userRequest);
+        comboPositions.ForEach(pos =>
+        {
+            gridSystem.GetGridObject(pos).SetIsInteractable(false);
+            if (pos != startPosition)
+            {
+                gridSystem.GetGridObject(pos).SetUnit(null);
+            }
+        });
+
         
     }
 
@@ -72,12 +67,9 @@ public class TNTBlastStrategy : IBlastStrategy
         Unit unit = gridObject.GetUnit();
         unit.SetSortingOrder(999);
         IAnimationService animationService = AnimationServiceLocator.GetAnimationService();
-        Sequence seq = DOTween.Sequence();
         Vector3 targetScale = new Vector3(5f, 5f, 1f);
         Tween scalingUpTween = animationService.TriggerAnimation(unit.transform, unit.transform.localScale, targetScale, 0.25f, AnimationType.SCALE);
-
-        seq.Append(scalingUpTween);
-        return seq;
+        return scalingUpTween;
     }
 
     private void HandleTNTBlast(GridSystem gridSystem, GridPosition startPosition)
@@ -160,7 +152,6 @@ public class TNTBlastStrategy : IBlastStrategy
             {
                 continue;
             }
-
             visited.Add(currentPosition);
             GridObject currentGridObject = gridSystem.GetGridObject(currentPosition);
             TNTData tntSO = currentGridObject.GetUnit().GetUnitData() as TNTData;

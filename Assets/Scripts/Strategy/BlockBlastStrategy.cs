@@ -45,15 +45,11 @@ public class BlockBlastStrategy : IBlastStrategy
 
         UserRequest userRequest = new UserRequest(blastablePositions.ToArray(), async (request) =>
         {
-            //Debug.Log("[BLOCK_BLAST] Callback execution is being executed for request : " + request);
             await unitManager.DropUnits(request);
             requestManager.FinishCallback(request);
-            //Debug.Log("BLOCK_BLAST] Callback execution is finished for request : " + request);
 
         });
-        //Debug.Log("BLOCK_BLAST] User Request is posted request : " + userRequest);
         requestManager.PostRequest(userRequest);
-        //Debug.Log("BLOCK_BLAST] User Request is finished request : " + userRequest);
         requestManager.FinishRequest(userRequest);
     }
 
@@ -74,24 +70,19 @@ public class BlockBlastStrategy : IBlastStrategy
         }
 
         List<Unit> unitsToBeDestoryed = blastablePositions.Select(pos => gridSystem.GetGridObject(pos).GetUnit()).ToList();
-
         UserRequest userRequest = new UserRequest(mergedPositions.ToArray(), async (request) =>
         {
-            //Debug.Log("[TNT_FORMATION] Callback execution is being executed for request : " + request);
             unitsToBeDestoryed.ForEach(unit => UnityEngine.GameObject.Destroy(unit.gameObject));
             await unitManager.DropUnits(request);
             requestManager.FinishCallback(request);
-            //Debug.Log("[TNT_FORMATION] Callback execution is finished for request : " + request);
         });
 
-        //Debug.Log("[TNT_FORMATION] User Request is posted request : " + userRequest);
         requestManager.PostRequest(userRequest);
 
         Tween sequence = AnimateFormation(gridSystem, startPosition, blastablePositions);
         sequence.OnComplete(() =>
         {
             unitManager.CreateTNTUnit(startPosition);
-            //Debug.Log("TNT_FORMATION] User Request is finished request : " + userRequest);
             requestManager.FinishRequest(userRequest);
         });
 

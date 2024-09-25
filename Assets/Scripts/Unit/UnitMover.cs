@@ -41,30 +41,5 @@ public class UnitMover : MonoBehaviour
         return tween;
     }
 
-    public Tween MoveWithDOTween(Vector3 targetPosition, float totalTime, float overshootAmount, Action<Unit, Vector3, Vector3> stepCallback, Action<Vector3> lastCallback)
-    {
-        bool stepCallbackCalled = false;
-        Tween tween = transform.DOMove(targetPosition, totalTime)
-            .OnUpdate(() =>
-            {
-                if (stepCallbackCalled) return;
-                Vector3 currentPosition = transform.position;
-                float distanceToNextTarget = Vector3.Distance(currentPosition, targetPosition);
-                if (distanceToNextTarget <= Vector3.Distance(currentPosition, targetPosition) * 0.5f)
-                {
-                    stepCallback?.Invoke(gameObject.GetComponent<Unit>(), currentPosition, targetPosition);
-                    stepCallbackCalled = true;
-                }
-            }
-            )
-            .OnComplete(() =>
-            {
-                lastCallback?.Invoke(targetPosition);
-            })
-            .SetEase(Ease.OutBack, overshootAmount);
-
-        return tween;
-    }
-
 
 }

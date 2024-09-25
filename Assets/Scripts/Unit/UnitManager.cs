@@ -147,6 +147,14 @@ public class UnitManager
                 moveTasks.Add(moveTask);
             }
         }
+
+        if(emptyColumnCountMaps.Count == 0)
+        {
+            for(int x= startCol; x < endCol; x++)
+            {
+                emptyColumnCountMaps[x] = endRow - startRow;
+            }
+        }
         FillEmptyCells(moveTasks, emptyColumnCountMaps);
         await UniTask.WhenAll(moveTasks);
         ActivateUnits(startRow, endRow, startCol, endCol);
@@ -177,7 +185,6 @@ public class UnitManager
         int height = gridSystem.GetHeight();
         float yWorldPositionBlockGenerator = gridSystem.GetBlockGeneratorWorldPosition();
         Vector3 spawnWorldPosition = new Vector3(0, yWorldPositionBlockGenerator);
-        //pair = {col1 : count1, col2 : count 2}
         GridPosition spawnGridPosition = new GridPosition();
         spawnGridPosition.y = height;
         
@@ -189,13 +196,12 @@ public class UnitManager
             for(int i = 0; i < count; i++)
             {
                 Unit unit = UnitFactory.CreateRandomBlockUnit(unitAssetsData, spawnWorldPosition, height);
-                //Create Unit
                 UniTask moveTask = GetDropMoveTask(unit, spawnGridPosition, 
                     (col, count) =>
                     {
 
                     });
-                //Move tasks
+                moveTasks.Add(moveTask);
             }
         }
     }
