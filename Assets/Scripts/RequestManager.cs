@@ -27,7 +27,7 @@ public class RequestManager
 
     }
 
-    public void FinishUserRequest(UserRequest userRequest)
+    public void FinishRequest(UserRequest userRequest)
     {
         int minCol = userRequest.GetMinCol();
         int maxCol = userRequest.GetMaxCol();

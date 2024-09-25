@@ -17,7 +17,7 @@ public class ClickCommandInvoker
     public bool HandleClick(Vector3 mousePos)
     {
         GridPosition position = gridSystem.GetGridPosition(mousePos);
-        if (!gridSystem.CanPerformOnPosition(position) || !gridSystem.IsInteractable(position))
+        if (!gridSystem.CanPerformOnPosition(position) || !gridSystem.IsGridPositionInteractable(position))
         {
             return false;
         }

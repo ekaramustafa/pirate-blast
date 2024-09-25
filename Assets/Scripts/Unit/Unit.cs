@@ -12,7 +12,7 @@ public class Unit : MonoBehaviour
     {
     }
 
-    public void SetUnitSO(UnitData unitData)
+    public void SetUnitData(UnitData unitData)
     {     
         this.unitData = unitData;
         GetComponent<SpriteRenderer>().sprite = unitData.defaultStateSprite;
@@ -23,11 +23,6 @@ public class Unit : MonoBehaviour
     public UnitData GetUnitData()
     {
         return unitData;
-    }
-
-    public Sprite GetDefaultSprite()
-    {
-        return unitData.defaultStateSprite;
     }
 
     public int GetHealth()
@@ -49,11 +44,33 @@ public class Unit : MonoBehaviour
         return unitData.affectedByNeighborBlast;
     }
 
+    public bool IsStationary()
+    {
+        return unitData.isStationary;
+    }
 
     public void SetSortingOrder(int y)
     {
         transform.GetComponent<SpriteRenderer>().sortingOrder = y;
     }
+
+    public Sprite GetDefaultSprite()
+    {
+        return unitData.defaultStateSprite;
+    }
+
+    public void SetSpriteToTNTState()
+    {
+        BlockData blockSO = GetUnitData() as BlockData;
+        GetComponent<SpriteRenderer>().sprite = blockSO.tntStateSprite;
+    }
+
+
+    public void SetSpriteToDefault()
+    {
+        GetComponent<SpriteRenderer>().sprite = GetDefaultSprite();
+    }
+
 
 
 

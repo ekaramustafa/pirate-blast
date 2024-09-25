@@ -1,11 +1,12 @@
 #if UNITY_EDITOR
+using System;
 using UnityEditor;
 #endif
 using UnityEngine;
 
 public static class UnitFactory
 {
-    public static Unit CreateUnit(UnitData unitSO, Transform unitTemplatePrefab, Vector3 position, int sortingOrder)
+    public static Unit CreateUnit(UnitData unitData, Transform unitTemplatePrefab, Vector3 position, int sortingOrder)
     {
         Transform unitTransform = null;
 
@@ -27,9 +28,17 @@ public static class UnitFactory
     #endif
 
         Unit unit = unitTransform.GetComponent<Unit>();
-        unit.SetUnitSO(unitSO);
+        unit.SetUnitData(unitData);
         unit.GetComponent<SpriteRenderer>().sortingOrder = sortingOrder;
 
         return unit;
+    }
+
+    public static Unit CreateRandomBlockUnit(UnitAssetsData unitAssetsData, Vector3 worldPosition, int sortingOrder)
+    {
+        BlockColor blockColor = BlockColorExtensions.GetRandomBlockColor();
+        UnitData unitData = unitAssetsData.GetBlockDataByBlockColor(blockColor);
+        Transform unitTemplatePrefab = unitAssetsData.GetPrefabByUnitType(unitData.unitType);
+        return CreateUnit(unitData, unitTemplatePrefab, worldPosition, sortingOrder);
     }
 }

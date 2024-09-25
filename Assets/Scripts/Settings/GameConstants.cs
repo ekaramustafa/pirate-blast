@@ -41,11 +41,6 @@ public static class GameConstants
     /// The required number of adjacent tnts to from large tnt
     /// </summary>
     public const int TNT_COMBO_FORMATION_THRESHOLD = 2;
-
-    /// <summary>
-    /// Time for blocks to drop
-    /// </summary>
-    public const float DROP_DURATION = 0.5f;
     #endregion
 
 

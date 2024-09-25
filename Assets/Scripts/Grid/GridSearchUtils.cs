@@ -125,7 +125,7 @@ public static class GridSearchUtils
             {
                 GridPosition adjacentPosition = new GridPosition(currentPosition.x + direction.x, currentPosition.y + direction.y);
 
-                if (gridSystem.CanPerformOnPosition(adjacentPosition) && gridSystem.IsInteractable(adjacentPosition))
+                if (gridSystem.CanPerformOnPosition(adjacentPosition) && gridSystem.IsGridPositionInteractable(adjacentPosition))
                 {
                     GridObject adjacentGridObject = gridSystem.GetGridObject(adjacentPosition);
                     UnitType adjacentUnitType = adjacentGridObject.GetUnit().GetUnitType();
@@ -176,16 +176,16 @@ public static class GridSearchUtils
 
     public static GridPosition FindLowerEmptyPositionBelow(GridSystem gridSystem,GridPosition startPosition)
     {
-        int x = startPosition.x;
         int y = startPosition.y;
         y = Mathf.Min(y, gridSystem.GetHeight() + 1); //startPosition can be from hidden row
 
-        GridPosition belowPosition = new GridPosition(x, y - 1);
-        if (!gridSystem.CanPerformOnPosition(belowPosition))
+        startPosition.y -= 1;
+        if (gridSystem.CanDropToPosition(startPosition))
         {
-            y--;
+            return startPosition;
         }
-        return new GridPosition(x, y);
+        startPosition.y = y;
+        return startPosition;
 
     }
 

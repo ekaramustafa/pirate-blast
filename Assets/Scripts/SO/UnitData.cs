@@ -9,6 +9,7 @@ public class UnitData : ScriptableObject
     public UnitType unitType;
     public int health;
     public bool affectedByNeighborBlast;
+    public bool isStationary;
     public ParticleSystem blastParticleSystem;
     public ParticleSystem tntExplosionParticleSystem;
     public Material particleMaterial;

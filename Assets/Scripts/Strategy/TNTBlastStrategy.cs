@@ -28,39 +28,41 @@ public class TNTBlastStrategy : IBlastStrategy
 
     private void HandleComboTNTFormationBlast(GridSystem gridSystem, GridPosition startPosition, List<GridPosition> comboPositions)
     {
-        List<Unit> unitsToBeDestoryed = comboPositions.Select(pos => gridSystem.GetGridObject(pos).GetUnit()).ToList();
-        /*
-        comboPositions.ForEach(pos =>
-        {
-            gridSystem.GetGridObject(pos).SetIsInteractable(false);
-            if(pos != startPosition)
-            {
-                gridSystem.GetGridObject(pos).SetUnit(null);
-            }
-        });
-        */
+        RequestManager requestManager = gridSystem.GetRequestManager();
+        UnitManager unitManager = gridSystem.GetUnitManager();
 
-        AnimateFormation(gridSystem, startPosition, comboPositions)
+        List<Unit> unitsToBeDestoryed = comboPositions.Select(pos => gridSystem.GetGridObject(pos).GetUnit()).ToList();
+
+        UserRequest userRequest = new UserRequest(comboPositions.ToArray(), async (request) =>
+        {
+            AnimateFormation(gridSystem, startPosition, comboPositions)
             .OnPlay(() =>
-        {
-            comboPositions.ForEach(pos =>
             {
-                gridSystem.GetGridObject(pos).SetIsInteractable(false);
-                if (pos != startPosition)
+                comboPositions.ForEach(pos =>
                 {
-                    gridSystem.GetGridObject(pos).SetUnit(null);
-                }
-            });
-        })
+                    gridSystem.GetGridObject(pos).SetIsInteractable(false);
+                    if (pos != startPosition)
+                    {
+                        gridSystem.GetGridObject(pos).SetUnit(null);
+                    }
+                });
+            })
             .OnComplete(() =>
-        {
-            unitsToBeDestoryed.ForEach(unit => UnityEngine.GameObject.Destroy(unit.gameObject));
-            gridSystem.GetUnitManager().CreateComboTNTUnit(startPosition);
-            AnimateComboTNTCreation(gridSystem, startPosition).OnComplete(() =>
             {
-                HandleTNTBlast(gridSystem, startPosition);
+                unitsToBeDestoryed.ForEach(unit => UnityEngine.GameObject.Destroy(unit.gameObject));
+                gridSystem.GetUnitManager().CreateComboTNTUnit(startPosition);
+                AnimateComboTNTCreation(gridSystem, startPosition).OnComplete(() =>
+                {
+                    HandleTNTBlast(gridSystem, startPosition);
+                });
             });
+            requestManager.FinishCallback(request);
+            await UniTask.Yield();
+
         });
+
+        requestManager.PostRequest(userRequest);
+        requestManager.FinishRequest(userRequest);
         
     }
 
@@ -100,7 +102,7 @@ public class TNTBlastStrategy : IBlastStrategy
         });
 
         requestManager.PostRequest(userRequest);
-        requestManager.FinishUserRequest(userRequest);
+        requestManager.FinishRequest(userRequest);
         BlastUtils.PublishBlastedParts(gridSystem, positionSpriteMap, spriteCountMap);
 
     }

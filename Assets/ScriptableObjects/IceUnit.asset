@@ -16,6 +16,7 @@ MonoBehaviour:
   unitType: 2
   health: 1
   affectedByNeighborBlast: 1
+  isStationary: 1
   blastParticleSystem: {fileID: 2220476824931831946, guid: 4e40a3e57ad38aa478dc689b2232134c, type: 3}
   tntExplosionParticleSystem: {fileID: 7544857655930263523, guid: e9c93caa341ce4740931cd30ecba2afb, type: 3}
   particleMaterial: {fileID: 2100000, guid: 5e016aa34d9e44ee7a95eff76284d494, type: 2}

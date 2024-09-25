@@ -9,6 +9,8 @@ public class GridObject
     private GridPosition gridPosition;
     private Unit unit;
     private bool isInteractable;
+    private bool willBeOccupied;
+
     public GridObject(GridPosition gridPosition)
     {
         this.gridPosition = gridPosition;
@@ -109,4 +111,15 @@ public class GridObject
         return blastParticleClone;
     }
 
+    public void SetWillBeOccupied(bool val)
+    {
+        willBeOccupied = val;
+    }
+    
+    public bool WillBeOccupied()
+    {
+        return willBeOccupied;
+    }
+
 }
+

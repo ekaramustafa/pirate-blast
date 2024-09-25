@@ -30,6 +30,9 @@ public class BlockBlastStrategy : IBlastStrategy
 
     private void HandleBlockBlast(GridSystem gridSystem, List<GridPosition> blastablePositions)
     {
+        RequestManager requestManager = gridSystem.GetRequestManager();
+        UnitManager unitManager = gridSystem.GetUnitManager();
+
         List<GridPosition> neighbors = GetNeighborAffectableUnits(gridSystem, blastablePositions);
         blastablePositions.AddRange(neighbors);
         Dictionary<Sprite, int> spriteCountMap = BlastUtils.GetBlastedSpritesCountMap(gridSystem, blastablePositions);
@@ -43,19 +46,22 @@ public class BlockBlastStrategy : IBlastStrategy
         UserRequest userRequest = new UserRequest(blastablePositions.ToArray(), async (request) =>
         {
             //Debug.Log("[BLOCK_BLAST] Callback execution is being executed for request : " + request);
-            await gridSystem.GetUnitManager().DropUnits(request);
-            gridSystem.GetRequestManager().FinishCallback(request);
+            await unitManager.DropUnits(request);
+            requestManager.FinishCallback(request);
             //Debug.Log("BLOCK_BLAST] Callback execution is finished for request : " + request);
 
         });
         //Debug.Log("BLOCK_BLAST] User Request is posted request : " + userRequest);
-        gridSystem.GetRequestManager().PostRequest(userRequest);
+        requestManager.PostRequest(userRequest);
         //Debug.Log("BLOCK_BLAST] User Request is finished request : " + userRequest);
-        gridSystem.GetRequestManager().FinishUserRequest(userRequest);
+        requestManager.FinishRequest(userRequest);
     }
 
     private void HandleTNTFormationBlast(GridSystem gridSystem, GridPosition startPosition, List<GridPosition> blastablePositions)
     {
+        RequestManager requestManager = gridSystem.GetRequestManager();
+        UnitManager unitManager = gridSystem.GetUnitManager();
+
         List<GridPosition> neighbors = GetNeighborAffectableUnits(gridSystem, blastablePositions);
         List<GridPosition> mergedPositions = new List<GridPosition>(blastablePositions);
         mergedPositions.AddRange(neighbors);
@@ -73,20 +79,20 @@ public class BlockBlastStrategy : IBlastStrategy
         {
             //Debug.Log("[TNT_FORMATION] Callback execution is being executed for request : " + request);
             unitsToBeDestoryed.ForEach(unit => UnityEngine.GameObject.Destroy(unit.gameObject));
-            await gridSystem.GetUnitManager().DropUnits(request);
-            gridSystem.GetRequestManager().FinishCallback(request);
+            await unitManager.DropUnits(request);
+            requestManager.FinishCallback(request);
             //Debug.Log("[TNT_FORMATION] Callback execution is finished for request : " + request);
         });
 
         //Debug.Log("[TNT_FORMATION] User Request is posted request : " + userRequest);
-        gridSystem.GetRequestManager().PostRequest(userRequest);
+        requestManager.PostRequest(userRequest);
 
         Tween sequence = AnimateFormation(gridSystem, startPosition, blastablePositions);
         sequence.OnComplete(() =>
         {
-            gridSystem.GetUnitManager().CreateTNTUnit(startPosition);
+            unitManager.CreateTNTUnit(startPosition);
             //Debug.Log("TNT_FORMATION] User Request is finished request : " + userRequest);
-            gridSystem.GetRequestManager().FinishUserRequest(userRequest);
+            requestManager.FinishRequest(userRequest);
         });
 
         blastablePositions.ForEach(pos =>

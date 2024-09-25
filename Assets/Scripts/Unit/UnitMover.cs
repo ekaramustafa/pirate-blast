@@ -7,89 +7,64 @@ using System;
 
 public class UnitMover : MonoBehaviour
 {
-    [SerializeField] private float overshootAmount = 1f;
 
-    public UniTask MoveWithDOTween(Vector3 targetPosition, float totalTime)
+    public Tween MoveWithDOTween(List<Vector3> targetPositions, float totalTime, float overshootAmount, Action<Unit, Vector3, Vector3> stepCallback, Action<Vector3> lastCallback)
     {
-        Vector3 startPosition = transform.position;
-        
-        Vector3 overshootPosition = targetPosition + (targetPosition - startPosition).normalized * overshootAmount;
-        Vector3 undershootPosition = targetPosition - (targetPosition - startPosition).normalized * (overshootAmount * 1f);
+        if (targetPositions == null || targetPositions.Count == 0)
+            return null;
 
-        Sequence moveSequence = DOTween.Sequence();
+        Vector3 lastPosition = targetPositions[targetPositions.Count - 1];
+        int index = 0;
 
-        moveSequence.Append(transform.DOMove(overshootPosition, totalTime * 0.4f).SetEase(Ease.OutQuad));
-
-        moveSequence.Append(transform.DOMove(undershootPosition, totalTime * 0.2f).SetEase(Ease.OutQuad));
-
-        moveSequence.Append(transform.DOMove(targetPosition, totalTime * 0.4f).SetEase(Ease.OutQuad));
-        moveSequence.SetId(transform.gameObject);
-        
-        return moveSequence.AsyncWaitForCompletion().AsUniTask();
-    }
-
-
-    public IEnumerator MoveCoroutine(Vector3 targetPosition, float totalTime)
-    {
-        Vector3 startPosition = transform.position;
-        float elapsedTime = 0f;
-
-        Vector3 overshootPosition = targetPosition + (targetPosition - startPosition).normalized * overshootAmount;
-        Vector3 undershootPosition = targetPosition - (targetPosition - startPosition).normalized * (overshootAmount * 0.5f); // Undershoot for added bounce
-
-        while (elapsedTime < totalTime)
-        {
-            if (transform == null || this == null) yield return null;
-            float t = elapsedTime / totalTime;
-            float easedT = EaseInQuad(t);
-
-            if (easedT < 0.3f)
+        Tween tween = transform.DOMove(lastPosition, totalTime)
+            .OnUpdate(() =>
             {
-                // Move quickly towards the overshoot position
-                transform.position = Vector3.Lerp(startPosition, overshootPosition, easedT / 0.3f);
+                if (index >= targetPositions.Count) return;
+
+                Vector3 currentPosition = transform.position;
+                Vector3 nextTargetPosition = targetPositions[index];
+                float distanceToNextTarget = Vector3.Distance(currentPosition, nextTargetPosition);
+                if (distanceToNextTarget <= Vector3.Distance(currentPosition, nextTargetPosition) * 0.5f)
+                {
+                    stepCallback?.Invoke(gameObject.GetComponent<Unit>(), currentPosition, nextTargetPosition);
+                    index++;
+                }
             }
-            else if (easedT < 0.6f)
+            )
+            .OnComplete(() =>
             {
-                // Move slowly back to the undershoot position
-                float slowT = (easedT - 0.3f) / 0.3f;
-                transform.position = Vector3.Lerp(overshootPosition, undershootPosition, EaseOutQuad(slowT));
-            }
-            else
+                stepCallback?.Invoke(gameObject.GetComponent<Unit>(), transform.position, lastPosition);
+                lastCallback?.Invoke(lastPosition);
+            })
+            .SetEase(Ease.OutBack, overshootAmount);
+
+        return tween;
+    }
+
+    public Tween MoveWithDOTween(Vector3 targetPosition, float totalTime, float overshootAmount, Action<Unit, Vector3, Vector3> stepCallback, Action<Vector3> lastCallback)
+    {
+        bool stepCallbackCalled = false;
+        Tween tween = transform.DOMove(targetPosition, totalTime)
+            .OnUpdate(() =>
             {
-                // Move very slowly to the final target position
-                float finalT = (easedT - 0.6f) / 0.4f;
-                transform.position = Vector3.Lerp(undershootPosition, targetPosition, EaseOutQuad(finalT));
+                if (stepCallbackCalled) return;
+                Vector3 currentPosition = transform.position;
+                float distanceToNextTarget = Vector3.Distance(currentPosition, targetPosition);
+                if (distanceToNextTarget <= Vector3.Distance(currentPosition, targetPosition) * 0.5f)
+                {
+                    stepCallback?.Invoke(gameObject.GetComponent<Unit>(), currentPosition, targetPosition);
+                    stepCallbackCalled = true;
+                }
             }
+            )
+            .OnComplete(() =>
+            {
+                lastCallback?.Invoke(targetPosition);
+            })
+            .SetEase(Ease.OutBack, overshootAmount);
 
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-
-        //transform.position = targetPosition;
-    }
-    /// <summary>
-    /// Eases out with a quadratic function, creating a decelerating effect.
-    /// This function takes an input value `t` (ranging from 0 to 1) and returns `t * (2 - t)`,
-    /// which starts fast and then slows down as it approaches the end.
-    /// The result is a smooth finish, with the movement decelerating towards the target.
-    /// </summary>
-    /// <param name="t">The normalized time (0 to 1) representing the current progress of the easing.</param>
-    /// <returns>A float representing the eased value at the given time `t`.</returns>
-    private float EaseOutQuad(float t)
-    {
-        return t * (2 - t); // Easier, slower ending
+        return tween;
     }
 
-    // <summary>
-    /// Eases in with a quadratic function, creating an accelerating effect.
-    /// This function takes an input value `t` (ranging from 0 to 1) and returns `t` squared.
-    /// The result is a smooth start, with the movement starting slowly and accelerating as it progresses.
-    /// </summary>
-    /// <param name="t">The normalized time (0 to 1) representing the current progress of the easing.</param>
-    /// <returns>A float representing the eased value at the given time `t`.</returns>
-    private float EaseInQuad(float t)
-    {
-        return t * t;
-    }
 
 }
