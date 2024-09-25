@@ -28,7 +28,7 @@ public class LevelFailUI : MonoBehaviour
     #region Button Functions
     public void TryAgain()
     {
-        Tween tween = animationService.TriggerAnimation(transform, transform.position, new Vector3(0.9f, 1f, 1f), AnimationConstants.SCALEBOUNCE_DEFAULT_DURATION, AnimationType.SCALEBOUNCE);
+        Tween tween = animationService.TriggerAnimation(animatedTryAgainButton, animatedTryAgainButton.position, new Vector3(0.9f, 1f, 1f), AnimationConstants.SCALEBOUNCE_DEFAULT_DURATION, AnimationType.SCALEBOUNCE);
         tween.OnComplete(() =>
         {
             Loader.LoadLevel();
@@ -37,7 +37,7 @@ public class LevelFailUI : MonoBehaviour
 
     public void ReturnToMainMenu()
     {
-        Tween tween = animationService.TriggerAnimation(transform, transform.position, new Vector3(0.9f, 1f, 1f), AnimationConstants.SCALEBOUNCE_DEFAULT_DURATION, AnimationType.SCALEBOUNCE);
+        Tween tween = animationService.TriggerAnimation(animatedExitButton, animatedExitButton.position, new Vector3(0.9f, 1f, 1f), AnimationConstants.SCALEBOUNCE_DEFAULT_DURATION, AnimationType.SCALEBOUNCE);
         tween.OnComplete(() =>
         {
             Loader.LoadMenu();

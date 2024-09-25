@@ -7,13 +7,13 @@ using DG.Tweening;
 public class UnitManager
 {
     private GridSystem gridSystem;
-    private UnitAssetsData unitAssetsSO;
+    private UnitAssetsData unitAssetsData;
     private LevelData levelData;
 
     public UnitManager(GridSystem gridSystem)
     {
         this.gridSystem = gridSystem;
-        unitAssetsSO = gridSystem.GetUnitAssetsSO();
+        unitAssetsData = gridSystem.GetUnitAssetsSO();
         levelData = gridSystem.GetLevelData();
     }
 
@@ -36,7 +36,7 @@ public class UnitManager
                 if (unitType == UnitType.Block)
                 {
                     BlockColor blockColor = MappingUtils.stringToBlockColorMapping[cell_value]();
-                    unitSO = unitAssetsSO.GetBlockDataByBlockColor(blockColor);
+                    unitSO = unitAssetsData.GetBlockDataByBlockColor(blockColor);
                     if (unitSO == null)
                     {
                         Debug.LogError("CANNOT FIND THE BLOCK WITH GIVEN COLOR");
@@ -45,7 +45,7 @@ public class UnitManager
                 }
                 else if (unitType == UnitType.TNT)
                 {
-                    unitSO = unitAssetsSO.GetTNTSOByTNTType(TNTType.NORMAL);
+                    unitSO = unitAssetsData.GetTNTSOByTNTType(TNTType.NORMAL);
                     if (unitSO == null)
                     {
                         Debug.LogError("CANNOT FIND THE TNT WITH GIVEN TYPE");
@@ -54,7 +54,7 @@ public class UnitManager
                 }
                 else
                 {
-                    unitSO = unitAssetsSO.GetUnitSOByUnitType(unitType);
+                    unitSO = unitAssetsData.GetUnitSOByUnitType(unitType);
                 }
 
                 if (unitSO != null)
@@ -95,20 +95,20 @@ public class UnitManager
 
     public void CreateComboTNTUnit(GridPosition gridPosition)
     {
-        UnitData unitData = unitAssetsSO.GetTNTSOByTNTType(TNTType.LARGE);
+        UnitData unitData = unitAssetsData.GetTNTSOByTNTType(TNTType.LARGE);
         CreateUnit(gridPosition, unitData);
     }
 
     public void CreateTNTUnit(GridPosition gridPosition)
     {
-        UnitData unitData = unitAssetsSO.GetUnitSOByUnitType(UnitType.TNT);
+        UnitData unitData = unitAssetsData.GetUnitSOByUnitType(UnitType.TNT);
         CreateUnit(gridPosition, unitData);
     }
 
     public void CreateUnit(GridPosition gridPosition, UnitData unitData)
     {
         Vector3 worldPosition = gridSystem.GetWorldPosition(gridPosition);
-        Transform unitTemplatePrefab = unitAssetsSO.GetPrefabByUnitType(unitData.unitType);
+        Transform unitTemplatePrefab = unitAssetsData.GetPrefabByUnitType(unitData.unitType);
         Unit unit = UnitFactory.CreateUnit(unitData, unitTemplatePrefab, worldPosition, gridPosition.y);
         GridObject gridObject = gridSystem.GetGridObject(gridPosition);
         gridObject.SetUnit(unit);
@@ -117,114 +117,148 @@ public class UnitManager
     public async UniTask DropUnits(int startRow, int endRow, int startCol, int endCol)
     {
         DeActivateUnits(startRow, endRow, startCol, endCol);
-        int height = gridSystem.GetHeight();
         List<UniTask> moveTasks = new List<UniTask>();
+        int startRowAdjusted = Mathf.Max(1, startRow); // exclude the first column, they cannot fall
+        
+        Dictionary<int, int> emptyColumnCountMaps = new Dictionary<int, int>();
 
         for (int x = startCol; x < endCol; x++)
         {
-            for (int y = startRow; y < endRow; y++)
+            for (int y = startRowAdjusted; y < endRow; y++)
             {
                 GridPosition currentPosition = new GridPosition(x, y);
-                GridObject currentGridObject = gridSystem.GetGridObject(currentPosition);
 
                 if (!gridSystem.CanPerformOnPosition(currentPosition))
                     continue;
 
-                UnitType unitType = currentGridObject.GetUnit().GetUnitType();
-                if (unitType == UnitType.Stone || unitType == UnitType.Ice) continue;
+                Unit unit = gridSystem.GetGridObject(currentPosition).GetUnit();
 
-                Queue<GridPosition> moveQueue = new Queue<GridPosition>();
-                GridPosition lowerEmptyPosition = GridSearchUtils.FindLowerEmptyPositionBelow(gridSystem, currentPosition);
+                if (unit.IsStationary())
+                    continue;
 
-                GridPosition posPtr = new GridPosition(currentPosition.x, currentPosition.y);
-                while (lowerEmptyPosition != posPtr && lowerEmptyPosition.y < height && lowerEmptyPosition.y >= 0)
-                {
-                    moveQueue.Enqueue(lowerEmptyPosition);  // Queue all the moves first
-                    posPtr = lowerEmptyPosition;   // Update current position
-                    lowerEmptyPosition = GridSearchUtils.FindLowerEmptyPositionBelow(gridSystem, posPtr);
-                }
-
-                // Now execute the queued moves
-                while (moveQueue.Count > 0)
-                {
-                    GridPosition targetPosition = moveQueue.Dequeue();
-                    Unit unit = gridSystem.GetGridObject(currentPosition).GetUnit();
-                    UniTask moveTask = unit.GetComponent<UnitMover>().MoveWithDOTween(gridSystem.GetWorldPosition(targetPosition), GameConstants.DROP_DURATION);
-                    moveTasks.Add(moveTask);
-                    MoveUnitToNewPosition(currentPosition, targetPosition);  // Update the grid positions after moving
-                    currentPosition = targetPosition;  // Update the current position after the move
-                    AdjustPossibleUnitFormationsVisual();
-                }
+                UniTask moveTask = GetDropMoveTask(
+                    unit, 
+                    currentPosition,
+                    (col, count) =>
+                    {
+                        emptyColumnCountMaps[col] = count;
+                    } 
+                );
+                moveTasks.Add(moveTask);
             }
         }
-        FillEmptyCells(moveTasks, startCol, endCol);
+
+        if(emptyColumnCountMaps.Count == 0)
+        {
+            for(int x= startCol; x < endCol; x++)
+            {
+                emptyColumnCountMaps[x] = endRow - startRow;
+            }
+        }
+        FillEmptyCells(moveTasks, emptyColumnCountMaps);
         await UniTask.WhenAll(moveTasks);
         ActivateUnits(startRow, endRow, startCol, endCol);
     }
 
 
-    public void MoveUnitToNewPosition(GridPosition from, GridPosition to)
+
+    public async UniTask DropUnits(UserRequest request)
     {
-        GridObject fromGridObject = gridSystem.GetGridObject(from);
-        GridObject toGridObject = gridSystem.GetGridObject(to);
-        Unit unit = fromGridObject.GetUnit();
-        unit.SetSortingOrder(to.y);
-        fromGridObject.SetUnit(null);
-
-        toGridObject.SetUnit(unit);
-
+        int startCol = request.GetMinCol();
+        int endCol = request.GetMaxCol() + 1;
+        int startRow = request.GetMinRow();
+        int endRow = gridSystem.GetHeight();
+        await DropUnits(startRow,  endRow,  startCol, endCol);
     }
 
-    
-    public void FillEmptyCells(List<UniTask> moveTasks, int startCol, int endCol)
+
+    public void SetUnitToPosition(Unit unit, GridPosition to)
+    {
+        GridObject toGridObject = gridSystem.GetGridObject(to);
+        unit.SetSortingOrder(to.y);
+        toGridObject.SetUnit(unit);
+    }
+
+
+    public void FillEmptyCells(List<UniTask> moveTasks, Dictionary<int, int> emptyColumnCountMaps)
     {
         int height = gridSystem.GetHeight();
-        float xWorldPositionOffsetBlockGenerator = gridSystem.GetBlockGeneratorOffset();
-        Dictionary<int, int> emptyColumnCountMaps = GridSearchUtils.FindEmptyCellsMap(gridSystem);
-        foreach (KeyValuePair<int, int> pair in emptyColumnCountMaps)
+        float yWorldPositionBlockGenerator = gridSystem.GetBlockGeneratorWorldPosition();
+        Vector3 spawnWorldPosition = new Vector3(0, yWorldPositionBlockGenerator);
+        GridPosition spawnGridPosition = new GridPosition();
+        spawnGridPosition.y = height;
+        
+        foreach(KeyValuePair<int, int> pair in emptyColumnCountMaps)
         {
-            int key = pair.Key;
-            int val = pair.Value;
-            int adjustedY = gridSystem.GetGridPosition(new Vector3(0, xWorldPositionOffsetBlockGenerator, 0)).y;
-            GridPosition currentPosition = new GridPosition(key, adjustedY);
-            Vector3 worldPosition = gridSystem.GetWorldPosition(currentPosition);
-            for (int i = 0; i < val; i++)
+            spawnGridPosition.x = pair.Key;
+            spawnWorldPosition.x = gridSystem.GetWorldPositionX(spawnGridPosition.x);
+            int count = pair.Value;
+            for(int i = 0; i < count; i++)
             {
-                currentPosition.y = adjustedY;
-                currentPosition.x = key;
-                Queue<GridPosition> moveQueue = new Queue<GridPosition>();
-                GridPosition lowerEmptyPosition = new GridPosition(currentPosition.x, height - 1);
-                BlockColor blockColor = BlockColorExtensions.GetRandomBlockColor();
-                UnitData unitData = unitAssetsSO.GetBlockDataByBlockColor(blockColor);
-                Transform unitTemplatePrefab = unitAssetsSO.GetPrefabByUnitType(unitData.unitType);
-                Unit unit = UnitFactory.CreateUnit(unitData, unitTemplatePrefab, worldPosition, lowerEmptyPosition.y);
-                gridSystem.GetGridObject(lowerEmptyPosition).SetUnit(unit);
+                Unit unit = UnitFactory.CreateRandomBlockUnit(unitAssetsData, spawnWorldPosition, height);
+                UniTask moveTask = GetDropMoveTask(unit, spawnGridPosition, 
+                    (col, count) =>
+                    {
 
-                GridPosition posPtr = new GridPosition(currentPosition.x, currentPosition.y);
-                currentPosition = lowerEmptyPosition;
-
-                while (lowerEmptyPosition != posPtr && lowerEmptyPosition.y < height && lowerEmptyPosition.y >= 0)
-                {
-                    posPtr = lowerEmptyPosition;   // Update current position
-                    lowerEmptyPosition = GridSearchUtils.FindLowerEmptyPositionBelow(gridSystem, posPtr);
-                    moveQueue.Enqueue(lowerEmptyPosition);  // Queue all the moves first
-                }
-                
-                // Now execute the queued moves
-                while (moveQueue.Count > 0)
-                {
-                    GridPosition targetPosition = moveQueue.Dequeue();
-                    Unit currentUnit = gridSystem.GetGridObject(currentPosition).GetUnit();
-                    UniTask moveTask = currentUnit.GetComponent<UnitMover>().MoveWithDOTween(gridSystem.GetWorldPosition(targetPosition), GameConstants.DROP_DURATION);
-                    moveTasks.Add(moveTask);
-                    MoveUnitToNewPosition(currentPosition, targetPosition);
-                    currentPosition = targetPosition;  // Update the current position after the move
-                    AdjustPossibleUnitFormationsVisual();
-                }
+                    });
+                moveTasks.Add(moveTask);
             }
         }
     }
-    
+
+    public UniTask GetDropMoveTask(Unit unit, GridPosition startPosition, Action<int,int> callback)
+    {
+        Queue<GridPosition> moveQueue = new Queue<GridPosition>();
+        GridPosition lowerEmptyPosition = GridSearchUtils.FindLowerEmptyPositionBelow(gridSystem, startPosition);
+
+        GridPosition posPtr = new GridPosition(startPosition.x, startPosition.y);
+        while (lowerEmptyPosition != posPtr && lowerEmptyPosition.y < gridSystem.GetHeight() && lowerEmptyPosition.y >= 0)
+        {
+            moveQueue.Enqueue(lowerEmptyPosition);  // Queue all the moves first
+            posPtr = lowerEmptyPosition;   // Update pointer
+            lowerEmptyPosition = GridSearchUtils.FindLowerEmptyPositionBelow(gridSystem, posPtr);
+        }
+
+        UnitMover unitMover = unit.GetComponent<UnitMover>();
+
+        List<Vector3> targetWorldPositions = new List<Vector3>();
+        while (moveQueue.Count != 0)
+        {
+            targetWorldPositions.Add(gridSystem.GetWorldPosition(moveQueue.Dequeue()));
+        }
+        if (targetWorldPositions.Count == 0) return UniTask.CompletedTask;
+
+        Vector3 lastPosition = targetWorldPositions[targetWorldPositions.Count - 1];
+        gridSystem.GetGridObject(gridSystem.GetGridPosition(lastPosition)).SetWillBeOccupied(true);
+        if (gridSystem.CanPerformOnPosition(startPosition))
+        {
+            gridSystem.GetGridObject(startPosition).SetUnit(null);
+            //The start position might be the hidden position
+        }
+
+        Tween moveTask = unitMover.MoveWithDOTween(
+            targetPositions: targetWorldPositions,
+            totalTime: AnimationConstants.DROP_ANIMATION_DURATION,
+            overshootAmount: AnimationConstants.DROP_ANIMATION_OVERSHOOT_AMOUNT,
+            stepCallback: (Action<Unit, Vector3, Vector3>)((unit, sourceWorldPos, destinationWorldPos) =>
+            {
+                GridPosition sourcePos = gridSystem.GetGridPosition(sourceWorldPos);
+                GridPosition destinationPos = gridSystem.GetGridPosition(destinationWorldPos);
+                gridSystem.GetGridObject(sourcePos).SetUnit(null);
+                SetUnitToPosition(unit, destinationPos);
+            }),
+
+            lastCallback: (targetWorldPos) =>
+            {
+                GridPosition targetPos = gridSystem.GetGridPosition(targetWorldPos);
+                gridSystem.GetGridObject(targetPos).SetWillBeOccupied(false);
+                AdjustPossibleUnitFormationsVisual();
+            }
+        );
+        callback?.Invoke(startPosition.x, targetWorldPositions.Count); //collecting information for fill empty positions
+
+        return moveTask.AsyncWaitForCompletion().AsUniTask();
+    }
 
     public void AdjustPossibleUnitFormationsVisual()
     {
@@ -238,7 +272,7 @@ public class UnitManager
                 if (!gridSystem.CanPerformOnPosition(startPosition)) continue;
                 GridObject gridObject = gridSystem.GetGridObject(startPosition);
                 UnitType unitType = gridObject.GetUnit().GetUnitType();
-                if (unitType != UnitType.Block) continue;                
+                if (unitType != UnitType.Block) continue;
                 List<GridPosition> formableGridPositions = GridSearchUtils.GetAdjacentSameColorBlocks(gridSystem, startPosition);
                 if (formableGridPositions.Count >= GameConstants.TNT_FORMATION_BLOCKS_THRESHOLD)
                 {
@@ -246,59 +280,17 @@ public class UnitManager
                     {
                         GridObject formableGridObject = gridSystem.GetGridObject(position);
                         Unit unit = formableGridObject.GetUnit();
-                        BlockData blockSO = unit.GetUnitData() as BlockData;
-                        unit.GetComponent<SpriteRenderer>().sprite = blockSO.tntStateSprite;
+                        unit.SetSpriteToTNTState();
                     }
                 }
                 else
                 {
                     Unit unit = gridObject.GetUnit();
-                    unit.GetComponent<SpriteRenderer>().sprite = unit.GetDefaultSprite();
+                    unit.SetSpriteToDefault();
                 }
             }
         }
     }
-
-    public void UpdateTNTUnitFormationsVisualSingle(GridSystem gridSystem, GridPosition startPosition)
-    {
-        if (!gridSystem.CanPerformOnPosition(startPosition)) return;
-        
-        GridObject gridObject = gridSystem.GetGridObject(startPosition);
-        UnitType unitType = gridObject.GetUnit().GetUnitType();
-        
-        if (unitType != UnitType.Block) return;
-        
-        List<GridPosition> formableGridPositions = GridSearchUtils.GetAdjacentSameColorBlocks(gridSystem, startPosition);
-        if (formableGridPositions.Count >= GameConstants.TNT_FORMATION_BLOCKS_THRESHOLD)
-        {
-            foreach (GridPosition position in formableGridPositions)
-            {
-                GridObject formableGridObject = gridSystem.GetGridObject(position);
-                Unit unit = formableGridObject.GetUnit();
-                BlockData blockSO = unit.GetUnitData() as BlockData;
-                unit.GetComponent<SpriteRenderer>().sprite = blockSO.tntStateSprite;
-            }
-        }
-        else
-        {
-            Unit unit = gridObject.GetUnit();
-            unit.GetComponent<SpriteRenderer>().sprite = unit.GetDefaultSprite();
-        }
-    }
-
-    public void RevertTNTUnitFormationsVisualSingle(GridSystem gridSystem, GridPosition startPosition)
-    {
-        if (!gridSystem.CanPerformOnPosition(startPosition)) return;
-
-        GridObject gridObject = gridSystem.GetGridObject(startPosition);
-        UnitType unitType = gridObject.GetUnit().GetUnitType();
-
-        if (unitType != UnitType.Block) return;
-
-        List<GridPosition> formableGridPositions = GridSearchUtils.GetAdjacentSameColorBlocks(gridSystem, startPosition);
-        formableGridPositions.ForEach(pos => UpdateTNTUnitFormationsVisualSingle(gridSystem, pos));
-    }
-
 
 
 

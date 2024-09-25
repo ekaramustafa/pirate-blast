@@ -62,24 +62,17 @@ public class LevelGrid : MonoBehaviour
         if (!isGameActive) return;
         isGameActive = false;
 
-        bool wasClickHandled = clickCommandInvoker.HandleClick(mousePos);
-        if (!wasClickHandled)
+        bool performedAnyOperation = clickCommandInvoker.HandleClick(mousePos);
+        if (!performedAnyOperation)
         {
             isGameActive = true;
             return;
         }
 
-        //var dropTask = UniTask.WhenAll(gridSystem.GetUnitManager().DropUnits()); //wait until block fall down
-        
-        //gridSystem.GetUnitManager().AdjustPossibleUnitFormationsVisual();
-
-        //Make sure not to active the game to avoid bugs
         if (moves != 0 && goalsReached < totalGoals)
         {
             isGameActive = true;
         }
-
-        //await dropTask;
 
         EventAggregator.GetInstance().Publish(new MoveConsumedEvent(1));
         moves--;
@@ -92,7 +85,6 @@ public class LevelGrid : MonoBehaviour
 
     private bool LoadLevelData()
     {
-
         int currentLevel = GameConstants.CurrentLevel;
         if(currentLevel > GameConstants.MAX_LEVEL)
         {

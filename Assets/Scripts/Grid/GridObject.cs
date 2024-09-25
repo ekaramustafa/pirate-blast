@@ -2,13 +2,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using DG.Tweening;
 public class GridObject
 {
 
     private GridPosition gridPosition;
     private Unit unit;
     private bool isInteractable;
+    private bool willBeOccupied;
+
     public GridObject(GridPosition gridPosition)
     {
         this.gridPosition = gridPosition;
@@ -55,9 +57,12 @@ public class GridObject
         if (unit.GetHealth() == 0)
         {
             PlayBlastParticleSystem(blastType);
+            DOTween.Kill(unit.transform.gameObject);
             UnityEngine.GameObject.Destroy(unit.gameObject);
             unit = null;
         }
+
+
 
     }
 
@@ -106,4 +111,15 @@ public class GridObject
         return blastParticleClone;
     }
 
+    public void SetWillBeOccupied(bool val)
+    {
+        willBeOccupied = val;
+    }
+    
+    public bool WillBeOccupied()
+    {
+        return willBeOccupied;
+    }
+
 }
+

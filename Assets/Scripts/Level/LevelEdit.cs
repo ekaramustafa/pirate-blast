@@ -77,7 +77,7 @@ public class LevelEdit : MonoBehaviour
         UnitData unitSO = GetUnitSOBySprite(selectedSprite);
         UnitType unitType = unitSO.unitType;
         Unit unit = gridSystem.GetGridObject(gridPosition).GetUnit();
-        unit.SetUnitSO(unitSO);
+        unit.SetUnitData(unitSO);
 
         gridSystem.GetUnitManager().AdjustPossibleUnitFormationsVisual();
         int index = gridPosition.y * gridSystem.GetWidth() + gridPosition.x;

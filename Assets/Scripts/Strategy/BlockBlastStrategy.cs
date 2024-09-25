@@ -8,14 +8,12 @@ using System.Linq;
 
 public class BlockBlastStrategy : IBlastStrategy
 {
+    public static int semaphore = 0;
+
     public bool Blast(GridSystem gridSystem, GridPosition startPosition)
     {
 
         List<GridPosition> blastablePositions = GetBlastablePositions(gridSystem, startPosition);
-        if(blastablePositions.Any(pos => !gridSystem.GetGridObject(pos).IsInteractable()))
-        {
-            return false;
-        }
         if (blastablePositions.Count >= GameConstants.TNT_FORMATION_BLOCKS_THRESHOLD)
         {
             HandleTNTFormationBlast(gridSystem, startPosition, blastablePositions);
@@ -32,6 +30,9 @@ public class BlockBlastStrategy : IBlastStrategy
 
     private void HandleBlockBlast(GridSystem gridSystem, List<GridPosition> blastablePositions)
     {
+        RequestManager requestManager = gridSystem.GetRequestManager();
+        UnitManager unitManager = gridSystem.GetUnitManager();
+
         List<GridPosition> neighbors = GetNeighborAffectableUnits(gridSystem, blastablePositions);
         blastablePositions.AddRange(neighbors);
         Dictionary<Sprite, int> spriteCountMap = BlastUtils.GetBlastedSpritesCountMap(gridSystem, blastablePositions);
@@ -42,16 +43,21 @@ public class BlockBlastStrategy : IBlastStrategy
         }
         BlastUtils.PublishBlastedParts(gridSystem, positionSpriteMap, spriteCountMap);
 
-        int startRow = 0;
-        int endRow = gridSystem.GetHeight();
-        int startCol = blastablePositions.Min(pos => pos.x);
-        int endCol = blastablePositions.Max(pos => pos.x) + 1;
-        gridSystem.GetUnitManager().DropUnits(startRow, endRow, startCol, endCol).Forget();
-        
+        UserRequest userRequest = new UserRequest(blastablePositions.ToArray(), async (request) =>
+        {
+            await unitManager.DropUnits(request);
+            requestManager.FinishCallback(request);
+
+        });
+        requestManager.PostRequest(userRequest);
+        requestManager.FinishRequest(userRequest);
     }
 
     private void HandleTNTFormationBlast(GridSystem gridSystem, GridPosition startPosition, List<GridPosition> blastablePositions)
     {
+        RequestManager requestManager = gridSystem.GetRequestManager();
+        UnitManager unitManager = gridSystem.GetUnitManager();
+
         List<GridPosition> neighbors = GetNeighborAffectableUnits(gridSystem, blastablePositions);
         List<GridPosition> mergedPositions = new List<GridPosition>(blastablePositions);
         mergedPositions.AddRange(neighbors);
@@ -63,23 +69,31 @@ public class BlockBlastStrategy : IBlastStrategy
             BlastUtils.BlastBlockAtPosition(gridSystem, position, BlastType.BlockBlast);
         }
 
-        int startRow = 0;
-        int endRow = gridSystem.GetHeight();
-        int startCol = mergedPositions.Min(pos => pos.x);
-        int endCol = mergedPositions.Max(pos => pos.x) + 1;
-        gridSystem.GetUnitManager().DeActivateUnits(startRow, endRow, startCol, endCol);
-        mergedPositions.ForEach(pos => gridSystem.GetGridObject(pos).SetIsInteractable(false));
         List<Unit> unitsToBeDestoryed = blastablePositions.Select(pos => gridSystem.GetGridObject(pos).GetUnit()).ToList();
+        UserRequest userRequest = new UserRequest(mergedPositions.ToArray(), async (request) =>
+        {
+            unitsToBeDestoryed.ForEach(unit => UnityEngine.GameObject.Destroy(unit.gameObject));
+            await unitManager.DropUnits(request);
+            requestManager.FinishCallback(request);
+        });
+
+        requestManager.PostRequest(userRequest);
 
         Tween sequence = AnimateFormation(gridSystem, startPosition, blastablePositions);
         sequence.OnComplete(() =>
         {
-            unitsToBeDestoryed.ForEach(unit => UnityEngine.GameObject.Destroy(unit.gameObject));
-            gridSystem.GetUnitManager().CreateTNTUnit(startPosition);
-            gridSystem.GetUnitManager().DropUnits(startRow, endRow, startCol, endCol).Forget();
+            unitManager.CreateTNTUnit(startPosition);
+            requestManager.FinishRequest(userRequest);
         });
 
-        blastablePositions.ForEach(pos => gridSystem.GetGridObject(pos).SetUnit(null));
+        blastablePositions.ForEach(pos =>
+        {
+            if(pos != startPosition)
+            {
+                gridSystem.GetGridObject(pos).SetUnit(null);
+            }
+        });
+
         BlastUtils.PublishBlastedParts(gridSystem, positionSpriteMap, spriteCountMap);
 
     }

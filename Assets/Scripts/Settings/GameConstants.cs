@@ -6,7 +6,7 @@ public static class GameConstants
 {
 
     #region Paths & Path Related Constants
-    public const string LEVEL_FILES_PATH = "Levels";
+    public const string LEVEL_FILES_PATH = "StreamingAssets/Levels";
     public const string LEVEL_FILE_PREFIX = "level_";
     #endregion
 
@@ -35,17 +35,12 @@ public static class GameConstants
     /// <summary>
     /// The required number of adjacent blocks to from tnt
     /// </summary>
-    public const int TNT_FORMATION_BLOCKS_THRESHOLD = 5;
+    public const int TNT_FORMATION_BLOCKS_THRESHOLD = 7;
 
     /// <summary>
     /// The required number of adjacent tnts to from large tnt
     /// </summary>
     public const int TNT_COMBO_FORMATION_THRESHOLD = 2;
-
-    /// <summary>
-    /// Time for blocks to drop
-    /// </summary>
-    public const float DROP_DURATION = 0.5f;
     #endregion
 
 

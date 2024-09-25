@@ -8,6 +8,7 @@ using System;
 public class GridSystem
 {
     private UnitManager unitManager;
+    private RequestManager requestManager;
 
     private int width;
     private int height;
@@ -18,7 +19,7 @@ public class GridSystem
     private float horizantalCellSize;
     private float verticalCellSize;
 
-    private float xWorldPositionOffsetBlockGenerator;
+    private float yBlockGeneratorWorldPosition;
     private float yWorldPositionOffset;
     private float xWorldPositionOffset;
 
@@ -40,7 +41,8 @@ public class GridSystem
         InitializeOffsets();
         InitializeGridObjects();
 
-
+        requestManager = new RequestManager(width);
+        
         unitManager = new UnitManager(this);
         unitManager.CreateUnits();
         InitializeFrame();
@@ -64,7 +66,7 @@ public class GridSystem
 
         xWorldPositionOffset = -halfWidth;
         yWorldPositionOffset = -halfHeight - GameConstants.TOP_BANNER_OFFSET;
-        xWorldPositionOffsetBlockGenerator = height - yWorldPositionOffset;
+        yBlockGeneratorWorldPosition = height - yWorldPositionOffset;
 
     }
 
@@ -138,6 +140,17 @@ public class GridSystem
             IsGridPositionFilled(gridPosition);
     }
 
+    public bool CanDropToPosition(GridPosition gridPosition)
+    {
+        return IsValidGridPosition(gridPosition) && !IsGridPositionFilled(gridPosition)
+             && !WillGridPositionBeOccupied(gridPosition);
+    }
+
+    public bool IsGridPositionInteractable(GridPosition position)
+    {
+        GridObject gridObject = GetGridObject(position);
+        return gridObject.IsInteractable();
+    }
 
     private bool IsGridPositionFilled(GridPosition gridPosition)
     {
@@ -145,11 +158,11 @@ public class GridSystem
         return gridObject.GetUnit() != null;
     }
 
-    public bool IsInteractable(GridPosition position)
+    private bool WillGridPositionBeOccupied(GridPosition gridPosition)
     {
-        GridObject gridObject = GetGridObject(position);
-        return gridObject.IsInteractable();
+        return GetGridObject(gridPosition).WillBeOccupied();
     }
+
 
     private bool IsValidGridPosition(GridPosition gridPosition)
     {
@@ -190,12 +203,23 @@ public class GridSystem
             );
     }
 
+    public float GetWorldPositionX(int posX)
+    {
+        float worldPosX = posX * horizantalCellSize;
+        worldPosX += xWorldPositionOffset;
+        return worldPosX;
+    }
+
+
+    public UnitManager GetUnitManager() => unitManager;
+
+    public RequestManager GetRequestManager() => requestManager;
+
     public int GetWidth() => width;
     public int GetHeight() => height;
     public UnitAssetsData GetUnitAssetsSO() => unitAssetsSO;
     public LevelData GetLevelData() => levelData;
-    public UnitManager GetUnitManager() => unitManager;
-    public float GetBlockGeneratorOffset() => xWorldPositionOffsetBlockGenerator;
+    public float GetBlockGeneratorWorldPosition() => yBlockGeneratorWorldPosition;
     public GridObject GetGridObject(GridPosition gridPosition) => gridObjectsArray[gridPosition.x, gridPosition.y];
 
 
