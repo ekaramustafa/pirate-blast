@@ -7,8 +7,9 @@ public class LevelGrid : MonoBehaviour
 {
     [Header("Assets and Sprites")]
     [SerializeField] private UnitAssetsData unitAssetsSO;
-    [SerializeField] private SpriteRenderer blockFrame;
-    
+    [SerializeField] private SpriteRenderer gridFrameOutlineSpriteRenderer;
+    [SerializeField] private SpriteRenderer gridFrameBackgroundSpriteRenderer;
+
     private GridSystem gridSystem;
     private LevelData levelData;
     private ClickCommandInvoker clickCommandInvoker;
@@ -39,7 +40,11 @@ public class LevelGrid : MonoBehaviour
     private void Start()
     {
         
-        gridSystem = new GridSystem(levelData, unitAssetsSO, blockFrame);
+        gridSystem = new GridSystem(levelData: levelData, 
+            unitAssetsSO: unitAssetsSO, 
+            gridFrameBackgroundSpriteRenderer: gridFrameBackgroundSpriteRenderer, 
+            gridFrameOutlineSpriteRenderer: gridFrameOutlineSpriteRenderer
+        );
         clickCommandInvoker = new ClickCommandInvoker(gridSystem);
 
         //Publish UI Data

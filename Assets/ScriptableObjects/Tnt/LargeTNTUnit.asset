@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 205c003d03c017a48bc7e6dee9d29f2e, type: 3}
   m_Name: LargeTNTUnit
   m_EditorClassIdentifier: 
-  defaultStateSprite: {fileID: 21300000, guid: 3156334f89de346508a078faef6b07e5, type: 3}
+  defaultStateSprite: {fileID: 21300000, guid: cf36315410b8324469d58ff176bd4280, type: 3}
   unitType: 1
   health: 1
   affectedByNeighborBlast: 0
+  isStationary: 0
   blastParticleSystem: {fileID: 7544857655930263523, guid: e9c93caa341ce4740931cd30ecba2afb, type: 3}
   tntExplosionParticleSystem: {fileID: 7544857655930263523, guid: e9c93caa341ce4740931cd30ecba2afb, type: 3}
   particleMaterial: {fileID: 2100000, guid: 71900033e98452b4f8ecf1d4d7ac426b, type: 2}

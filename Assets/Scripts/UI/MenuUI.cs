@@ -8,11 +8,14 @@ using DG.Tweening;
 
 public class MenuUI : MonoBehaviour
 {
+    [SerializeField] private Transform headline;
+    [SerializeField] private Transform popupUI;
+    [Space(5)]
+    [Header("Buttons & Texts")]
     [SerializeField] private TextMeshProUGUI levelText;
     [SerializeField] private Button levelButton;
     [SerializeField] private Transform animatedLevelButton;
-    [SerializeField] private Transform popupUI;
-
+    
     [SerializeField] private Transform animatedResetButton; 
     [SerializeField] private Button resetButton; //For resetting level counts
 
@@ -32,6 +35,9 @@ public class MenuUI : MonoBehaviour
             levelText.text = $"Level {GameConstants.CurrentLevel.ToString()}";
         }
         animationService = AnimationServiceLocator.GetUIAnimationService();
+        Vector3 destination = headline.transform.localPosition;
+        headline.transform.localPosition = new Vector3Int(0, GameConstants.HEIGHT, 0);
+        animationService.TriggerAnimation(headline.transform, headline.transform.localPosition, destination, AnimationConstants.SLIDE_GAMESETUP_DEFAULT_DURATION / 2, AnimationType.SLIDE);
     }
 
     public void LoadPopupUI()

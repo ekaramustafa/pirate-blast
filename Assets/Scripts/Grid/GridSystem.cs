@@ -23,17 +23,19 @@ public class GridSystem
     private float yWorldPositionOffset;
     private float xWorldPositionOffset;
 
-    SpriteRenderer frameSpriteRenderer;
+    SpriteRenderer gridFrameOutlineSpriteRenderer;
+    SpriteRenderer gridFrameBackgroundSpriteRenderer;
 
 
 
-    public GridSystem(LevelData levelData, UnitAssetsData unitAssetsSO, SpriteRenderer frameSpriteRenderer)
+    public GridSystem(LevelData levelData, UnitAssetsData unitAssetsSO, SpriteRenderer gridFrameOutlineSpriteRenderer, SpriteRenderer gridFrameBackgroundSpriteRenderer)
     {
         this.levelData = levelData;
         this.width = levelData.grid_width;
         this.height = levelData.grid_height;
         this.unitAssetsSO = unitAssetsSO;
-        this.frameSpriteRenderer = frameSpriteRenderer;
+        this.gridFrameOutlineSpriteRenderer = gridFrameOutlineSpriteRenderer;
+        this.gridFrameBackgroundSpriteRenderer = gridFrameBackgroundSpriteRenderer;
 
         this.horizantalCellSize = GameConstants.HORIZONTAL_CELL_SIZE;
         this.verticalCellSize = GameConstants.VERTICAL_CELL_SIZE;
@@ -98,8 +100,10 @@ public class GridSystem
         {
             pos.y -= verticalCellSize / 2;
         }
-        frameSpriteRenderer.transform.position = new Vector2(pos.x, pos.y);
-        frameSpriteRenderer.size = new Vector2(width * horizantalCellSize + GameConstants.UNIT_BACKGROUND_FRAME_SIZE_ADDITION, height * verticalCellSize  + GameConstants.UNIT_BACKGROUND_FRAME_SIZE_ADDITION);
+        gridFrameOutlineSpriteRenderer.transform.position = new Vector2(pos.x, pos.y);
+        gridFrameOutlineSpriteRenderer.size = new Vector2(width * horizantalCellSize + GameConstants.UNIT_BACKGROUND_FRAME_HORIZANTAL_SIZE_ADDITION, height * verticalCellSize  + GameConstants.UNIT_BACKGROUND_FRAME_VERTICAL_SIZE_ADDITION);
+        gridFrameBackgroundSpriteRenderer.transform.position = new Vector2(pos.x, pos.y);
+        gridFrameBackgroundSpriteRenderer.size = new Vector2(width * horizantalCellSize + GameConstants.UNIT_BACKGROUND_FRAME_HORIZANTAL_SIZE_ADDITION, height * verticalCellSize + GameConstants.UNIT_BACKGROUND_FRAME_VERTICAL_SIZE_ADDITION);
     }
 
     #endregion
@@ -126,9 +130,11 @@ public class GridSystem
     private void AnimateFrame()
     {
         IAnimationService animationService = AnimationServiceLocator.GetAnimationService();
-        Transform rendererTransform = frameSpriteRenderer.transform;
+        Transform rendererTransform = gridFrameOutlineSpriteRenderer.transform;
         Vector3 destination = rendererTransform.position;
         animationService.TriggerAnimation(rendererTransform.transform, new Vector3(GameConstants.WIDTH, destination.y, destination.z), destination, AnimationConstants.SLIDE_GAMESETUP_DEFAULT_DURATION, AnimationType.SLIDE);
+        animationService.TriggerAnimation(gridFrameBackgroundSpriteRenderer.transform, new Vector3(GameConstants.WIDTH, destination.y, destination.z), destination, AnimationConstants.SLIDE_GAMESETUP_DEFAULT_DURATION, AnimationType.SLIDE);
+
     }
     #endregion
 

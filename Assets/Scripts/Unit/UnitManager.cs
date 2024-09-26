@@ -109,7 +109,13 @@ public class UnitManager
     {
         Vector3 worldPosition = gridSystem.GetWorldPosition(gridPosition);
         Transform unitTemplatePrefab = unitAssetsData.GetPrefabByUnitType(unitData.unitType);
-        Unit unit = UnitFactory.CreateUnit(unitData, unitTemplatePrefab, worldPosition, gridPosition.y);
+        int sortingLayer = gridPosition.y;
+        if(unitData.unitType == UnitType.TNT)
+        {
+            sortingLayer = 999;
+        }
+
+        Unit unit = UnitFactory.CreateUnit(unitData, unitTemplatePrefab, worldPosition, sortingLayer);
         GridObject gridObject = gridSystem.GetGridObject(gridPosition);
         gridObject.SetUnit(unit);
     }

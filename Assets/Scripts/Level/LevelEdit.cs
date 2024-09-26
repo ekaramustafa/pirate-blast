@@ -7,7 +7,8 @@ public class LevelEdit : MonoBehaviour
 {
     [Header("Assets and Sprites")]
     [SerializeField] private UnitAssetsData unitAssetsSO;
-    [SerializeField] private SpriteRenderer blockFrame;
+    [SerializeField] private SpriteRenderer gridFrameOutlineSpriteRenderer;
+    [SerializeField] private SpriteRenderer gridFrameBackgroundSpriteRenderer;
 
     private string blocksSortingLayerName = "Blocks";
 
@@ -47,7 +48,12 @@ public class LevelEdit : MonoBehaviour
                 ResetGrid();
                 gridSystem = null;
             }
-            gridSystem = new GridSystem(levelData, unitAssetsSO, blockFrame);
+            gridSystem = new GridSystem(
+                levelData: levelData, 
+                unitAssetsSO: unitAssetsSO, 
+                gridFrameOutlineSpriteRenderer: gridFrameOutlineSpriteRenderer,
+                gridFrameBackgroundSpriteRenderer: gridFrameBackgroundSpriteRenderer
+            );
         }
     }
     #endregion

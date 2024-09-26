@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: faf312acb0c58cf4497424c13385ed0a, type: 3}
   m_Name: StoneUnitOneHit
   m_EditorClassIdentifier: 
-  defaultStateSprite: {fileID: 21300000, guid: fc89bbee232b6e64bbff9e93221c0c6d, type: 3}
+  defaultStateSprite: {fileID: 21300000, guid: 62377e14fb708b14ca19fa0228163880, type: 3}
   unitType: 3
   health: 1
   affectedByNeighborBlast: 0
