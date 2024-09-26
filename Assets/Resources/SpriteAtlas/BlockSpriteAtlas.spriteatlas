@@ -40,7 +40,6 @@ SpriteAtlas:
     - {fileID: 2800000, guid: 9243cc5f6f05d4849a6aef47eec2d2d8, type: 3}
     - {fileID: 2800000, guid: 04f004c49d28ab541816d5920bf8518f, type: 3}
     - {fileID: 2800000, guid: c600e67747de95e449a5b55989668978, type: 3}
-    - {fileID: 2800000, guid: fc89bbee232b6e64bbff9e93221c0c6d, type: 3}
     - {fileID: 2800000, guid: 49291f986b7ce954a92345bba475bd8d, type: 3}
     - {fileID: 2800000, guid: 918b3980d9f499148a1680391e045663, type: 3}
     bindAsDefault: 1
@@ -56,7 +55,6 @@ SpriteAtlas:
     - 725e5f2b4533d934182950e3da14ee3a: 21300000
     - cf1b080e6b747dc4e9d489c37c3e35e2: 21300000
     - 13a12bce273ac5642b6e92c9ab6da5ae: 21300000
-    - fc89bbee232b6e64bbff9e93221c0c6d: 21300000
     - 9243cc5f6f05d4849a6aef47eec2d2d8: 21300000
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
@@ -69,7 +67,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 725e5f2b4533d934182950e3da14ee3a, type: 3}
   - {fileID: 21300000, guid: cf1b080e6b747dc4e9d489c37c3e35e2, type: 3}
   - {fileID: 21300000, guid: 13a12bce273ac5642b6e92c9ab6da5ae, type: 3}
-  - {fileID: 21300000, guid: fc89bbee232b6e64bbff9e93221c0c6d, type: 3}
   - {fileID: 21300000, guid: 9243cc5f6f05d4849a6aef47eec2d2d8, type: 3}
   m_PackedSpriteNamesToIndex:
   - random_block_placeholder
@@ -81,7 +78,6 @@ SpriteAtlas:
   - RedBlock
   - BlueBlockTNT
   - BlueBlock
-  - Unbreakable
   - RedBlockTNT
   m_RenderDataMap: {}
   m_Tag: BlockSpriteAtlas
