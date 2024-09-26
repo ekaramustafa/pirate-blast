@@ -16,8 +16,9 @@ MonoBehaviour:
   unitType: 0
   health: 1
   affectedByNeighborBlast: 0
+  isStationary: 0
   blastParticleSystem: {fileID: 2220476824931831946, guid: 4e40a3e57ad38aa478dc689b2232134c, type: 3}
   tntExplosionParticleSystem: {fileID: 7544857655930263523, guid: e9c93caa341ce4740931cd30ecba2afb, type: 3}
-  particleMaterial: {fileID: 2100000, guid: 0a8f0ec653e4e4d2fac4afc054e61ff6, type: 2}
+  particleMaterial: {fileID: 2100000, guid: 24a426741e24f72499392d8c402dab15, type: 2}
   blockColor: 2
   tntStateSprite: {fileID: 21300000, guid: c600e67747de95e449a5b55989668978, type: 3}
