@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: BlockSpriteAtlas
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings: []
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 1
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 2800000, guid: 13a12bce273ac5642b6e92c9ab6da5ae, type: 3}
+    - {fileID: 2800000, guid: cf1b080e6b747dc4e9d489c37c3e35e2, type: 3}
+    - {fileID: 2800000, guid: e65dc4264f5d8cf4684a1e8c1c220a36, type: 3}
+    - {fileID: 2800000, guid: 3d1c1b657aa32734990b35542e6ad83d, type: 3}
+    - {fileID: 2800000, guid: 725e5f2b4533d934182950e3da14ee3a, type: 3}
+    - {fileID: 2800000, guid: 9243cc5f6f05d4849a6aef47eec2d2d8, type: 3}
+    - {fileID: 2800000, guid: 04f004c49d28ab541816d5920bf8518f, type: 3}
+    - {fileID: 2800000, guid: c600e67747de95e449a5b55989668978, type: 3}
+    - {fileID: 2800000, guid: fc89bbee232b6e64bbff9e93221c0c6d, type: 3}
+    - {fileID: 2800000, guid: 49291f986b7ce954a92345bba475bd8d, type: 3}
+    - {fileID: 2800000, guid: 918b3980d9f499148a1680391e045663, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+    packedSpriteRenderDataKeys:
+    - 918b3980d9f499148a1680391e045663: 21300000
+    - 04f004c49d28ab541816d5920bf8518f: 21300000
+    - 3d1c1b657aa32734990b35542e6ad83d: 21300000
+    - e65dc4264f5d8cf4684a1e8c1c220a36: 21300000
+    - c600e67747de95e449a5b55989668978: 21300000
+    - 49291f986b7ce954a92345bba475bd8d: 21300000
+    - 725e5f2b4533d934182950e3da14ee3a: 21300000
+    - cf1b080e6b747dc4e9d489c37c3e35e2: 21300000
+    - 13a12bce273ac5642b6e92c9ab6da5ae: 21300000
+    - fc89bbee232b6e64bbff9e93221c0c6d: 21300000
+    - 9243cc5f6f05d4849a6aef47eec2d2d8: 21300000
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 918b3980d9f499148a1680391e045663, type: 3}
+  - {fileID: 21300000, guid: 04f004c49d28ab541816d5920bf8518f, type: 3}
+  - {fileID: 21300000, guid: 3d1c1b657aa32734990b35542e6ad83d, type: 3}
+  - {fileID: 21300000, guid: e65dc4264f5d8cf4684a1e8c1c220a36, type: 3}
+  - {fileID: 21300000, guid: c600e67747de95e449a5b55989668978, type: 3}
+  - {fileID: 21300000, guid: 49291f986b7ce954a92345bba475bd8d, type: 3}
+  - {fileID: 21300000, guid: 725e5f2b4533d934182950e3da14ee3a, type: 3}
+  - {fileID: 21300000, guid: cf1b080e6b747dc4e9d489c37c3e35e2, type: 3}
+  - {fileID: 21300000, guid: 13a12bce273ac5642b6e92c9ab6da5ae, type: 3}
+  - {fileID: 21300000, guid: fc89bbee232b6e64bbff9e93221c0c6d, type: 3}
+  - {fileID: 21300000, guid: 9243cc5f6f05d4849a6aef47eec2d2d8, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - random_block_placeholder
+  - YellowBlock
+  - GreenBlockTNT
+  - GreenBlock
+  - YellowBlockTNT
+  - Ice
+  - RedBlock
+  - BlueBlockTNT
+  - BlueBlock
+  - Unbreakable
+  - RedBlockTNT
+  m_RenderDataMap: {}
+  m_Tag: BlockSpriteAtlas
+  m_IsVariant: 0

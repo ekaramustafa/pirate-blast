@@ -63,7 +63,12 @@ public static class GameConstants
     /// <summary>
     /// Experimental offset of the background for units
     /// </summary>
-    public const float UNIT_BACKGROUND_FRAME_SIZE_ADDITION = 2f;
+    public const float UNIT_BACKGROUND_FRAME_VERTICAL_SIZE_ADDITION = 4f;
+
+    /// <summary>
+    /// Experimental offset of the background for units
+    /// </summary>
+    public const float UNIT_BACKGROUND_FRAME_HORIZANTAL_SIZE_ADDITION = 3.5f;
 
     #endregion
 

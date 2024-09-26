@@ -11,7 +11,8 @@ public class UIAnimationService : IAnimationService
     {
         _UIanimationStrategies = new Dictionary<AnimationType, IAnimationStrategy>
         {
-            { AnimationType.SCALEBOUNCE, new UIScaleBounceAnimation() },
+            { AnimationType.SCALEBOUNCE, new UIScaleBounceAnimation()},
+            {AnimationType.SLIDE, new NewUISlideAnimation() }
         };
     }
 
@@ -24,5 +25,14 @@ public class UIAnimationService : IAnimationService
 
         throw new ArgumentException($"No animation strategy found for {animationType}");
 
+    }
+}
+
+public class NewUISlideAnimation : IAnimationStrategy
+{
+    public Tween Animate(Transform animatedTransform, Vector3 from, Vector3 to, float duration)
+    {
+        RectTransform rectTransform = (RectTransform)animatedTransform;
+        return rectTransform.DOAnchorPos(to, duration, false).SetEase(Ease.OutQuad);
     }
 }
