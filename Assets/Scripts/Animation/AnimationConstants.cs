@@ -9,9 +9,9 @@ public static class AnimationConstants
 
     public static float SLIDE_GAMESETUP_DEFAULT_DURATION = 0.5f;
 
-    public static float DROP_ANIMATION_DURATION = 0.3f;
+    public static float DROP_ANIMATION_DURATION = 0.5f;
 
-    public static float DROP_ANIMATION_OVERSHOOT_AMOUNT = 1f;
+    public static float DROP_ANIMATION_OVERSHOOT_AMOUNT = 0.2f;
 
     public const float UNIT_FORM_ELASTICITIY_ANIMATION_DURATION = 0.3f;
 

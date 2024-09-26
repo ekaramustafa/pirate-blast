@@ -34,6 +34,8 @@ public static class BlastUtils
         Dictionary<GridPosition, Sprite> map = new Dictionary<GridPosition, Sprite>();
         foreach (GridPosition position in blastablePositions)
         {
+            if (!gridSystem.CanPerformOnPosition(position)) continue;
+
             GridObject gridObject = gridSystem.GetGridObject(position);
             Unit unit = gridObject.GetUnit();
             UnitType unitType = unit.GetUnitType();
@@ -54,6 +56,7 @@ public static class BlastUtils
             if (visitedGridPositions.Contains(position))
                 continue;
             visitedGridPositions.Add(position);
+            if (!gridSystem.CanPerformOnPosition(position)) continue;
             GridObject gridObject = gridSystem.GetGridObject(position);
             Unit unit = gridObject.GetUnit();
             UnitType unitType = unit.GetUnitType();

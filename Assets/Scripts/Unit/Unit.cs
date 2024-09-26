@@ -2,11 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class Unit : MonoBehaviour
 {
     private UnitData unitData;
     private int health;
+    [SerializeField] public bool debug;
 
     private void Awake()
     {
@@ -69,6 +71,11 @@ public class Unit : MonoBehaviour
     public void SetSpriteToDefault()
     {
         GetComponent<SpriteRenderer>().sprite = GetDefaultSprite();
+    }
+
+    private void OnDestroy()
+    {
+        DOTween.Kill(gameObject);
     }
 
 

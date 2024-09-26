@@ -244,7 +244,11 @@ public class UnitManager
             {
                 GridPosition sourcePos = gridSystem.GetGridPosition(sourceWorldPos);
                 GridPosition destinationPos = gridSystem.GetGridPosition(destinationWorldPos);
-                gridSystem.GetGridObject(sourcePos).SetUnit(null);
+                if(sourcePos.y < gridSystem.GetHeight())
+                {
+                    gridSystem.GetGridObject(sourcePos).SetUnit(null);
+                }
+                    
                 SetUnitToPosition(unit, destinationPos);
             }),
 
@@ -252,7 +256,6 @@ public class UnitManager
             {
                 GridPosition targetPos = gridSystem.GetGridPosition(targetWorldPos);
                 gridSystem.GetGridObject(targetPos).SetWillBeOccupied(false);
-                AdjustPossibleUnitFormationsVisual();
             }
         );
         callback?.Invoke(startPosition.x, targetWorldPositions.Count); //collecting information for fill empty positions

@@ -15,19 +15,27 @@ public class UnitMover : MonoBehaviour
 
         Vector3 lastPosition = targetPositions[targetPositions.Count - 1];
         int index = 0;
+        AnimationCurve smoothBounceCurve = new AnimationCurve(
+            new Keyframe(0f, 0f),   // Starting point
+            new Keyframe(0.6f, 1.1f),  // Reduced peak of bounce (overshoot)
+            new Keyframe(1f, 1f)    // Ending point
+        );
+        Vector3 startPosition = transform.position;
 
-        Tween tween = transform.DOMove(lastPosition, totalTime)
+        Tween tween = transform.DOMove(lastPosition, totalTime).SetId(gameObject)
             .OnUpdate(() =>
             {
                 if (index >= targetPositions.Count) return;
 
                 Vector3 currentPosition = transform.position;
                 Vector3 nextTargetPosition = targetPositions[index];
+                float totalDistance = Vector3.Distance(startPosition, nextTargetPosition);
                 float distanceToNextTarget = Vector3.Distance(currentPosition, nextTargetPosition);
-                if (distanceToNextTarget <= Vector3.Distance(currentPosition, nextTargetPosition) * 0.5f)
+                if (distanceToNextTarget < totalDistance * 0.5f)
                 {
                     stepCallback?.Invoke(gameObject.GetComponent<Unit>(), currentPosition, nextTargetPosition);
                     index++;
+                    startPosition = currentPosition;
                 }
             }
             )
@@ -36,8 +44,10 @@ public class UnitMover : MonoBehaviour
                 stepCallback?.Invoke(gameObject.GetComponent<Unit>(), transform.position, lastPosition);
                 lastCallback?.Invoke(lastPosition);
             })
-            .SetEase(Ease.OutBack, overshootAmount);
-
+            .OnKill(() =>
+            {
+                lastCallback?.Invoke(lastPosition);
+            }).SetEase(smoothBounceCurve);
         return tween;
     }
 

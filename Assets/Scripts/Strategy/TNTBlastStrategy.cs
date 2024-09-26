@@ -164,7 +164,6 @@ public class TNTBlastStrategy : IBlastStrategy
                     if (gridSystem.CanPerformOnPosition(blastPosition))
                     {
                         blastablePositions.Add(blastPosition);
-
                         GridObject gridObject = gridSystem.GetGridObject(blastPosition);
                         UnitType unitType = gridObject.GetUnit().GetUnitType();
                         if (unitType == UnitType.TNT && !visited.Contains(blastPosition))
