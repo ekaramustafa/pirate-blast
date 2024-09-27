@@ -19,7 +19,8 @@ public class LevelEditor : Editor
     private List<string> levels = new List<string>();
     private int selectedLevelIndex = 0;
     private string moveCount;
-
+    private string width;
+    private string height;
 
     //Save variables
     private SaveOption selectedOption = SaveOption.SaveCurrentLevel;
@@ -51,21 +52,29 @@ public class LevelEditor : Editor
             GetSelectedSaveOption: () => selectedOption,
             GetMoveCount: () => moveCount,
             IsEditDisabled: () => isEditDisabled,
+            GetWidth: () => width,
+            GetHeight: () => height,
             SetMoveCount: (new_value) => moveCount = new_value,
-            SetSelectedLevelIndex: (new_value) => selectedLevelIndex = new_value, 
+            SetSelectedLevelIndex: (new_value) => selectedLevelIndex = new_value,
             ResetPreferences: () => ResetPreferences(),
             UpdateLevelOptions: () => UpdateLevelOptions(),
-            SetSelectedSaveOption : (new_value) => selectedOption = new_value
-            );
+            SetSelectedSaveOption: (new_value) => selectedOption = new_value,
+            SetWidth: (new_value) => width = new_value,
+            SetHeight: (new_value) => height = new_value
+            ); ;
 
         gridUnitEditSection = new GridUnitEditSection(
             levelEdit: levelEdit,
             GetMoveCount: () => moveCount,
             IsEditDisabled: () => isEditDisabled,
             GetSelectedSprite: () => selectedSprite,
+            GetWidth: () => width,
+            GetHeight: () => height,
             SetEditDisabled: (new_value) => isEditDisabled = new_value,
             SetSelectedSprite: (sprite) => selectedSprite = sprite,
-            SetMoveCount: (new_value) => moveCount = new_value
+            SetMoveCount: (new_value) => moveCount = new_value,
+            SetWidth: (new_value) => width = new_value,
+            SetHeight: (new_value) => height = new_value
             );
 
     }

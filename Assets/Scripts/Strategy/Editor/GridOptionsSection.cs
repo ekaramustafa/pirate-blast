@@ -12,12 +12,17 @@ public class GridOptionsSection : IEditorSection
     private Func<SaveOption> GetSelectedSaveOption;
     private Func<string> GetMoveCount;
     private Func<bool> IsEditDisabled;
+    private Func<string> GetWidth;
+    private Func<string> GetHeight;
 
     private Action ResetPreferences;
     private Action UpdateLevelOptions;
     private Action<string> SetMoveCount;
+    private Action<string> SetWidth;
+    private Action<string> SetHeight;
     private Action<int> SetSelectedLevelIndex;
     private Action<SaveOption> SetSelectedSaveOption;
+
 
 
     public GridOptionsSection(LevelEdit levelEdit,
@@ -25,23 +30,31 @@ public class GridOptionsSection : IEditorSection
                                 Func<SaveOption> GetSelectedSaveOption,
                                 Func<string> GetMoveCount,
                                 Func<bool> IsEditDisabled,
+                                Func<string> GetWidth,
+                                Func<string> GetHeight,
                                 Action<string> SetMoveCount,
                                 Action<int> SetSelectedLevelIndex,
                                 Action ResetPreferences,
                                 Action UpdateLevelOptions,
-                                Action<SaveOption> SetSelectedSaveOption)
+                                Action<SaveOption> SetSelectedSaveOption,
+                                Action<string> SetWidth,
+                                Action<string> SetHeight
+                                )
     {
         this.levelEdit = levelEdit;
         this.GetSelectedLevelIndex = GetSelectedLevelIndex;
         this.GetSelectedSaveOption = GetSelectedSaveOption;
         this.GetMoveCount = GetMoveCount;
         this.IsEditDisabled = IsEditDisabled;
+        this.GetWidth = GetWidth;
+        this.GetHeight = GetHeight;
         this.SetMoveCount = SetMoveCount;
         this.ResetPreferences = ResetPreferences;
         this.UpdateLevelOptions = UpdateLevelOptions;
         this.SetSelectedSaveOption = SetSelectedSaveOption;
         this.SetSelectedLevelIndex = SetSelectedLevelIndex;
-
+        this.SetWidth = SetWidth;
+        this.SetHeight = SetHeight;
 
     }
 
@@ -60,7 +73,9 @@ public class GridOptionsSection : IEditorSection
         IEditorCommand initializeCommand = new EditorInitializeCommand(
             levelEdit,
             () => GetSelectedLevelIndex(),
-            (new_value) => SetMoveCount(new_value)
+            (new_value) => SetMoveCount(new_value),
+            (new_value) => SetWidth(new_value),
+            (new_value) => SetHeight(new_value)
             );
         if (GUILayout.Button("Initialize Grid", expandingOption, gridButtonWidth, gridButtonHeight))
         {
@@ -78,11 +93,13 @@ public class GridOptionsSection : IEditorSection
         GUILayout.FlexibleSpace();
 
         IEditorCommand saveCommand = new EditorSaveCommand(levelEdit,
-            () => GetSelectedSaveOption(),
-            () => GetSelectedLevelIndex(),
-            () => GetMoveCount(),
+            GetSelectedSaveOption: () => GetSelectedSaveOption(),
+            GetSelectedLevelIndex: () => GetSelectedLevelIndex(),
+            GetMoveCount: () => GetMoveCount(),
+            GetWidth: () => GetWidth(),
+            GetHeight: () => GetHeight(),
             (new_value) => SetSelectedLevelIndex(new_value)
-            ); ;
+            );
 
         if (GUILayout.Button("Save the Grid", expandingOption, gridButtonWidth, gridButtonHeight) && levelEdit.IsGridInitialized())
         {
