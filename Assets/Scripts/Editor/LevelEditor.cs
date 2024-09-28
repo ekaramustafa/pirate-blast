@@ -1,9 +1,8 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEditor;
 using System;
+using System.Drawing;
 using System.Reflection;
 
 [CustomEditor(typeof(LevelEdit))]
@@ -149,14 +148,8 @@ public class LevelEditor : Editor
 
     private Vector3 GetMousePosition()
     {
-        int currentWidth = Screen.currentResolution.width;
-        int currentHeight = Screen.currentResolution.height;
-        float widthScale = currentWidth / GameConstants.WIDTH;
-        float heightScale = currentHeight / GameConstants.HEIGHT;
-
-        // Take the minimum of width and height scale to maintain aspect ratio
-        float resolutionScale = Mathf.Min(widthScale, heightScale);
-        Vector3 mousePosition = Event.current.mousePosition * 1.00f; // to-do
+        float resolutionScale = Screen.dpi / 96;
+        Vector3 mousePosition = Event.current.mousePosition * resolutionScale; 
         mousePosition.y = SceneView.currentDrawingSceneView.camera.pixelHeight - mousePosition.y;
         mousePosition = SceneView.currentDrawingSceneView.camera.ScreenToWorldPoint(mousePosition);
         mousePosition.z = 0f;

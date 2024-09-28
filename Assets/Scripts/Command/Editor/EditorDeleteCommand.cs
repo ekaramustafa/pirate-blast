@@ -14,8 +14,6 @@ public class EditorDeleteCommand : IEditorCommand
         this.getSelectedLevelIndex = getSelectedLevelIndex;
 
     }
-
-
     public void Execute()
     {
         levelEdit.RemoveCurrentLevel(getSelectedLevelIndex() + 1);

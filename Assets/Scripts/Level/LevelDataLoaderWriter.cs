@@ -11,7 +11,7 @@ public static class LevelDataLoaderWriter
         {
             string jsonContent = File.ReadAllText(levelFilePath);
             mlevelData = JsonUtility.FromJson<LevelData>(jsonContent);
-            return mlevelData;
+            return mlevelData.Clone();
         }
         else
         {
@@ -27,7 +27,7 @@ public static class LevelDataLoaderWriter
         {
             string jsonContent = File.ReadAllText(levelFilePath);
             mlevelData = JsonUtility.FromJson<LevelData>(jsonContent);
-            return mlevelData;
+            return mlevelData.Clone();
         }
         else
         {
@@ -53,8 +53,7 @@ public static class LevelDataLoaderWriter
 
     private static void UpdateGridArray(LevelData levelData)
     {
-        if (levelData.grid_height == mlevelData.grid_height &&
-            levelData.grid_width == mlevelData.grid_width)
+        if (levelData.grid_height == mlevelData.grid_height && levelData.grid_width == mlevelData.grid_width)
         {
             return; // Height & Width are not modified
         }
@@ -84,9 +83,9 @@ public static class LevelDataLoaderWriter
             {
                 int index = j * levelData.grid_width + i;
 
-                if (new_grid[index] == null) // Only fill if it wasn't copied from the old grid
+                if (new_grid[index] == null) 
                 {
-                    new_grid[index] = "r"; // Put random block or any other default value
+                    new_grid[index] = "rand"; 
                 }
             }
         }
@@ -96,6 +95,7 @@ public static class LevelDataLoaderWriter
 
     public static void CreateNewLevelData(LevelData levelData)
     {
+        UpdateGridArray(levelData);
         string json = JsonUtility.ToJson(levelData, true);
         int lastLevel = GameConstants.MAX_LEVEL;
         string path = GetLevelFilePath(lastLevel + 1);
