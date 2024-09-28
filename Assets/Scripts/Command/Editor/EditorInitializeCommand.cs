@@ -7,22 +7,33 @@ public class EditorInitializeCommand : IEditorCommand
 {
 
     private LevelEdit levelEdit;
-    private Func<int> getSelectedLevelIndex;
-    private Action<string> setMoveCountString;
+    private Func<int> GetSelectedLevelIndex;
+    private Action<string> SetMoveCountString;
+    private Action<string> SetWidth;
+    private Action<string> SetHeight;
 
-    public EditorInitializeCommand(LevelEdit levelEdit, Func<int> getSelectedLevelIndex, Action<string> setMoveCountString)
+    public EditorInitializeCommand(LevelEdit levelEdit, 
+                    Func<int> GetSelectedLevelIndex, 
+                    Action<string> SetMoveCountString,
+                    Action<string> SetWidth,
+                    Action<string> SetHeight
+        )
     {
         this.levelEdit = levelEdit;
-        this.getSelectedLevelIndex = getSelectedLevelIndex;
-        this. setMoveCountString = setMoveCountString;
+        this.GetSelectedLevelIndex = GetSelectedLevelIndex;
+        this.SetMoveCountString = SetMoveCountString;
+        this.SetWidth = SetWidth;
+        this.SetHeight = SetHeight;
     }
 
     public void Execute()
     {
-        if (levelEdit.LoadLevelDataForEditing(getSelectedLevelIndex() + 1))
+        if (levelEdit.LoadLevelDataForEditing(GetSelectedLevelIndex() + 1))
         {
             levelEdit.InitializeGridSystem();
-            setMoveCountString(levelEdit.GetMoveCount());
+            SetMoveCountString(levelEdit.GetMoveCount());
+            SetWidth(levelEdit.GetCurrentLevelWidth());
+            SetHeight(levelEdit.GetCurrentLevelHeight());
         }
     }
 }

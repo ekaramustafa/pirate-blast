@@ -11,11 +11,15 @@ public class GridUnitEditSection : IEditorSection
 
     private Func<Sprite> GetSelectedSprite;
     private Func<string> GetMoveCount;
+    private Func<string> GetWidth;
+    private Func<string> GetHeight;
     private Func<bool> IsEditDisabled;
     
     private Action<bool> SetEditDisabled;
     private Action<Sprite> SetSelectedSprite;
     private Action<string> SetMoveCount;
+    private Action<string> SetWidth;
+    private Action<string> SetHeight;
 
 
     public GridUnitEditSection(
@@ -23,18 +27,26 @@ public class GridUnitEditSection : IEditorSection
         Func<string> GetMoveCount,
         Func<bool> IsEditDisabled,
         Func<Sprite> GetSelectedSprite,
+        Func<string> GetWidth,
+        Func<string> GetHeight,
         Action<bool> SetEditDisabled,
         Action<Sprite> SetSelectedSprite,
-        Action<string> SetMoveCount
+        Action<string> SetMoveCount,
+        Action<string> SetWidth,
+        Action<string> SetHeight
         )
     {
         this.levelEdit = levelEdit;
         this.GetMoveCount = GetMoveCount;
         this.GetSelectedSprite = GetSelectedSprite;
+        this.GetWidth = GetWidth;
+        this.GetHeight = GetHeight;
         this.IsEditDisabled = IsEditDisabled;
         this.SetEditDisabled = SetEditDisabled;
         this.SetSelectedSprite = SetSelectedSprite;
         this.SetMoveCount = SetMoveCount;
+        this.SetWidth = SetWidth;
+        this.SetHeight = SetHeight;
 
     }
 
@@ -46,14 +58,6 @@ public class GridUnitEditSection : IEditorSection
             EditorGUILayout.HelpBox("Grid must be initialized before editing.", MessageType.Warning);
             return;
         }
-
-        #region Move Count
-        GUILayout.BeginHorizontal();
-        GUILayout.Label("Move Count");
-        string moveCount = GUILayout.TextField(GetMoveCount());
-        SetMoveCount(moveCount);
-        GUILayout.EndHorizontal();
-        #endregion
 
         #region Edit Toggle
         bool newSelectionDisabled = EditorGUILayout.ToggleLeft("Enable Editing", IsEditDisabled());
@@ -71,6 +75,37 @@ public class GridUnitEditSection : IEditorSection
         }
 
         if (!IsEditDisabled()) return;
+        #endregion
+
+        #region Move Count
+        GUILayout.BeginHorizontal();
+        GUILayout.FlexibleSpace();
+        GUILayout.Label("Move Count");
+        string moveCount = GUILayout.TextField(GetMoveCount(), GUILayout.Width(100));
+        SetMoveCount(moveCount);
+        GUILayout.FlexibleSpace();
+        GUILayout.EndHorizontal();
+        #endregion
+
+        #region Width & Height
+        GUILayout.Space(10);
+        GUILayout.BeginHorizontal();
+        GUILayout.FlexibleSpace();
+        
+        GUILayout.BeginVertical();
+        GUILayout.Label("Width");
+        string width = GUILayout.TextField(GetWidth(), GUILayout.Width(100));
+        SetWidth(width);
+        GUILayout.EndVertical();
+
+        GUILayout.BeginVertical();
+        GUILayout.Label("Height");
+        string height = GUILayout.TextField(GetHeight(), GUILayout.Width(100));
+        SetHeight(height);
+        GUILayout.EndVertical();
+        
+        GUILayout.FlexibleSpace();
+        GUILayout.EndHorizontal();
         #endregion
 
         #region Unit Selection

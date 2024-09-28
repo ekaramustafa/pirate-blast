@@ -1,9 +1,8 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEditor;
 using System;
+using System.Drawing;
 using System.Reflection;
 
 [CustomEditor(typeof(LevelEdit))]
@@ -19,7 +18,8 @@ public class LevelEditor : Editor
     private List<string> levels = new List<string>();
     private int selectedLevelIndex = 0;
     private string moveCount;
-
+    private string width;
+    private string height;
 
     //Save variables
     private SaveOption selectedOption = SaveOption.SaveCurrentLevel;
@@ -51,21 +51,29 @@ public class LevelEditor : Editor
             GetSelectedSaveOption: () => selectedOption,
             GetMoveCount: () => moveCount,
             IsEditDisabled: () => isEditDisabled,
+            GetWidth: () => width,
+            GetHeight: () => height,
             SetMoveCount: (new_value) => moveCount = new_value,
-            SetSelectedLevelIndex: (new_value) => selectedLevelIndex = new_value, 
+            SetSelectedLevelIndex: (new_value) => selectedLevelIndex = new_value,
             ResetPreferences: () => ResetPreferences(),
             UpdateLevelOptions: () => UpdateLevelOptions(),
-            SetSelectedSaveOption : (new_value) => selectedOption = new_value
-            );
+            SetSelectedSaveOption: (new_value) => selectedOption = new_value,
+            SetWidth: (new_value) => width = new_value,
+            SetHeight: (new_value) => height = new_value
+            ); ;
 
         gridUnitEditSection = new GridUnitEditSection(
             levelEdit: levelEdit,
             GetMoveCount: () => moveCount,
             IsEditDisabled: () => isEditDisabled,
             GetSelectedSprite: () => selectedSprite,
+            GetWidth: () => width,
+            GetHeight: () => height,
             SetEditDisabled: (new_value) => isEditDisabled = new_value,
             SetSelectedSprite: (sprite) => selectedSprite = sprite,
-            SetMoveCount: (new_value) => moveCount = new_value
+            SetMoveCount: (new_value) => moveCount = new_value,
+            SetWidth: (new_value) => width = new_value,
+            SetHeight: (new_value) => height = new_value
             );
 
     }
@@ -140,14 +148,8 @@ public class LevelEditor : Editor
 
     private Vector3 GetMousePosition()
     {
-        int currentWidth = Screen.currentResolution.width;
-        int currentHeight = Screen.currentResolution.height;
-        float widthScale = currentWidth / GameConstants.WIDTH;
-        float heightScale = currentHeight / GameConstants.HEIGHT;
-
-        // Take the minimum of width and height scale to maintain aspect ratio
-        float resolutionScale = Mathf.Min(widthScale, heightScale);
-        Vector3 mousePosition = Event.current.mousePosition * 1.00f; // to-do
+        float resolutionScale = Screen.dpi / 96;
+        Vector3 mousePosition = Event.current.mousePosition * resolutionScale; 
         mousePosition.y = SceneView.currentDrawingSceneView.camera.pixelHeight - mousePosition.y;
         mousePosition = SceneView.currentDrawingSceneView.camera.ScreenToWorldPoint(mousePosition);
         mousePosition.z = 0f;

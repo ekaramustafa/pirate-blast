@@ -6,6 +6,8 @@ using UnityEditor;
 public class LevelPlaySection : IEditorSection
 {
     private LevelEdit levelEdit;
+    private IEditorCommand playCommand;
+    private IEditorCommand deleteCommand;
 
     private Func<List<string>> GetLevelOptionsList;
     private Func<int> GetSelectedLevelIndex;
@@ -28,6 +30,10 @@ public class LevelPlaySection : IEditorSection
         this.SetSelectedLevelIndex = SetSelectedLevelIndex;
         this.ResetPreferences = ResetPreferences;
         this.UpdateLevelOptions = UpdateLevelOptions;
+
+
+        playCommand = new EditorPlayCommand(levelEdit, () => GetSelectedLevelIndex());
+        deleteCommand = new EditorDeleteCommand(levelEdit, () => GetSelectedLevelIndex());
     }
 
 
@@ -57,13 +63,11 @@ public class LevelPlaySection : IEditorSection
         GUILayout.BeginHorizontal();
         GUILayout.FlexibleSpace();
 
-        IEditorCommand playCommand = new EditorPlayCommand(levelEdit, () => GetSelectedLevelIndex());
         if (GUILayout.Button("Play the current level", levelButtonWidth, levelButtonHeight, expandingOption))
         {
             playCommand.Execute();
         }
 
-        IEditorCommand deleteCommand = new EditorDeleteCommand(levelEdit, () => GetSelectedLevelIndex());
         if (GUILayout.Button("Delete the level", style, levelButtonWidth, levelButtonHeight, expandingOption))
         {
             deleteCommand.Execute();

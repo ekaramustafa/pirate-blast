@@ -102,7 +102,6 @@ public class LevelEdit : MonoBehaviour
 
     public void SaveGrid(int level) => LevelDataLoaderWriter.SaveLevelData(levelData, level);
     
-
     public void RemoveCurrentLevel(int level) => LevelDataLoaderWriter.DeleteLevel(level);
 
     public void CreateNewLevelWithGrid() => LevelDataLoaderWriter.CreateNewLevelData(levelData);
@@ -127,8 +126,6 @@ public class LevelEdit : MonoBehaviour
     {
         return gridSystem != null;
     }
-
-    
 
     private UnitData GetUnitSOBySprite(Sprite selectedSprite)
     {
@@ -161,11 +158,31 @@ public class LevelEdit : MonoBehaviour
     {
         return levelData.move_count.ToString();
     }
-
     public void SetMoveCount(int moveCount)
-    {       
+    {
         levelData.move_count = moveCount;
     }
+
+    public string GetCurrentLevelWidth()
+    {
+        return levelData.grid_width.ToString();
+    }
+
+    public void SetWidth(int width)
+    {
+        levelData.grid_width = width;
+    }
+
+    public string GetCurrentLevelHeight()
+    {
+        return levelData.grid_height.ToString();
+    }
+
+    public void SetHeight(int height)
+    {
+        levelData.grid_height = height;
+    }
+
     #endregion
 
 }
