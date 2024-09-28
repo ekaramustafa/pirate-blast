@@ -14,14 +14,16 @@ public class LevelSuccessUI : MonoBehaviour
     [Header("Parameters")]
     [SerializeField] private string victoryText = "Victory";
 
+    private IAnimationService UIanimationService;
+
     private void Awake()
     {
         gameObject.SetActive(false);
+        UIanimationService = AnimationServiceLocator.GetUIAnimationService();
     }
 
     private void OnEnable()
     {
-        IAnimationService UIanimationService = AnimationServiceLocator.GetUIAnimationService();
         Tween successTween = UIanimationService.TriggerAnimation(successImage.transform, successImage.transform.position, new Vector3(2f, 0f, 0f), AnimationConstants.SCALEBOUNCE_DEFAULT_DURATION, AnimationType.SCALEBOUNCE);
         successTween.OnComplete(() =>
         {
@@ -29,11 +31,14 @@ public class LevelSuccessUI : MonoBehaviour
         });
 
         levelCompletedText.GetComponent<TextMeshProUGUI>().SetText(victoryText);
-        Vector3 startPos = new Vector3(-GameConstants.WIDTH, 0f, 0f);
-        levelCompletedText.GetComponent<UISlideAnimation>().TriggerAnimation(startPos, AnimationType.HORIZANTALSLIDE).OnComplete(() =>
-        {
-            StartCoroutine(DelayAndLoadMenu());
-        });
+        Vector3 sourcePos = new Vector3(-GameConstants.WIDTH, levelCompletedText.transform.localPosition.y, 0f);
+        Vector3 destinationPos = levelCompletedText.localPosition;
+        levelCompletedText.localPosition = sourcePos;
+        UIanimationService.TriggerAnimation(levelCompletedText.transform, sourcePos, destinationPos, AnimationConstants.SLIDE_GAMESETUP_DEFAULT_DURATION / 2f, AnimationType.SLIDE)
+            .OnComplete(() =>
+            {
+                StartCoroutine(DelayAndLoadMenu());
+            });
 
     }
 
@@ -42,14 +47,17 @@ public class LevelSuccessUI : MonoBehaviour
 
 
         yield return new WaitForSeconds(sceneTransitionDelay);
+
+        
         if (successImage.gameObject.activeSelf)
         {
-            successImage.GetComponent<UISlideAnimation>().TriggerAnimationTo(new Vector3(0f, -GameConstants.HEIGHT, 0f), AnimationType.VERTICALSLIDE);
+            UIanimationService.TriggerAnimation(successImage, successImage.localPosition, new Vector3(successImage.localPosition.x, -GameConstants.HEIGHT, 0f), AnimationConstants.SLIDE_GAMESETUP_DEFAULT_DURATION / 2f, AnimationType.SLIDE);
         }
-        levelCompletedText.GetComponent<UISlideAnimation>().TriggerAnimationTo(new Vector3(GameConstants.WIDTH, 0f, 0f), AnimationType.HORIZANTALSLIDE)
-                .OnComplete(() => {
-                    Loader.LoadMenu();
-                });
+        UIanimationService.TriggerAnimation(levelCompletedText, levelCompletedText.localPosition, new Vector3(GameConstants.WIDTH, levelCompletedText.localPosition.y, 0f), AnimationConstants.SLIDE_GAMESETUP_DEFAULT_DURATION / 2f, AnimationType.SLIDE)
+            .OnComplete(() =>
+            {
+                Loader.LoadMenu();
+            });
     }
 
 }

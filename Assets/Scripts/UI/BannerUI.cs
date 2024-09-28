@@ -6,7 +6,10 @@ public class BannerUI : MonoBehaviour
 {
     private void Start()
     {
-        Vector3 pos = new Vector3(0, GameConstants.HEIGHT, 0);
-        GetComponent<UISlideAnimation>().TriggerAnimation(pos, AnimationType.VERTICALSLIDE);
+        Vector3 source = new Vector3(transform.localPosition.x, GameConstants.HEIGHT, 0);
+        IAnimationService animationService = AnimationServiceLocator.GetUIAnimationService();
+        Vector3 destination = transform.localPosition;
+        transform.localPosition = source;
+        animationService.TriggerAnimation(transform, source, destination, AnimationConstants.SLIDE_GAMESETUP_DEFAULT_DURATION / 2f, AnimationType.SLIDE);
     }
 }

@@ -1,7 +1,7 @@
 {
-       "level_number": 9,
-       "grid_width": 6,
-       "grid_height": 9,
-       "move_count": 20,
-       "grid": ["g", "y", "b", "g", "y", "b", "g", "y", "b", "g", "y", "b", "g", "y", "b", "g", "y", "b", "g", "y", "b", "g", "y", "b", "g", "y", "b", "g", "y", "b", "g", "y", "v", "v", "y", "b", "g", "v", "r", "r", "v", "b", "v", "r", "r", "r", "r", "v", "r", "r", "r", "r", "r", "r"]
+       "level_number": 10,
+       "grid_width": 10,
+       "grid_height": 8,
+       "move_count": 10,
+       "grid": ["b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "bo", "bo", "bo", "b", "b", "b", "b", "bo", "bo", "b", "bo", "b", "b", "bo", "b", "b", "bo", "b", "b", "bo", "bo", "b", "b", "bo", "b", "b", "bo", "b", "bo", "bo", "bo", "b", "b", "bo", "b", "b", "bo", "b", "b", "b", "bo", "b", "b", "bo", "b", "b", "bo", "b", "b", "bo", "bo", "bo", "bo", "b", "b", "b", "b", "bo", "bo", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b"]
 }
