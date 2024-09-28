@@ -9,7 +9,10 @@ public class LevelExitButton : MonoBehaviour
     private void Start()
     {
         animationService = AnimationServiceLocator.GetUIAnimationService();
-        GetComponent<UISlideAnimation>().TriggerAnimation(new Vector3(0f, -GameConstants.HEIGHT,0f), AnimationType.VERTICALSLIDE);
+        Vector3 source = new Vector3(transform.localPosition.x, -GameConstants.HEIGHT, 0f);
+        Vector3 destination = transform.localPosition;
+        transform.localPosition = source;
+        animationService.TriggerAnimation(transform,source, destination, AnimationConstants.SLIDE_GAMESETUP_DEFAULT_DURATION / 2f, AnimationType.SLIDE);
     }
 
     public void ReturnToMainMenu()
