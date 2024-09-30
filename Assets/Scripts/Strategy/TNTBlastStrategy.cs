@@ -29,18 +29,33 @@ public class TNTBlastStrategy : IBlastStrategy
         RequestManager requestManager = gridSystem.GetRequestManager();
         UnitManager unitManager = gridSystem.GetUnitManager();
 
+        List<GridPosition> affectedNeighbors = new List<GridPosition>();
+        foreach (GridPosition pos in comboPositions)
+        {
+            affectedNeighbors.AddRange(GridSearchUtils.GetNeighborBlastablePositions(gridSystem, pos));
+        }
+        foreach (GridPosition pos in affectedNeighbors)
+        {
+            BlastUtils.BlastBlockAtPosition(gridSystem, pos, BlastType.BlockBlast);
+        }
+
         List<Unit> unitsToBeDestoryed = comboPositions.Select(pos => gridSystem.GetGridObject(pos).GetUnit()).ToList();
 
         int startCol = 0;
         int endCol = gridSystem.GetWidth();
         int startRow = 0;
         int endRow = gridSystem.GetHeight();
-        unitManager.DeActivateUnits(startRow, endRow, startCol, endCol);
+        unitManager.DeActivateUnits(startRow, endRow, startCol, endCol); //Deactivate all interactions
 
         Tween sequence = AnimateFormation(gridSystem, startPosition, comboPositions);
         sequence.OnComplete(() =>
         {
-            unitsToBeDestoryed.ForEach(unit => UnityEngine.GameObject.Destroy(unit.gameObject));
+            unitsToBeDestoryed.ForEach(unit => {
+                if(unit != null)
+                {
+                    UnityEngine.GameObject.Destroy(unit.gameObject);
+                }
+            });
             unitManager.CreateComboTNTUnit(startPosition);
             AnimateComboTNTCreation(gridSystem, startPosition).OnComplete(() =>
             {
@@ -138,7 +153,7 @@ public class TNTBlastStrategy : IBlastStrategy
 
     public List<GridPosition> GetBlastablePositions(GridSystem gridSystem, GridPosition startPosition)
     {
-        //For TNT
+        //For TNT Blast
         List<GridPosition> blastablePositions = new List<GridPosition>();
         Queue<GridPosition> queue = new Queue<GridPosition>();
         HashSet<GridPosition> visited = new HashSet<GridPosition>();

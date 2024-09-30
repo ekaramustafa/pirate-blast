@@ -72,7 +72,14 @@ public class BlockBlastStrategy : IBlastStrategy
         List<Unit> unitsToBeDestoryed = blastablePositions.Select(pos => gridSystem.GetGridObject(pos).GetUnit()).ToList();
         UserRequest userRequest = new UserRequest(mergedPositions.ToArray(), async (request) =>
         {
-            unitsToBeDestoryed.ForEach(unit => UnityEngine.GameObject.Destroy(unit.gameObject));
+            unitsToBeDestoryed.ForEach(unit => {
+                if (unit != null)
+                {
+                    DOTween.Kill(unit.transform.gameObject);
+                    UnityEngine.GameObject.Destroy(unit.gameObject);
+                }
+
+            });
             await unitManager.DropUnits(request);
             requestManager.FinishCallback(request);
         });
